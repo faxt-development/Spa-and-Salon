@@ -1,11 +1,48 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
+// Public routes
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+// Dashboard routes
+Route::middleware(['auth'])->group(function () {
+    // Common authenticated user routes
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Admin routes
+    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+        
+        // Appointments routes for admin
+        Route::resource('appointments', 'App\Http\Controllers\Admin\AppointmentController')
+            ->except(['show']);
+    });
+    
+    // Staff routes
+    Route::middleware(['role:staff'])->prefix('staff')->name('staff.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
+        
+        // Appointments routes for staff
+        Route::resource('appointments', 'App\Http\Controllers\Staff\AppointmentController')
+            ->except(['destroy']);
+    });
+    
+    // Common appointments routes for both admin and staff
+    Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
+        ->middleware(['role:admin|staff'])
+        ->only(['index', 'show']);
+    
+    // Client routes
+    Route::middleware(['role:client'])->prefix('client')->name('client.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
+        // Add more client routes here
+    });
+});
 
 // Auth Routes
 Route::namespace('App\Http\Controllers\Auth')->group(function () {

@@ -9,7 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules;
+use Spatie\Permission\Models\Role;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -35,16 +37,49 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            // Create the user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+            ]);
 
-        event(new Registered($user));
+            // Assign the 'Client' role to the new user
+            $clientRole = Role::where('name', 'client')->first();
+            
+            if ($clientRole) {
+                $user->assignRole($clientRole);
+            } else {
+                // Log a warning if the client role doesn't exist
+                Log::warning('Client role not found during user registration', [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                ]);
+            }
 
-        Auth::login($user);
+            // Fire the registered event
+            event(new Registered($user));
 
-        return redirect(route('dashboard', absolute: false));
+            // Log in the user
+            Auth::login($user);
+
+            // Redirect to the dashboard with a success message
+            return redirect(route('dashboard', absolute: false))
+                ->with('success', 'Registration successful! Welcome to our platform.');
+                
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('Error during user registration', [
+                'email' => $request->email,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Redirect back with error message
+            return back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->withErrors(['registration' => 'An error occurred during registration. Please try again.']);
+        }
     }
 }
