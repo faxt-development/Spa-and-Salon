@@ -1,0 +1,264 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Appointment;
+use App\Models\Client;
+use App\Models\Staff;
+use App\Models\Service;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+class AppointmentController extends Controller
+{
+    /**
+     * Display a listing of the appointments.
+     */
+    public function index()
+    {
+        $staff = Staff::all();
+        
+        return view('appointments.index', compact('staff'));
+    }
+
+    /**
+     * Show the form for creating a new appointment.
+     */
+    public function create(Request $request)
+    {
+        $clients = Client::orderBy('last_name')->get();
+        $staff = Staff::orderBy('last_name')->get();
+        $services = Service::orderBy('name')->get();
+        
+        return view('appointments.create', compact('clients', 'staff', 'services'));
+    }
+
+    /**
+     * Store a newly created appointment in storage.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'client_id' => 'required_without:new_client|exists:clients,id',
+            'first_name' => 'required_if:new_client,on|string|max:255',
+            'last_name' => 'required_if:new_client,on|string|max:255',
+            'email' => 'required_if:new_client,on|email|max:255',
+            'phone' => 'required_if:new_client,on|string|max:20',
+            'staff_id' => 'required|exists:staff,id',
+            'date' => 'required|date',
+            'start_time' => 'required|string',
+            'end_time' => 'required|string',
+            'service_ids' => 'required|array',
+            'service_ids.*' => 'exists:services,id',
+            'notes' => 'nullable|string',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            // Create new client if needed
+            if ($request->has('new_client') && $request->new_client === 'on') {
+                $client = Client::create([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                ]);
+                $clientId = $client->id;
+            } else {
+                $clientId = $request->client_id;
+            }
+
+            // Format start and end times
+            $startDateTime = Carbon::parse($request->date . ' ' . $request->start_time);
+            $endDateTime = Carbon::parse($request->date . ' ' . $request->end_time);
+
+            // Calculate total price based on selected services
+            $services = Service::whereIn('id', $request->service_ids)->get();
+            $totalPrice = $services->sum('price');
+
+            // Create the appointment
+            $appointment = Appointment::create([
+                'client_id' => $clientId,
+                'staff_id' => $request->staff_id,
+                'start_time' => $startDateTime,
+                'end_time' => $endDateTime,
+                'status' => 'scheduled',
+                'notes' => $request->notes,
+                'total_price' => $totalPrice,
+                'is_paid' => false,
+            ]);
+
+            // Attach services to the appointment
+            foreach ($services as $service) {
+                $appointment->services()->attach($service->id, [
+                    'price' => $service->price,
+                    'duration' => $service->duration
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('appointments.show', $appointment->id)
+                ->with('success', 'Appointment created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return back()->withInput()->withErrors(['error' => 'Failed to create appointment: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Display the specified appointment.
+     */
+    public function show(string $id)
+    {
+        $appointment = Appointment::with(['client', 'staff', 'services', 'products', 'payments'])
+            ->findOrFail($id);
+            
+        return view('appointments.show', compact('appointment'));
+    }
+
+    /**
+     * Show the form for editing the specified appointment.
+     */
+    public function edit(string $id)
+    {
+        $appointment = Appointment::with(['client', 'staff', 'services'])->findOrFail($id);
+        $clients = Client::orderBy('last_name')->get();
+        $staff = Staff::orderBy('last_name')->get();
+        $services = Service::orderBy('name')->get();
+        
+        return view('appointments.edit', compact('appointment', 'clients', 'staff', 'services'));
+    }
+
+    /**
+     * Update the specified appointment in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'staff_id' => 'required|exists:staff,id',
+            'date' => 'required|date',
+            'start_time' => 'required|string',
+            'end_time' => 'required|string',
+            'service_ids' => 'required|array',
+            'service_ids.*' => 'exists:services,id',
+            'status' => 'required|in:scheduled,confirmed,completed,cancelled,no_show',
+            'notes' => 'nullable|string',
+        ]);
+
+        $appointment = Appointment::findOrFail($id);
+
+        DB::beginTransaction();
+
+        try {
+            // Format start and end times
+            $startDateTime = Carbon::parse($request->date . ' ' . $request->start_time);
+            $endDateTime = Carbon::parse($request->date . ' ' . $request->end_time);
+
+            // Calculate total price based on selected services
+            $services = Service::whereIn('id', $request->service_ids)->get();
+            $totalPrice = $services->sum('price');
+
+            // Update the appointment
+            $appointment->update([
+                'client_id' => $request->client_id,
+                'staff_id' => $request->staff_id,
+                'start_time' => $startDateTime,
+                'end_time' => $endDateTime,
+                'status' => $request->status,
+                'notes' => $request->notes,
+                'total_price' => $totalPrice,
+            ]);
+
+            // Update services
+            $appointment->services()->detach();
+            foreach ($services as $service) {
+                $appointment->services()->attach($service->id, [
+                    'price' => $service->price,
+                    'duration' => $service->duration
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('appointments.show', $appointment->id)
+                ->with('success', 'Appointment updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return back()->withInput()->withErrors(['error' => 'Failed to update appointment: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Remove the specified appointment from storage.
+     */
+    public function destroy(string $id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        
+        // Check if appointment can be deleted (e.g., not completed)
+        if ($appointment->status === 'completed') {
+            return back()->withErrors(['error' => 'Completed appointments cannot be deleted.']);
+        }
+        
+        $appointment->delete();
+        
+        return redirect()->route('appointments.index')
+            ->with('success', 'Appointment deleted successfully.');
+    }
+    
+    /**
+     * Cancel the specified appointment.
+     */
+    public function cancel(Request $request, string $id)
+    {
+        $request->validate([
+            'cancellation_reason' => 'required|string|max:255'
+        ]);
+        
+        $appointment = Appointment::findOrFail($id);
+        
+        // Check if appointment can be cancelled
+        if (in_array($appointment->status, ['completed', 'cancelled', 'no_show'])) {
+            return back()->withErrors(['error' => 'This appointment cannot be cancelled.']);
+        }
+        
+        $appointment->update([
+            'status' => 'cancelled',
+            'cancellation_reason' => $request->cancellation_reason
+        ]);
+        
+        return redirect()->route('appointments.show', $appointment->id)
+            ->with('success', 'Appointment cancelled successfully.');
+    }
+    
+    /**
+     * Mark the specified appointment as completed.
+     */
+    public function complete(string $id)
+    {
+        $appointment = Appointment::findOrFail($id);
+        
+        // Check if appointment can be marked as completed
+        if (in_array($appointment->status, ['completed', 'cancelled', 'no_show'])) {
+            return back()->withErrors(['error' => 'This appointment cannot be marked as completed.']);
+        }
+        
+        $appointment->update([
+            'status' => 'completed'
+        ]);
+        
+        // Update client's last visit date
+        $appointment->client->update([
+            'last_visit' => now()
+        ]);
+        
+        return redirect()->route('appointments.show', $appointment->id)
+            ->with('success', 'Appointment marked as completed.');
+    }
+}
