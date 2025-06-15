@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel Middleware Execution Flow</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        .mermaid {
+            margin: 30px 0;
+        }
+        .notes {
+            background-color: #f8fafc;
+            border-left: 4px solid #4299e1;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .notes h3 {
+            margin-top: 0;
+            color: #2b6cb0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Laravel Middleware Execution Flow for POST to route('appointments.store')</h1>
+
+    <div class="mermaid">
+        flowchart TD
+            A[HTTP Request to appointments.store] --> B[Global Middleware]
+
+            subgraph Global["Global Middleware"]
+                B1[TrustProxies] --> B2[HandleCors]
+                B2 --> B3[PreventRequestsDuringMaintenance]
+                B3 --> B4[ValidatePostSize]
+                B4 --> B5[TrimStrings]
+                B5 --> B6[ConvertEmptyStringsToNull]
+            end
+
+            B6 --> C[Web Middleware Group]
+
+            subgraph Web["Web Middleware Group"]
+                C1[EncryptCookies] --> C2[AddQueuedCookiesToResponse]
+                C2 --> C3[StartSession]
+                C3 --> C4[ShareErrorsFromSession]
+                C4 --> C5[VerifyCsrfToken]
+                C5 --> C6[SubstituteBindings]
+            end
+
+            C6 --> D[Route Middleware]
+
+            subgraph Route["Route Middleware"]
+                D1[auth] --> D2["role:admin or staff"]
+            end
+
+            D2 --> E[AppointmentController store]
+    </div>
+
+    <div class="notes">
+        <h3>Notes on Middleware Execution:</h3>
+        <ul>
+            <li><strong>Global Middleware:</strong> Runs on every request to the application</li>
+            <li><strong>Web Middleware Group:</strong> Runs on all routes defined in routes/web.php</li>
+            <li><strong>Route Middleware:</strong> Runs only on routes with specific middleware applied</li>
+            <li><strong>Execution Order:</strong> Middleware executes from top to bottom in the flowchart</li>
+            <li><strong>Early Termination:</strong> Any middleware can terminate the request and return a response (like a redirect) before reaching the controller</li>
+            <li><strong>CSRF Protection:</strong> For POST requests, the VerifyCsrfToken middleware checks for a valid CSRF token</li>
+            <li><strong>Authentication:</strong> The auth middleware checks if the user is authenticated</li>
+            <li><strong>Authorization:</strong> The role middleware checks if the authenticated user has the required role</li>
+        </ul>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+</body>
+</html>

@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Public routes
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{service}', [ServiceController::class, 'show']);
+Route::post('/booking/availability', [BookingController::class, 'checkAvailability']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -47,28 +48,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/appointments/calendar/{year}/{month}', [AppointmentController::class, 'calendar']);
     Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
     Route::post('/appointments/{appointment}/complete', [AppointmentController::class, 'complete']);
-    
+
     // Booking
-    Route::get('/booking/availability', [BookingController::class, 'checkAvailability']);
     Route::post('/booking/reserve', [BookingController::class, 'reserve']);
-    
+
     // Clients
     Route::apiResource('clients', ClientController::class);
     Route::get('/clients/{client}/appointments', [ClientController::class, 'appointments']);
-    
+
     // Staff
     Route::apiResource('staff', StaffController::class);
     Route::get('/staff/{staff}/schedule', [StaffController::class, 'schedule']);
     Route::get('/staff/{staff}/appointments', [StaffController::class, 'appointments']);
-    
+
     // Services
     Route::post('/services', [ServiceController::class, 'store']);
     Route::put('/services/{service}', [ServiceController::class, 'update']);
     Route::delete('/services/{service}', [ServiceController::class, 'destroy']);
-    
+
     // Payments
     Route::apiResource('payments', PaymentController::class);
-    
+
     // Products
     Route::apiResource('products', ProductController::class);
 });

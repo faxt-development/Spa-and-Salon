@@ -14,32 +14,22 @@ use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
+
     /**
      * Display a listing of the appointments.
      */
     public function index()
     {
-        Log::info('AppointmentController@index: Accessing appointments index');
-        
-        // Log authentication status
+        // Simplified authentication check
         if (Auth::check()) {
             $user = Auth::user();
-            Log::info('AppointmentController@index: User is authenticated', [
-                'user_id' => $user->id, 
-                'email' => $user->email,
-                'roles' => $user->getRoleNames(),
-                'session_has_token' => session()->has('api_token')
-            ]);
-            
-            // Log session data
-            Log::info('AppointmentController@index: Session data', ['session' => session()->all()]);
         } else {
-            Log::warning('AppointmentController@index: User is NOT authenticated');
+            Log::warning('AppointmentController@index: User is NOT authenticated', [
+                'session_id' => session()->getId()
+            ]);
         }
-        
+
         $staff = Staff::all();
-        Log::info('AppointmentController@index: Retrieved staff', ['count' => $staff->count()]);
-        
         return view('appointments.index', compact('staff'));
     }
 
@@ -51,7 +41,7 @@ class AppointmentController extends Controller
         $clients = Client::orderBy('last_name')->get();
         $staff = Staff::orderBy('last_name')->get();
         $services = Service::orderBy('name')->get();
-        
+
         return view('appointments.create', compact('clients', 'staff', 'services'));
     }
 
@@ -60,6 +50,9 @@ class AppointmentController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info('AppointmentController@store: Storing new appointment', [
+            'request' => $request->all()
+        ]);
         $request->validate([
             'client_id' => 'required_without:new_client|exists:clients,id',
             'first_name' => 'required_if:new_client,on|string|max:255',
@@ -125,7 +118,7 @@ class AppointmentController extends Controller
                 ->with('success', 'Appointment created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return back()->withInput()->withErrors(['error' => 'Failed to create appointment: ' . $e->getMessage()]);
         }
     }
@@ -137,7 +130,7 @@ class AppointmentController extends Controller
     {
         $appointment = Appointment::with(['client', 'staff', 'services', 'products', 'payments'])
             ->findOrFail($id);
-            
+
         return view('appointments.show', compact('appointment'));
     }
 
@@ -150,7 +143,7 @@ class AppointmentController extends Controller
         $clients = Client::orderBy('last_name')->get();
         $staff = Staff::orderBy('last_name')->get();
         $services = Service::orderBy('name')->get();
-        
+
         return view('appointments.edit', compact('appointment', 'clients', 'staff', 'services'));
     }
 
@@ -210,7 +203,7 @@ class AppointmentController extends Controller
                 ->with('success', 'Appointment updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return back()->withInput()->withErrors(['error' => 'Failed to update appointment: ' . $e->getMessage()]);
         }
     }
@@ -221,18 +214,18 @@ class AppointmentController extends Controller
     public function destroy(string $id)
     {
         $appointment = Appointment::findOrFail($id);
-        
+
         // Check if appointment can be deleted (e.g., not completed)
         if ($appointment->status === 'completed') {
             return back()->withErrors(['error' => 'Completed appointments cannot be deleted.']);
         }
-        
+
         $appointment->delete();
-        
+
         return redirect()->route('appointments.index')
             ->with('success', 'Appointment deleted successfully.');
     }
-    
+
     /**
      * Cancel the specified appointment.
      */
@@ -241,44 +234,44 @@ class AppointmentController extends Controller
         $request->validate([
             'cancellation_reason' => 'required|string|max:255'
         ]);
-        
+
         $appointment = Appointment::findOrFail($id);
-        
+
         // Check if appointment can be cancelled
         if (in_array($appointment->status, ['completed', 'cancelled', 'no_show'])) {
             return back()->withErrors(['error' => 'This appointment cannot be cancelled.']);
         }
-        
+
         $appointment->update([
             'status' => 'cancelled',
             'cancellation_reason' => $request->cancellation_reason
         ]);
-        
+
         return redirect()->route('appointments.show', $appointment->id)
             ->with('success', 'Appointment cancelled successfully.');
     }
-    
+
     /**
      * Mark the specified appointment as completed.
      */
     public function complete(string $id)
     {
         $appointment = Appointment::findOrFail($id);
-        
+
         // Check if appointment can be marked as completed
         if (in_array($appointment->status, ['completed', 'cancelled', 'no_show'])) {
             return back()->withErrors(['error' => 'This appointment cannot be marked as completed.']);
         }
-        
+
         $appointment->update([
             'status' => 'completed'
         ]);
-        
+
         // Update client's last visit date
         $appointment->client->update([
             'last_visit' => now()
         ]);
-        
+
         return redirect()->route('appointments.show', $appointment->id)
             ->with('success', 'Appointment marked as completed.');
     }

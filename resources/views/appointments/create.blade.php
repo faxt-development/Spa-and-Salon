@@ -8,9 +8,10 @@
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
+
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold">Create New Appointment</h2>
-                    <a href="{{ route('appointments.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    <a href="#" onclick="window.history.back(); return false;" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
@@ -29,7 +30,7 @@
                     </div>
                 @endif
 
-                <form id="appointment-form" method="POST" action="{{ route('appointments.store') }}" class="space-y-6">
+                <form id="appointmentForm" method="POST" action="/appointments" class="space-y-6" x-data="appointmentForm">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -87,7 +88,7 @@
 
                             <div>
                                 <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
-                                <input type="text" name="date" id="date" value="{{ old('date', request('date', date('Y-m-d'))) }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md datepicker">
+                                <input type="date" name="date" id="date" value="{{ old('date', request('date', date('Y-m-d'))) }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md datepicker">
                             </div>
 
                             <div class="grid grid-cols-2 gap-4">
@@ -151,14 +152,19 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-end">
-                        <button type="button" id="check-availability-btn" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-3">
-                            Check Availability
-                        </button>
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            Create Appointment
+                    <div class="flex justify-center mt-4">
+                        <button type="button"
+                            @click="checkAvailability"
+                            :class="{'bg-blue-700': loading, 'bg-blue-600': !loading}"
+                            :disabled="loading"
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <span x-text="loading ? 'Checking...' : 'Check Availability'"></span>
                         </button>
                     </div>
+                    <div x-show="validationError" x-text="validationError" class="mt-2 text-red-600 text-sm"></div>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        Create Appointment
+                    </button>
                 </form>
             </div>
         </div>
@@ -166,17 +172,19 @@
 </div>
 
 <!-- Availability Modal -->
-<div id="availability-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Available Time Slots</h3>
-            <div id="availability-results" class="mt-2 px-7 py-3 max-h-96 overflow-y-auto">
-                <p class="text-center text-gray-500">Select date, time, staff, and services to check availability</p>
-            </div>
-            <div class="items-center px-4 py-3 flex justify-end">
-                <button id="availability-modal-close" class="px-4 py-2 bg-gray-200 text-gray-800 text-xs font-semibold rounded-md hover:bg-gray-300 focus:outline-none">
-                    Close
+<div x-data="{ open: false, availabilityResults: '' }" x-cloak>
+    <div x-show="open" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" x-transition>
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium">Available Time Slots</h3>
+                <button @click="open = false" class="text-gray-400 hover:text-gray-500">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
                 </button>
+            </div>
+            <div class="mt-4" x-html="availabilityResults">
+                <!-- Results will be inserted here -->
             </div>
         </div>
     </div>
@@ -185,6 +193,121 @@
 
 @push('scripts')
 <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('appointmentForm', () => ({
+            loading: false,
+            validationError: '',
+
+            checkAvailability() {
+                this.loading = true;
+                this.validationError = '';
+
+                const date = document.getElementById('date').value;
+                const staffId = document.getElementById('staff_id').value;
+                const servicesSelect = document.getElementById('services');
+                const serviceIds = Array.from(servicesSelect.selectedOptions).map(option => option.value);
+
+                if (!date) {
+                    this.validationError = 'Please select a date';
+                    this.loading = false;
+                    return;
+                }
+
+                if (serviceIds.length === 0) {
+                    this.validationError = 'Please select at least one service';
+                    this.loading = false;
+                    return;
+                }
+
+                const availabilityModal = document.getElementById('availability-modal');
+                const availabilityResults = document.getElementById('availability-results');
+
+                availabilityResults.innerHTML = '<p class="text-center">Loading available time slots...</p>';
+                availabilityModal.classList.remove('hidden');
+
+                // Create a status message element to show network activity
+                const statusMessage = document.createElement('div');
+                statusMessage.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg';
+                statusMessage.textContent = 'Checking availability...';
+                document.body.appendChild(statusMessage);
+
+                // Fetch available time slots from API
+                fetch('/api/booking/availability', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        date: date,
+                        staff_id: staffId || null,
+                        service_ids: serviceIds
+                    })
+                })
+                .then(response => {
+                    // Remove status message
+                    document.body.removeChild(statusMessage);
+
+                    // Reset loading state
+                    this.loading = false;
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.available_slots && data.available_slots.length > 0) {
+                        let html = '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">';
+
+                        data.available_slots.forEach(slot => {
+                            html += `
+                                <button type="button" class="time-slot-btn p-2 border rounded text-center hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    data-time="${slot.time}" data-end-time="${slot.end_time}">
+                                    ${slot.formatted_time}
+                                </button>
+                            `;
+                        });
+
+                        html += '</div>';
+                        availabilityResults.innerHTML = html;
+
+                        // Add event listeners to time slot buttons
+                        document.querySelectorAll('.time-slot-btn').forEach(btn => {
+                            btn.addEventListener('click', function() {
+                                const startTimeInput = document.getElementById('start_time');
+                                const endTimeInput = document.getElementById('end_time');
+                                startTimeInput._flatpickr.setDate(this.dataset.time);
+                                endTimeInput._flatpickr.setDate(this.dataset.endTime);
+                                availabilityModal.classList.add('hidden');
+                            });
+                        });
+                    } else {
+                        availabilityResults.innerHTML = '<p class="text-center text-red-500">No available time slots found for the selected date and services.</p>';
+                    }
+                })
+                .catch(error => {
+                    // Reset loading state if not already done
+                    this.loading = false;
+
+                    // Remove status message if still present
+                    if (document.body.contains(statusMessage)) {
+                        document.body.removeChild(statusMessage);
+                    }
+
+                    console.error('Error checking availability:', error);
+                    availabilityResults.innerHTML = `
+                        <div class="text-center text-red-500">
+                            <p class="font-bold">Error checking availability</p>
+                            <p class="text-sm">${error.message || 'Please try again'}</p>
+                            <pre class="mt-2 text-xs text-left bg-gray-100 p-2 rounded overflow-auto max-h-40">${JSON.stringify(error, null, 2)}</pre>
+                        </div>`;
+                });
+            }
+        }));
+    });
+
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize date picker
         flatpickr('.datepicker', {
@@ -251,77 +374,10 @@
         servicesSelect.addEventListener('change', updateTotals);
         startTimeInput.addEventListener('change', updateTotals);
 
-        // Check availability button
-        const checkAvailabilityBtn = document.getElementById('check-availability-btn');
+        // Availability modal setup
         const availabilityModal = document.getElementById('availability-modal');
         const availabilityResults = document.getElementById('availability-results');
         const availabilityModalClose = document.getElementById('availability-modal-close');
-
-        checkAvailabilityBtn.addEventListener('click', function() {
-            const date = document.getElementById('date').value;
-            const staffId = document.getElementById('staff_id').value;
-            const serviceIds = Array.from(servicesSelect.selectedOptions).map(option => option.value);
-
-            if (!date) {
-                alert('Please select a date');
-                return;
-            }
-
-            if (serviceIds.length === 0) {
-                alert('Please select at least one service');
-                return;
-            }
-
-            availabilityResults.innerHTML = '<p class="text-center">Loading available time slots...</p>';
-            availabilityModal.classList.remove('hidden');
-
-            // Fetch available time slots from API
-            fetch('/api/booking/check-availability', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    date: date,
-                    staff_id: staffId || null,
-                    service_ids: serviceIds
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.available_slots && data.available_slots.length > 0) {
-                    let html = '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">';
-
-                    data.available_slots.forEach(slot => {
-                        html += `
-                            <button type="button" class="time-slot-btn p-2 border rounded text-center hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                data-time="${slot.time}" data-end-time="${slot.end_time}">
-                                ${slot.formatted_time}
-                            </button>
-                        `;
-                    });
-
-                    html += '</div>';
-                    availabilityResults.innerHTML = html;
-
-                    // Add event listeners to time slot buttons
-                    document.querySelectorAll('.time-slot-btn').forEach(btn => {
-                        btn.addEventListener('click', function() {
-                            startTimeInput._flatpickr.setDate(this.dataset.time);
-                            endTimeInput._flatpickr.setDate(this.dataset.endTime);
-                            availabilityModal.classList.add('hidden');
-                        });
-                    });
-                } else {
-                    availabilityResults.innerHTML = '<p class="text-center text-red-500">No available time slots found for the selected date and services.</p>';
-                }
-            })
-            .catch(error => {
-                console.error('Error checking availability:', error);
-                availabilityResults.innerHTML = '<p class="text-center text-red-500">Error checking availability. Please try again.</p>';
-            });
-        });
 
         availabilityModalClose.addEventListener('click', function() {
             availabilityModal.classList.add('hidden');

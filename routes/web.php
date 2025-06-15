@@ -9,28 +9,41 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Debug route to check authentication and token status
+Route::middleware(['auth'])->get('/debug-auth', function () {
+    return response()->json([
+        'user' => auth()->user(),
+        'token_in_session' => session()->has('api_token') ? 'Yes' : 'No',
+        'token_value' => session('api_token') ? substr(session('api_token'), 0, 10) . '...' : 'None',
+        'session_id' => session()->getId(),
+        'auth_check' => auth()->check() ? 'Yes' : 'No',
+        'auth_id' => auth()->id(),
+        'session_data' => session()->all(),
+    ]);
+});
+
 // Dashboard routes
 Route::middleware(['auth'])->group(function () {
     // Common authenticated user routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Admin routes
     Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
     });
-    
+
     // Staff routes
     Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
     });
-    
+
     // Appointments routes for both admin and staff
     Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
-        ->middleware(['auth', 'role:admin|staff'])
+        ->middleware(['auth:web', 'role:admin|staff'])
         ->except(['destroy']);
-    
+
     // Client routes
-    Route::middleware(['auth', 'role:client'])->prefix('client')->name('client.')->group(function () {
+    Route::middleware(['auth:web', 'role:client'])->prefix('client')->name('client.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
         // Add more client routes here
     });
@@ -55,28 +68,28 @@ Route::namespace('App\Http\Controllers\Auth')->group(function () {
 
     // Email Verification Routes...
     Route::get('email/verify', 'EmailVerificationPromptController@__invoke')
-                ->middleware('auth')
+                ->middleware('auth:web')
                 ->name('verification.notice');
 
     Route::get('email/verify/{id}/{hash}', 'VerifyEmailController@__invoke')
-                ->middleware(['auth', 'signed', 'throttle:6,1'])
+                ->middleware(['auth:web', 'signed', 'throttle:6,1'])
                 ->name('verification.verify');
 
     Route::post('email/verification-notification', 'EmailVerificationNotificationController@store')
-                ->middleware(['auth', 'throttle:6,1'])
+                ->middleware(['auth:web', 'throttle:6,1'])
                 ->name('verification.send');
 
     // Confirm Password...
     Route::get('confirm-password', 'ConfirmablePasswordController@show')
-                ->middleware('auth')
+                ->middleware('auth:web')
                 ->name('password.confirm');
 
     Route::post('confirm-password', 'ConfirmablePasswordController@store')
-                ->middleware('auth');
+                ->middleware('auth:web');
 });
 
 // Protected Routes
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth:web', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');

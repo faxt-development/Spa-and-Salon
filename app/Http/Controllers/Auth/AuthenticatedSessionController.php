@@ -25,26 +25,18 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        Log::info('AuthenticatedSessionController@store: Login attempt', ['email' => $request->email]);
-        
+
         $request->authenticate();
-        Log::info('AuthenticatedSessionController@store: Authentication successful');
 
         $request->session()->regenerate();
-        Log::info('AuthenticatedSessionController@store: Session regenerated');
-        
+
         // Generate a Sanctum token for the user
         $user = Auth::user();
         $deviceName = $request->userAgent() ?? 'Web Browser';
         $token = $user->createToken($deviceName)->plainTextToken;
-        Log::info('AuthenticatedSessionController@store: Sanctum token generated', ['token_length' => strlen($token)]);
-        
+
         // Store the token in the session for later use
         session(['api_token' => $token]);
-        Log::info('AuthenticatedSessionController@store: Token stored in session');
-        
-        // Log all session data for debugging
-        Log::info('AuthenticatedSessionController@store: Session data', ['session' => $request->session()->all()]);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
@@ -55,7 +47,7 @@ class AuthenticatedSessionController extends Controller
     public function destroy(Request $request): RedirectResponse
     {
         Log::info('AuthenticatedSessionController@destroy: Logout attempt');
-        
+
         // Revoke all tokens for the current user if they exist
         $user = Auth::user();
         if ($user) {
@@ -64,7 +56,7 @@ class AuthenticatedSessionController extends Controller
         } else {
             Log::warning('AuthenticatedSessionController@destroy: No authenticated user found during logout');
         }
-        
+
         Auth::guard('web')->logout();
         Log::info('AuthenticatedSessionController@destroy: User logged out');
 

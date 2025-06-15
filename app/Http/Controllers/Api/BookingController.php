@@ -22,6 +22,16 @@ class BookingController extends Controller
      */
     public function checkAvailability(Request $request)
     {
+        \Illuminate\Support\Facades\Log::info('BookingController@checkAvailability: Request received', [
+            'request_data' => $request->all(),
+            'user_id' => $request->user() ? $request->user()->id : 'unauthenticated',
+            'session_id' => session()->getId(),
+            'headers' => $request->headers->all(),
+            'method' => $request->method(),
+            'url' => $request->fullUrl(),
+            'ip' => $request->ip(),
+        ]);
+
         $validator = Validator::make($request->all(), [
             'date' => 'required|date|after_or_equal:today',
             'service_ids' => 'required|array',
@@ -30,6 +40,9 @@ class BookingController extends Controller
         ]);
 
         if ($validator->fails()) {
+            \Illuminate\Support\Facades\Log::warning('BookingController@checkAvailability: Validation failed', [
+                'errors' => $validator->errors()->toArray()
+            ]);
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors()
@@ -38,14 +51,31 @@ class BookingController extends Controller
 
         // Get the selected services
         $services = Service::whereIn('id', $request->service_ids)->get();
+        \Illuminate\Support\Facades\Log::info('BookingController@checkAvailability: Services retrieved', [
+            'service_count' => $services->count(),
+            'service_ids' => $services->pluck('id')->toArray(),
+            'service_names' => $services->pluck('name')->toArray(),
+        ]);
         
         // Calculate total duration needed for the appointment
         $totalDuration = $services->sum('duration'); // in minutes
+        \Illuminate\Support\Facades\Log::info('BookingController@checkAvailability: Total duration calculated', [
+            'total_duration_minutes' => $totalDuration
+        ]);
         
         // Get the date for availability check
         $date = Carbon::parse($request->date)->startOfDay();
+        \Illuminate\Support\Facades\Log::info('BookingController@checkAvailability: Date parsed', [
+            'requested_date' => $request->date,
+            'parsed_date' => $date->toDateString(),
+        ]);
         
         // Find available staff members and time slots
+        \Illuminate\Support\Facades\Log::info('BookingController@checkAvailability: Finding available time slots', [
+            'date' => $date->toDateString(),
+            'duration' => $totalDuration,
+            'staff_id' => $request->staff_id,
+        ]);
         $availableSlots = $this->findAvailableTimeSlots($date, $totalDuration, $request->staff_id, $services);
         
         return response()->json([
