@@ -15,7 +15,7 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Redirect based on user role
         if ($user->hasRole('admin')) {
             return redirect()->route('admin.dashboard');
@@ -24,10 +24,10 @@ class DashboardController extends Controller
         } elseif ($user->hasRole('client')) {
             return redirect()->route('client.dashboard');
         }
-        
+
         return view('dashboard');
     }
-    
+
     /**
      * Show the admin dashboard.
      *
@@ -35,12 +35,16 @@ class DashboardController extends Controller
      */
     public function admin()
     {
+        info('admin');
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('admin.dashboard', [
-            'title' => 'Admin Dashboard',
-            'role' => 'admin'
+            'title' => 'Admin Dashboard'
         ]);
     }
-    
+
     /**
      * Show the staff dashboard.
      *
@@ -48,12 +52,15 @@ class DashboardController extends Controller
      */
     public function staff()
     {
+        if (!auth()->user()->hasRole('staff')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('staff.dashboard', [
-            'title' => 'Staff Dashboard',
-            'role' => 'staff'
+            'title' => 'Staff Dashboard'
         ]);
     }
-    
+
     /**
      * Show the client dashboard.
      *
@@ -61,9 +68,12 @@ class DashboardController extends Controller
      */
     public function client()
     {
+        if (!auth()->user()->hasRole('client')) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('client.dashboard', [
-            'title' => 'My Dashboard',
-            'role' => 'client'
+            'title' => 'My Dashboard'
         ]);
     }
 }

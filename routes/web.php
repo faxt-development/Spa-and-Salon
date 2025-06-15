@@ -15,30 +15,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Admin routes
-    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
-        
-        // Appointments routes for admin
-        Route::resource('appointments', 'App\Http\Controllers\Admin\AppointmentController')
-            ->except(['show']);
     });
     
     // Staff routes
-    Route::middleware(['role:staff'])->prefix('staff')->name('staff.')->group(function () {
+    Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
-        
-        // Appointments routes for staff
-        Route::resource('appointments', 'App\Http\Controllers\Staff\AppointmentController')
-            ->except(['destroy']);
     });
     
-    // Common appointments routes for both admin and staff
+    // Appointments routes for both admin and staff
     Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
-        ->middleware(['role:admin|staff'])
-        ->only(['index', 'show']);
+        ->middleware(['auth', 'role:admin|staff'])
+        ->except(['destroy']);
     
     // Client routes
-    Route::middleware(['role:client'])->prefix('client')->name('client.')->group(function () {
+    Route::middleware(['auth', 'role:client'])->prefix('client')->name('client.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
         // Add more client routes here
     });

@@ -9,6 +9,8 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
@@ -17,7 +19,26 @@ class AppointmentController extends Controller
      */
     public function index()
     {
+        Log::info('AppointmentController@index: Accessing appointments index');
+        
+        // Log authentication status
+        if (Auth::check()) {
+            $user = Auth::user();
+            Log::info('AppointmentController@index: User is authenticated', [
+                'user_id' => $user->id, 
+                'email' => $user->email,
+                'roles' => $user->getRoleNames(),
+                'session_has_token' => session()->has('api_token')
+            ]);
+            
+            // Log session data
+            Log::info('AppointmentController@index: Session data', ['session' => session()->all()]);
+        } else {
+            Log::warning('AppointmentController@index: User is NOT authenticated');
+        }
+        
         $staff = Staff::all();
+        Log::info('AppointmentController@index: Retrieved staff', ['count' => $staff->count()]);
         
         return view('appointments.index', compact('staff'));
     }
