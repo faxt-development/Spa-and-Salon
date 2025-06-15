@@ -30,6 +30,7 @@ Route::middleware(['auth'])->group(function () {
     // Admin routes
     Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
+        Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
     });
 
     // Staff routes
