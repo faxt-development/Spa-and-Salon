@@ -1,26 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
-use App\Models\Appointment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Auth;
 
 class ClientController extends Controller
 {
     /**
-     * Constructor to apply middleware for role-based authorization
-     */
-    public function __construct()
-    {
-        $this->middleware('role:admin|staff');
-    }
-
-    /**
-     * Display a listing of the resource.
+     * Display a listing of the clients.
+     *
+     * @return \Illuminate\View\View
      */
     public function index(Request $request)
     {
@@ -50,14 +42,24 @@ class ClientController extends Controller
         $perPage = $request->input('per_page', 15);
         $clients = $query->paginate($perPage);
         
-        return response()->json([
-            'status' => 'success',
-            'data' => $clients
-        ]);
+        return view('admin.clients.index', compact('clients'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Show the form for creating a new client.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        return view('admin.clients.create');
+    }
+
+    /**
+     * Store a newly created client in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -73,45 +75,57 @@ class ClientController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation error',
-                'errors' => $validator->errors()
-            ], 422);
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
         
-        $client = Client::create($request->all());
+        Client::create($request->all());
         
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Client created successfully',
-            'data' => $client
-        ], 201);
+        return redirect()->route('admin.clients.index')
+            ->with('success', 'Client created successfully.');
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified client.
+     *
+     * @param  int  $id
+     * @return \Illuminate\View\View
      */
-    public function show(string $id)
+    public function show($id)
     {
         $client = Client::findOrFail($id);
         
-        return response()->json([
-            'status' => 'success',
-            'data' => $client
-        ]);
+        return view('admin.clients.show', compact('client'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Show the form for editing the specified client.
+     *
+     * @param  int  $id
+     * @return \Illuminate\View\View
      */
-    public function update(Request $request, string $id)
+    public function edit($id)
+    {
+        $client = Client::findOrFail($id);
+        
+        return view('admin.clients.edit', compact('client'));
+    }
+
+    /**
+     * Update the specified client in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, $id)
     {
         $client = Client::findOrFail($id);
         
         $validator = Validator::make($request->all(), [
-            'first_name' => 'sometimes|required|string|max:255',
-            'last_name' => 'sometimes|required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'nullable|email|unique:clients,email,' . $id,
             'phone' => 'nullable|string|max:20',
             'date_of_birth' => 'nullable|date',
@@ -121,49 +135,29 @@ class ClientController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation error',
-                'errors' => $validator->errors()
-            ], 422);
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
         
         $client->update($request->all());
         
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Client updated successfully',
-            'data' => $client
-        ]);
+        return redirect()->route('admin.clients.index')
+            ->with('success', 'Client updated successfully.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified client from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $client = Client::findOrFail($id);
         $client->delete();
         
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Client deleted successfully'
-        ]);
-    }
-    
-    /**
-     * Get client appointments.
-     */
-    public function appointments(string $id)
-    {
-        $client = Client::findOrFail($id);
-        $appointments = Appointment::where('client_id', $client->id)
-            ->orderBy('start_time', 'desc')
-            ->paginate(10);
-            
-        return response()->json([
-            'status' => 'success',
-            'data' => $appointments
-        ]);
+        return redirect()->route('admin.clients.index')
+            ->with('success', 'Client deleted successfully.');
     }
 }
