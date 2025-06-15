@@ -16,6 +16,7 @@ class Payment extends Model
      */
     protected $fillable = [
         'appointment_id',
+        'order_id',
         'client_id',
         'staff_id',
         'payment_method',
@@ -77,6 +78,14 @@ class Payment extends Model
     public function appointment()
     {
         return $this->belongsTo(Appointment::class);
+    }
+    
+    /**
+     * Get the order that owns the payment.
+     */
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
     }
 
     /**

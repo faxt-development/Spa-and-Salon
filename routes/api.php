@@ -71,4 +71,41 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Products
     Route::apiResource('products', ProductController::class);
+    Route::post('/products/{product}/inventory', [ProductController::class, 'updateInventory']);
+    
+    // Product Categories
+    Route::apiResource('product-categories', \App\Http\Controllers\Api\ProductCategoryController::class);
+    Route::get('/product-categories/hierarchy', [\App\Http\Controllers\Api\ProductCategoryController::class, 'hierarchy']);
+    
+    // Suppliers
+    Route::apiResource('suppliers', \App\Http\Controllers\Api\SupplierController::class);
+    
+    // Orders
+    Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class);
+    
+    // Payments
+    Route::apiResource('payments', \App\Http\Controllers\Api\PaymentController::class);
+    Route::post('/payments/{id}/refund', [\App\Http\Controllers\Api\PaymentController::class, 'refund']);
+    
+    // Inventory Transactions
+    Route::apiResource('inventory-transactions', \App\Http\Controllers\Api\InventoryTransactionController::class, ['only' => ['index', 'show']]);
+    Route::get('/inventory-transactions/product/{productId}', [\App\Http\Controllers\Api\InventoryTransactionController::class, 'productHistory']);
+    Route::get('/inventory-transactions/summary', [\App\Http\Controllers\Api\InventoryTransactionController::class, 'summary']);
+    
+    // Employees
+    Route::apiResource('employees', \App\Http\Controllers\Api\EmployeeController::class);
+    
+    // Payroll
+    Route::apiResource('payroll', \App\Http\Controllers\Api\PayrollController::class);
+    Route::post('/payroll/{id}/process', [\App\Http\Controllers\Api\PayrollController::class, 'process']);
+    Route::post('/payroll/{id}/cancel', [\App\Http\Controllers\Api\PayrollController::class, 'cancel']);
+    Route::post('/payroll/generate', [\App\Http\Controllers\Api\PayrollController::class, 'generatePayroll']);
+    
+    // Time Clock
+    Route::apiResource('time-clock', \App\Http\Controllers\Api\TimeClockController::class, ['only' => ['index', 'update']]);
+    Route::post('/time-clock/clock-in', [\App\Http\Controllers\Api\TimeClockController::class, 'clockIn']);
+    Route::post('/time-clock/clock-out', [\App\Http\Controllers\Api\TimeClockController::class, 'clockOut']);
+    Route::post('/time-clock/{id}/approve', [\App\Http\Controllers\Api\TimeClockController::class, 'approve']);
+    Route::get('/time-clock/employee/{employeeId}/status', [\App\Http\Controllers\Api\TimeClockController::class, 'status']);
+    Route::get('/time-clock/employee/{employeeId}/weekly-report', [\App\Http\Controllers\Api\TimeClockController::class, 'weeklyReport']);
 });

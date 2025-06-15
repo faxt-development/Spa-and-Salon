@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Carbon\Carbon;
 
 class Staff extends Model
@@ -104,6 +105,15 @@ class Staff extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+    
+    /**
+     * Get the employee record associated with the staff member.
+     * This is a one-to-one relationship where the employees table has a staff_id foreign key.
+     */
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class, 'staff_id');
     }
 
     /**
