@@ -265,41 +265,75 @@
                 },
 
                 init() {
-                    // Initialize flatpickr for date picker
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const dateInput = document.querySelector('.datepicker');
-                        if (dateInput) {
-                            const wrapper = dateInput.closest('.date-picker-wrapper');
-                            const datePicker = flatpickr(dateInput, {
-                                dateFormat: 'Y-m-d',
-                                minDate: 'today',
-                                disableMobile: true,
-                                static: true,
-                                appendTo: wrapper,
-                                position: 'auto',
-                                onOpen: () => {
-                                    const calendar = wrapper.querySelector('.flatpickr-calendar');
-                                    if (calendar) {
-                                        calendar.style.position = 'absolute';
-                                        calendar.style.zIndex = '9999';
+                    // Initialize flatpickr for date picker when modal opens
+                    this.$watch('showModal', (isOpen) => {
+                        if (isOpen) {
+                            this.$nextTick(() => {
+                                const dateInput = document.querySelector('.datepicker');
+                                if (dateInput) {
+                                    // Clean up any existing instances
+                                    if (dateInput._flatpickr) {
+                                        dateInput._flatpickr.destroy();
                                     }
+                                    
+                                    // Initialize flatpickr
+                                    flatpickr(dateInput, {
+                                        dateFormat: 'Y-m-d',
+                                        minDate: 'today',
+                                        disableMobile: true,
+                                        static: true,
+                                        appendTo: dateInput.closest('.modal-panel'),
+                                        position: 'auto',
+                                        onOpen: (selectedDates, dateStr, instance) => {
+                                            const calendar = instance.calendarContainer;
+                                            if (calendar) {
+                                                calendar.style.position = 'absolute';
+                                                calendar.style.zIndex = '9999';
+                                            }
+                                        }
+                                    });
+                                }
+
+                                // Initialize flatpickr for time picker
+                                const timeInput = document.querySelector('.timepicker');
+                                if (timeInput) {
+                                    // Clean up any existing instances
+                                    if (timeInput._flatpickr) {
+                                        timeInput._flatpickr.destroy();
+                                    }
+                                    
+                                    flatpickr(timeInput, {
+                                        enableTime: true,
+                                        noCalendar: true,
+                                        dateFormat: 'H:i',
+                                        time_24hr: true,
+                                        minuteIncrement: 15,
+                                        disableMobile: true,
+                                        appendTo: timeInput.closest('.modal-panel'),
+                                        position: 'auto',
+                                        onOpen: (selectedDates, dateStr, instance) => {
+                                            const calendar = instance.calendarContainer;
+                                            if (calendar) {
+                                                calendar.style.position = 'absolute';
+                                                calendar.style.zIndex = '9999';
+                                            }
+                                        }
+                                    });
                                 }
                             });
+                        } else {
+                            // Clean up flatpickr instances when modal closes
+                            const dateInput = document.querySelector('.datepicker');
+                            if (dateInput && dateInput._flatpickr) {
+                                dateInput._flatpickr.destroy();
+                            }
+                            
+                            const timeInput = document.querySelector('.timepicker');
+                            if (timeInput && timeInput._flatpickr) {
+                                timeInput._flatpickr.destroy();
+                            }
                         }
                     });
-
-                    // Initialize flatpickr for time picker
-                    const timeInput = document.querySelector('.timepicker');
-                    if (timeInput) {
-                        flatpickr(timeInput, {
-                            enableTime: true,
-                            noCalendar: true,
-                            dateFormat: 'H:i',
-                            time_24hr: true,
-                            minuteIncrement: 15,
-                            disableMobile: true
-                        });
-                    }
 
                     // Initialize form data from inputs if they exist
                     const clientNameInput = document.getElementById('client_name');
