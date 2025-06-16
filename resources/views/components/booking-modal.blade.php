@@ -1,25 +1,29 @@
-<div x-show="showBookingModal" 
+<div x-data="{}" 
      class="fixed inset-0 z-50 overflow-y-auto" 
      aria-labelledby="modal-title" 
      role="dialog" 
      aria-modal="true"
-     x-cloak>
+     x-cloak
+     x-show="$store.bookingModal.open"
+     x-transition.opacity
+     @keydown.escape.window="$store.bookingModal.close()"
+     x-init="console.log('Modal component initialized', $store.bookingModal)">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <!-- Background overlay -->
-        <div x-show="window.showBookingModal.value" 
-             x-transition:enter="ease-out duration-300" 
-             x-transition:enter-start="opacity-0" 
-             x-transition:enter-end="opacity-100" 
-             x-transition:leave="ease-in duration-200" 
-             x-transition:leave-start="opacity-100" 
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+             x-show="$store.bookingModal.open"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
-             @click="window.showBookingModal.value = false"
+             @click="$store.bookingModal.close()"
              aria-hidden="true">
         </div>
-
+        
         <!-- Modal panel -->
-        <div x-show="window.showBookingModal.value"
+        <div x-show="$store.bookingModal.open"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
              x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -30,7 +34,7 @@
             
             <!-- Close button -->
             <div class="absolute top-0 right-0 pt-4 pr-4">
-                <button @click="window.showBookingModal.value = false" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button @click="$store.bookingModal.close()" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <span class="sr-only">Close</span>
                     <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

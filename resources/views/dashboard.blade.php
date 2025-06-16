@@ -11,7 +11,7 @@
             <h2 class="font-semibold text-2xl text-gray-900">
                 {{ __('Welcome back, ') }} {{ Auth::user()->name }}!
             </h2>
-            <button @click="showBookingModal = true" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+            <button @click="showModal = true" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 {{ __('New Booking') }}
             </button>
         </div>
@@ -20,18 +20,19 @@
     <div x-data="dashboard()" class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Status Messages -->
-            <div x-show="message" 
+            <div x-show="message && message.text" 
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0 transform translate-y-2"
                  x-transition:enter-end="opacity-100 transform translate-y-0"
                  x-transition:leave="transition ease-in duration-200"
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
-                 class="mb-6 p-4 rounded-md" 
-                 :class="message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'"
-                 x-text="message.text"
-                 @click="message = ''"
-                 role="alert">
+                 class="mb-6 p-4 rounded-md cursor-pointer" 
+                 :class="message && message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'"
+                 x-text="message?.text || ''"
+                 @click="message = null"
+                 role="alert"
+                 x-cloak>
             </div>
 
             <!-- Main Grid -->
@@ -124,18 +125,135 @@
         </div>
     </div>
 
-    <!-- Booking Modal Component -->
-    <x-booking-modal :clients="$clients" :staff="$staff" :services="$services" />
+    <div x-data="{
+        showModal: false,
+        flatpickrInstance: null,
+        initFlatpickr() {
+            // Clean up any existing instance
+            if (this.flatpickrInstance) {
+                this.flatpickrInstance.destroy();
+                this.flatpickrInstance = null;
+            }
+            
+            // Initialize flatpickr for date picker
+            const dateInput = document.querySelector('.datepicker');
+            if (dateInput) {
+                this.flatpickrInstance = flatpickr(dateInput, {
+                    dateFormat: 'Y-m-d',
+                    minDate: 'today',
+                    disableMobile: true,
+                    static: true,
+                    appendTo: dateInput.closest('.date-picker-wrapper'),
+                    position: 'auto',
+                    onOpen: () => {
+                        const calendar = document.querySelector('.flatpickr-calendar');
+                        if (calendar) {
+                            calendar.style.position = 'absolute';
+                            calendar.style.zIndex = '9999';
+                        }
+                    }
+                });
+            }
+        },
+        destroyFlatpickr() {
+            if (this.flatpickrInstance) {
+                this.flatpickrInstance.destroy();
+                this.flatpickrInstance = null;
+            }
+        }
+    }" 
+    x-init="() => {
+        // Initialize flatpickr when modal opens
+        $watch('showModal', value => {
+            if (value) {
+                // Small delay to ensure modal is fully rendered
+                setTimeout(() => this.initFlatpickr(), 50);
+            } else {
+                this.destroyFlatpickr();
+            }
+        });
+    }">
 
+        <!-- Modal Overlay -->
+        <div x-show="showModal" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             aria-labelledby="modal-title" 
+             role="dialog" 
+             aria-modal="true"
+             @click.self="showModal = false">
+            
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Background overlay -->
+                <div x-show="showModal"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+                     @click="showModal = false"
+                     aria-hidden="true">
+                </div>
+
+                <!-- Modal panel -->
+                <div x-show="showModal"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                     x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                     class="modal-panel inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-visible shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6"
+                     style="position: relative;">
+                    
+                    <!-- Close button -->
+                    <div class="absolute top-0 right-0 pt-4 pr-4">
+                        <button @click="showModal = false" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <span class="sr-only">Close</span>
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Modal content -->
+                    <div class="sm:flex sm:items-start">
+                        <div class="w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                                New Appointment
+                            </h3>
+                            
+                            <!-- Form with date input -->
+                            <div class="date-picker-wrapper relative">
+                                @include('appointments.partials.form', [
+                                    'staff' => $staff ?? [],
+                                    'services' => $services ?? []
+                                ])
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('styles')
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    @endpush
+    
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('alpine:init', () => {
-            // Make showBookingModal available globally for the modal component
-            window.showBookingModal = Alpine.reactive({
-                value: false
-            });
-
             // Appointment Form Component
             Alpine.data('appointmentForm', () => ({
                 loading: false,
@@ -147,21 +265,41 @@
                 },
 
                 init() {
-                    // Initialize flatpickr for date and time pickers
-                    flatpickr('.datepicker', {
-                        dateFormat: 'Y-m-d',
-                        minDate: 'today',
-                        disableMobile: true
+                    // Initialize flatpickr for date picker
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const dateInput = document.querySelector('.datepicker');
+                        if (dateInput) {
+                            const wrapper = dateInput.closest('.date-picker-wrapper');
+                            const datePicker = flatpickr(dateInput, {
+                                dateFormat: 'Y-m-d',
+                                minDate: 'today',
+                                disableMobile: true,
+                                static: true,
+                                appendTo: wrapper,
+                                position: 'auto',
+                                onOpen: () => {
+                                    const calendar = wrapper.querySelector('.flatpickr-calendar');
+                                    if (calendar) {
+                                        calendar.style.position = 'absolute';
+                                        calendar.style.zIndex = '9999';
+                                    }
+                                }
+                            });
+                        }
                     });
 
-                    flatpickr('.timepicker', {
-                        enableTime: true,
-                        noCalendar: true,
-                        dateFormat: 'H:i',
-                        time_24hr: true,
-                        minuteIncrement: 15,
-                        disableMobile: true
-                    });
+                    // Initialize flatpickr for time picker
+                    const timeInput = document.querySelector('.timepicker');
+                    if (timeInput) {
+                        flatpickr(timeInput, {
+                            enableTime: true,
+                            noCalendar: true,
+                            dateFormat: 'H:i',
+                            time_24hr: true,
+                            minuteIncrement: 15,
+                            disableMobile: true
+                        });
+                    }
 
                     // Initialize form data from inputs if they exist
                     const clientNameInput = document.getElementById('client_name');
@@ -440,8 +578,6 @@
             // Dashboard Component
             Alpine.data('dashboard', () => ({
                 loading: true,
-                showBookingModal: window.showBookingModal,
-                showGiftCardModal: false,
                 message: null,
                 upcomingAppointments: [],
                 
