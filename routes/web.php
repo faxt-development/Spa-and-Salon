@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GiftCardWebController;
 use App\Http\Controllers\Inventory\CategoryController;
 use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\EmailCampaignController;
+use App\Http\Controllers\EmailTrackingController;
 
 // Public routes
 Route::get('/', function () {
@@ -129,6 +131,36 @@ Route::middleware(['auth:web'])->group(function () {
         Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
             ;
     });
+    // Email Campaign Routes
+    Route::middleware(['auth', 'verified'])->group(function () {
+        // Email Campaigns
+        Route::resource('email-campaigns', EmailCampaignController::class)->except(['show']);
+        Route::get('email-campaigns/{emailCampaign}', [EmailCampaignController::class, 'show'])
+            ->name('email-campaigns.show');
+        Route::post('email-campaigns/{emailCampaign}/send', [EmailCampaignController::class, 'send'])
+            ->name('email-campaigns.send');
+        Route::post('email-campaigns/{emailCampaign}/cancel', [EmailCampaignController::class, 'cancel'])
+            ->name('email-campaigns.cancel');
+        Route::post('email-campaigns/{emailCampaign}/duplicate', [EmailCampaignController::class, 'duplicate'])
+            ->name('email-campaigns.duplicate');
+        Route::get('email-campaigns/{emailCampaign}/preview', [EmailCampaignController::class, 'preview'])
+            ->name('email-campaigns.preview');
+        Route::get('email-campaigns/{emailCampaign}/export', [EmailCampaignController::class, 'export'])
+            ->name('email-campaigns.export');
+            
+        // Email Tracking Routes (public routes that don't require authentication)
+        Route::get('/track/email/open/{token}.gif', [EmailTrackingController::class, 'trackOpen'])
+            ->name('track.email.open');
+        Route::get('/track/email/click/{token}/{url}', [EmailTrackingController::class, 'trackClick'])
+            ->name('track.email.click');
+        Route::get('/unsubscribe/{token}', [EmailTrackingController::class, 'unsubscribe'])
+            ->name('email.unsubscribe');
+        Route::get('/email-preferences/{token}', [EmailTrackingController::class, 'preferences'])
+            ->name('email.preferences');
+        Route::post('/email-preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])
+            ->name('email.preferences.update');
+    });
+    
     // Client routes
     Route::middleware(['auth:web', 'role:client'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
