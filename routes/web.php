@@ -11,9 +11,16 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/gift-cards/purchase', function () {
-    return view('gift-cards.purchase');
-})->middleware(['throttle:gift-card-purchase'])->name('gift-cards.purchase');
+// Gift card routes
+Route::controller(\App\Http\Controllers\GiftCardWebController::class)->group(function () {
+    Route::get('/gift-cards/purchase', 'purchaseForm')
+        ->middleware('throttle:gift-card-purchase')
+        ->name('gift-cards.purchase');
+    
+    Route::get('/gift-cards/history', 'history')
+        ->middleware('auth')
+        ->name('gift-cards.history');
+});
 
 // Debug route to check authentication and token status
 Route::middleware(['auth'])->get('/debug-auth', function () {
@@ -32,6 +39,10 @@ Route::middleware(['auth'])->get('/debug-auth', function () {
 Route::middleware(['auth'])->group(function () {
     // Common authenticated user routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Gift card history for authenticated users
+    Route::get('/gift-cards/history', [App\Http\Controllers\GiftCardController::class, 'history'])
+        ->name('gift-cards.history');
 
     // Admin routes
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -69,9 +80,9 @@ Route::middleware(['auth'])->group(function () {
 
         // API endpoints for POS
         Route::get('/products', [PosController::class, 'getProducts']);
-        Route::get('/services', [PosController::class, 'getServices']);
-        Route::get('/customers', [PosController::class, 'getCustomers']);
-        Route::post('/process-payment', [PosController::class, 'processPayment'])->name('process-payment');
+        Route::get('/gift-cards/purchase', [GiftCardController::class, 'purchaseForm'])->name('gift-cards.purchase');
+        Route::post('/gift-cards/payment-intent', [GiftCardController::class, 'createPaymentIntent'])->name('gift-cards.create-payment-intent');
+        Route::post('/gift-cards/handle-payment', [GiftCardController::class, 'handleSuccessfulPayment'])->name('gift-cards.handle-payment');
     });
 
     // Staff routes

@@ -98,6 +98,9 @@
                                 <x-dropdown-link href="#">
                                     {{ __('Services') }}
                                 </x-dropdown-link>
+                                <x-dropdown-link href="{{ route('gift-cards.history') }}">
+                                    {{ __('Gift Cards') }}
+                                </x-dropdown-link>
                                 <x-dropdown-link href="#">
                                     {{ __('Products') }}
                                 </x-dropdown-link>
