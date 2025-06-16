@@ -18,6 +18,12 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        \App\Events\AppointmentCreated::class => [
+            \App\Listeners\SendAppointmentConfirmation::class,
+        ],
+        \App\Events\AppointmentCompleted::class => [
+            \App\Listeners\SendAppointmentFollowUp::class,
+        ],
     ];
 
     /**

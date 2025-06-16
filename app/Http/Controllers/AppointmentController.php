@@ -53,12 +53,12 @@ class AppointmentController extends Controller
         Log::info('AppointmentController@store: Storing new appointment', [
             'request' => $request->all()
         ]);
-        $request->validate([
-            'client_id' => 'required_without:new_client|exists:clients,id',
-            'first_name' => 'required_if:new_client,on|string|max:255',
-            'last_name' => 'required_if:new_client,on|string|max:255',
-            'email' => 'required_if:new_client,on|email|max:255',
-            'phone' => 'required_if:new_client,on|string|max:20',
+        
+        // Validate request data
+        $validated = $request->validate([
+            'client_name' => 'required|string|max:255',
+            'client_email' => 'required|email|max:255',
+            'client_phone' => 'required|string|max:20',
             'staff_id' => 'required|exists:staff,id',
             'date' => 'required|date',
             'start_time' => 'required|string',
@@ -71,18 +71,31 @@ class AppointmentController extends Controller
         DB::beginTransaction();
 
         try {
-            // Create new client if needed
-            if ($request->has('new_client') && $request->new_client === 'on') {
-                $client = Client::create([
-                    'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                    'phone' => $request->phone,
+            // Split full name into first and last name
+            $nameParts = explode(' ', trim($validated['client_name']), 2);
+            $firstName = $nameParts[0] ?? '';
+            $lastName = $nameParts[1] ?? '';
+            
+            // Find or create client
+            $client = Client::firstOrCreate(
+                ['email' => $validated['client_email']],
+                [
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'phone' => $validated['client_phone'],
+                ]
+            );
+            
+            // If client exists but details have changed, update them
+            if ($client->wasRecentlyCreated === false) {
+                $client->update([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'phone' => $validated['client_phone'],
                 ]);
-                $clientId = $client->id;
-            } else {
-                $clientId = $request->client_id;
             }
+            
+            $clientId = $client->id;
 
             // Format start and end times
             $startDateTime = Carbon::parse($request->date . ' ' . $request->start_time);

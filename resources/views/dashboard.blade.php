@@ -1,3 +1,10 @@
+@php
+    // Get necessary data for the booking form
+    $clients = \App\Models\Client::orderBy('last_name')->get();
+    $staff = \App\Models\User::role('staff')->orderBy('name')->get();
+    $services = \App\Models\Service::orderBy('name')->get();
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
@@ -117,12 +124,323 @@
         </div>
     </div>
 
+    <!-- Booking Modal Component -->
+    <x-booking-modal :clients="$clients" :staff="$staff" :services="$services" />
+
     @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('alpine:init', () => {
+            // Make showBookingModal available globally for the modal component
+            window.showBookingModal = Alpine.reactive({
+                value: false
+            });
+
+            // Appointment Form Component
+            Alpine.data('appointmentForm', () => ({
+                loading: false,
+                validationError: '',
+                formData: {
+                    client_name: '{{ auth()->user()->name }}',
+                    client_email: '{{ auth()->user()->email }}',
+                    client_phone: ''
+                },
+
+                init() {
+                    // Initialize flatpickr for date and time pickers
+                    flatpickr('.datepicker', {
+                        dateFormat: 'Y-m-d',
+                        minDate: 'today',
+                        disableMobile: true
+                    });
+
+                    flatpickr('.timepicker', {
+                        enableTime: true,
+                        noCalendar: true,
+                        dateFormat: 'H:i',
+                        time_24hr: true,
+                        minuteIncrement: 15,
+                        disableMobile: true
+                    });
+
+                    // Initialize form data from inputs if they exist
+                    const clientNameInput = document.getElementById('client_name');
+                    const clientEmailInput = document.getElementById('client_email');
+                    const clientPhoneInput = document.getElementById('client_phone');
+                    
+                    if (clientNameInput) this.formData.client_name = clientNameInput.value;
+                    if (clientEmailInput) this.formData.client_email = clientEmailInput.value;
+                    if (clientPhoneInput) this.formData.client_phone = clientPhoneInput.value;
+
+
+                    // Calculate total duration and price when services change
+                    const servicesSelect = document.getElementById('services');
+                    const totalDurationEl = document.getElementById('total-duration');
+                    const totalPriceEl = document.getElementById('total-price');
+                    const endTimeInput = document.getElementById('end_time');
+                    const startTimeInput = document.getElementById('start_time');
+
+                    const updateTotals = () => {
+                        let totalDuration = 0;
+                        let totalPrice = 0;
+
+                        if (servicesSelect) {
+                            Array.from(servicesSelect.selectedOptions).forEach(option => {
+                                totalDuration += parseInt(option.dataset.duration || 0);
+                                totalPrice += parseFloat(option.dataset.price || 0);
+                            });
+                        }
+
+
+                        if (totalDurationEl) totalDurationEl.textContent = `${totalDuration} minutes`;
+                        if (totalPriceEl) totalPriceEl.textContent = `$${totalPrice.toFixed(2)}`;
+
+                        // Update end time based on start time and duration
+                        if (startTimeInput && startTimeInput.value && endTimeInput) {
+                            const startTime = flatpickr.parseDate(startTimeInput.value, 'H:i');
+                            if (startTime) {
+                                const endTime = new Date(startTime.getTime() + totalDuration * 60000);
+                                const formattedEndTime = flatpickr.formatDate(endTime, 'H:i');
+                                endTimeInput._flatpickr.setDate(formattedEndTime);
+                            }
+                        }
+                    };
+
+                    if (servicesSelect) servicesSelect.addEventListener('change', updateTotals);
+                    if (startTimeInput) startTimeInput.addEventListener('change', updateTotals);
+
+                    // Handle form submission
+                    const form = document.getElementById('appointmentForm');
+                    if (form) {
+                        form.addEventListener('submit', async (e) => {
+                            e.preventDefault();
+                            this.loading = true;
+                            this.validationError = '';
+                            
+                            try {
+                                const response = await fetch(form.action, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                    },
+                                    body: JSON.stringify(this.formData)
+                                });
+
+                                const data = await response.json();
+
+                                if (response.ok) {
+                                    // Close the modal on success
+                                    window.showBookingModal.value = false;
+                                    
+                                    // Show success message
+                                    this.showMessage('Appointment booked successfully!');
+                                    
+                                    // Reset the form
+                                    form.reset();
+                                    this.formData = {
+                                        client_name: '{{ auth()->user()->name }}',
+                                        client_email: '{{ auth()->user()->email }}',
+                                        client_phone: ''
+                                    };
+                                    
+                                    // Refresh the appointments list
+                                    this.fetchUpcomingAppointments();
+                                } else {
+                                    // Handle validation errors
+                                    if (data.errors) {
+                                        this.validationError = Object.values(data.errors).join(' ');
+                                    } else {
+                                        this.validationError = data.message || 'An error occurred while booking the appointment.';
+                                    }
+                                    // Scroll to top to show error
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }
+                            } catch (error) {
+                                console.error('Error:', error);
+                                this.validationError = 'An unexpected error occurred. Please try again.';
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            } finally {
+                                this.loading = false;
+                            }
+
+                            try {
+                                // Create FormData from the form
+                                const formData = new FormData(form);
+                                
+                                // Add client information from the Alpine.js data
+                                formData.set('client_name', this.formData.client_name);
+                                formData.set('client_email', this.formData.client_email);
+                                formData.set('client_phone', this.formData.client_phone);
+
+                                const response = await fetch(form.action, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                    },
+                                    body: formData
+                                });
+
+                                const data = await response.json();
+
+                                if (!response.ok) {
+                                    throw new Error(data.message || 'Something went wrong while saving the appointment');
+                                }
+
+                                // Success - show success message and close modal
+                                window.showBookingModal.value = false;
+                                
+                                // Show success message
+                                const messageContainer = document.querySelector('[x-data="dashboard()"]');
+                                if (messageContainer) {
+                                    messageContainer.__x.$data.message = {
+                                        text: 'Appointment booked successfully!',
+                                        type: 'success'
+                                    };
+                                    
+                                    // Clear the message after 5 seconds
+                                    setTimeout(() => {
+                                        messageContainer.__x.$data.message = '';
+                                    }, 5000);
+                                }
+                                
+                                // Reload the page to show the new appointment
+                                window.location.reload();
+                            } catch (error) {
+                                this.validationError = error.message || 'An error occurred while saving the appointment';
+                                console.error('Error:', error);
+                                
+                                // Scroll to the top of the form to show the error
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            } finally {
+                                this.loading = false;
+                            }
+                        });
+                    }
+                },
+
+                async checkAvailability() {
+                    this.loading = true;
+                    this.validationError = '';
+
+                    const date = document.getElementById('date')?.value;
+                    const staffId = document.getElementById('staff_id')?.value;
+                    const servicesSelect = document.getElementById('services');
+                    const serviceIds = servicesSelect ? Array.from(servicesSelect.selectedOptions).map(option => option.value) : [];
+
+                    if (!date) {
+                        this.validationError = 'Please select a date';
+                        this.loading = false;
+                        return;
+                    }
+
+
+                    if (serviceIds.length === 0) {
+                        this.validationError = 'Please select at least one service';
+                        this.loading = false;
+                        return;
+                    }
+
+
+                    const availabilityResults = document.getElementById('availability-results');
+                    if (availabilityResults) {
+                        availabilityResults.innerHTML = '<p class="text-center">Loading available time slots...</p>';
+                    }
+
+                    // Show loading state
+                    const loadingToast = document.createElement('div');
+                    loadingToast.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg';
+                    loadingToast.textContent = 'Checking availability...';
+                    document.body.appendChild(loadingToast);
+
+                    try {
+                        // Fetch available time slots from API
+                        const response = await fetch('/api/booking/availability', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                date: date,
+                                staff_id: staffId || null,
+                                service_ids: serviceIds
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            throw new Error(data.message || 'Failed to check availability');
+                        }
+
+                        if (data.available_slots && data.available_slots.length > 0) {
+                            let html = '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">';
+
+                            data.available_slots.forEach(slot => {
+                                html += `
+                                    <button type="button" class="time-slot-btn p-2 border rounded text-center hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        data-time="${slot.time}" data-end-time="${slot.end_time}">
+                                        ${slot.formatted_time}
+                                    </button>
+                                `;
+                            });
+
+                            html += '</div>';
+                            
+                            if (availabilityResults) {
+                                availabilityResults.innerHTML = html;
+
+                                // Add event listeners to time slot buttons
+                                document.querySelectorAll('.time-slot-btn').forEach(btn => {
+                                    btn.addEventListener('click', function() {
+                                        const startTimeInput = document.getElementById('start_time');
+                                        const endTimeInput = document.getElementById('end_time');
+                                        if (startTimeInput && startTimeInput._flatpickr) {
+                                            startTimeInput._flatpickr.setDate(this.dataset.time);
+                                        }
+                                        if (endTimeInput && endTimeInput._flatpickr) {
+                                            endTimeInput._flatpickr.setDate(this.dataset.endTime);
+                                        }
+                                        
+                                        // Hide the availability results
+                                        const availabilityModal = document.querySelector('[x-data]');
+                                        if (availabilityModal) {
+                                            availabilityModal._x_dataStack[0].open = false;
+                                        }
+                                    });
+                                });
+                            }
+                        } else {
+                            if (availabilityResults) {
+                                availabilityResults.innerHTML = '<p class="text-center text-red-500">No available time slots found for the selected date and services.</p>';
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error checking availability:', error);
+                        if (availabilityResults) {
+                            availabilityResults.innerHTML = `
+                                <div class="text-center text-red-500">
+                                    <p class="font-bold">Error checking availability</p>
+                                    <p class="text-sm">${error.message || 'Please try again'}</p>
+                                </div>`;
+                        }
+                    } finally {
+                        this.loading = false;
+                        if (loadingToast && loadingToast.parentNode) {
+                            document.body.removeChild(loadingToast);
+                        }
+                    }
+                }
+            }));
+
+            // Dashboard Component
             Alpine.data('dashboard', () => ({
                 loading: true,
-                showBookingModal: false,
+                showBookingModal: window.showBookingModal,
                 showGiftCardModal: false,
                 message: null,
                 upcomingAppointments: [],
