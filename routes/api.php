@@ -51,10 +51,18 @@ Route::post('/booking/availability', [BookingController::class, 'checkAvailabili
 Route::get('/gift-cards/check-balance/{code}', [\App\Http\Controllers\Api\GiftCardController::class, 'checkBalance']);
 Route::get('/gift-cards/{code}', [\App\Http\Controllers\Api\GiftCardController::class, 'show']);
 
+// Payment-related routes
+Route::post('/gift-cards/create-payment-intent', [\App\Http\Controllers\Api\GiftCardController::class, 'createPaymentIntent']);
+Route::post('/gift-cards/confirm-payment', [\App\Http\Controllers\Api\GiftCardController::class, 'handleSuccessfulPayment']);
+
+// Stripe webhook (must be outside auth middleware)
+Route::post('/stripe/webhook', [\App\Http\Controllers\Api\StripeWebhookController::class, 'handleWebhook'])
+    ->name('stripe.webhook');
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // Gift Card Management
-    Route::apiResource('gift-cards', \App\Http\Controllers\Api\GiftCardController::class)->except(['show']);
+    Route::apiResource('gift-cards', \App\Http\Controllers\Api\GiftCardController::class)->except(['show', 'store']);
     Route::post('/gift-cards/{code}/redeem', [\App\Http\Controllers\Api\GiftCardController::class, 'redeem']);
     Route::post('/gift-cards/{id}/deactivate', [\App\Http\Controllers\Api\GiftCardController::class, 'deactivate']);
     // Tax routes

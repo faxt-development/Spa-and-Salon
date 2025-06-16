@@ -28,6 +28,16 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        // Rate limiting for gift card purchases
+        RateLimiter::for('gift-card-purchase', function (Request $request) {
+            return Limit::perHour(5)->by($request->ip())
+                ->response(function (Request $request, array $headers) {
+                    return response()->json([
+                        'message' => 'Too many gift card purchase attempts. Please try again later.'
+                    ], 429, $headers);
+                });
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

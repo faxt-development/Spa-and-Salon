@@ -55,39 +55,192 @@ class GiftCardController extends Controller
         return response()->json($giftCards);
     }
 
+    protected $paymentService;
+
+    public function __construct(PaymentService $paymentService)
+    {
+        $this->paymentService = $paymentService;
+    }
+
     /**
-     * Store a newly created gift card in storage.
-     *
+     * Create a payment intent for a gift card purchase
+     * 
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function createPaymentIntent(Request $request)
     {
         $validated = $request->validate([
-            'amount' => 'required|numeric|min:1|max:1000',
+            'amount' => [
+                'required',
+                'numeric',
+                'min:' . config('services.gift_cards.min_amount', 5),
+                'max:' . config('services.gift_cards.max_amount', 1000),
+                function ($attribute, $value, $fail) {
+                    // Ensure amount has no more than 2 decimal places
+                    if (preg_match('/\.\d{3,}/', (string)$value)) {
+                        $fail('The ' . $attribute . ' must not have more than 2 decimal places.');
+                    }
+                    
+                    // Ensure amount is a valid monetary value
+                    if ($value <= 0) {
+                        $fail('The ' . $attribute . ' must be greater than 0.');
+                    }
+                },
+            ],
             'recipient_name' => 'required|string|max:255',
             'recipient_email' => 'required|email|max:255',
             'sender_name' => 'required|string|max:255',
-            'message' => 'nullable|string',
-            'expires_at' => 'nullable|date|after:today',
+            'sender_email' => 'nullable|email|max:255',
+            'message' => 'nullable|string|max:1000',
+            'expires_at' => [
+                'nullable',
+                'date',
+                'after:today',
+                function ($attribute, $value, $fail) {
+                    $maxDate = now()->addYears(config('services.gift_cards.max_validity_years', 2));
+                    if ($value && strtotime($value) > $maxDate->timestamp) {
+                        $fail('The gift card cannot be valid for more than ' . config('services.gift_cards.max_validity_years', 2) . ' years.');
+                    }
+                },
+            ],
+        ]);
+        
+        // Format amount to exactly 2 decimal places
+        $validated['amount'] = number_format((float)$validated['amount'], 2, '.', '');
+
+        // Add authenticated user info if available
+        $user = $request->user();
+        if ($user) {
+            $validated['user_id'] = $user->id;
+            // Use user's email as sender if not provided
+            if (empty($validated['sender_email']) && $user->email) {
+                $validated['sender_email'] = $user->email;
+            }
+        }
+
+        // Create payment intent
+        $metadata = [
+            'purchase_type' => 'gift_card',
+            'recipient_name' => $validated['recipient_name'],
+            'recipient_email' => $validated['recipient_email'],
+            'sender_name' => $validated['sender_name'],
+        ];
+
+        // Add user ID to metadata if authenticated
+        if (!empty($validated['user_id'])) {
+            $metadata['user_id'] = $validated['user_id'];
+        }
+
+        if (!empty($validated['sender_email'])) {
+            $metadata['sender_email'] = $validated['sender_email'];
+        }
+
+        if (isset($validated['message'])) {
+            $metadata['message'] = mb_substr($validated['message'], 0, 100); // Truncate to 100 chars for metadata
+        }
+
+        if (isset($validated['expires_at'])) {
+            $metadata['expires_at'] = $validated['expires_at'];
+        }
+
+        try {
+            $paymentService = app(\App\Services\PaymentService::class);
+            $paymentIntent = $paymentService->createGiftCardPaymentIntent(
+                $validated['amount'],
+                $metadata
+            );
+
+            // Store the gift card data in the session temporarily
+            // Include user_id if authenticated
+            $sessionData = $validated;
+            if ($user) {
+                $sessionData['user_id'] = $user->id;
+            }
+
+            session([
+                'gift_card_data_' . $paymentIntent->id => $sessionData
+            ]);
+
+            return response()->json([
+                'client_secret' => $paymentIntent->client_secret,
+                'publishable_key' => config('services.stripe.key'),
+                'is_authenticated' => !is_null($user),
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error creating payment intent: ' . $e->getMessage());
+            return response()->json(['error' => 'Unable to process payment. Please try again.'], 500);
+        }
+    }
+
+    /**
+     * Handle successful payment and create gift card
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function handleSuccessfulPayment(Request $request)
+    {
+        $validated = $request->validate([
+            'payment_intent_id' => 'required|string',
         ]);
 
-        $giftCard = new GiftCard();
-        $giftCard->code = $this->generateUniqueCode();
-        $giftCard->amount = $validated['amount'];
-        $giftCard->balance = $validated['amount']; // Initial balance equals the amount
-        $giftCard->recipient_name = $validated['recipient_name'];
-        $giftCard->recipient_email = $validated['recipient_email'];
-        $giftCard->sender_name = $validated['sender_name'];
-        $giftCard->message = $validated['message'] ?? null;
-        $giftCard->expires_at = $validated['expires_at'] ?? now()->addYear();
-        $giftCard->is_active = true;
-        $giftCard->save();
+        $paymentService = app(\App\Services\PaymentService::class);
+        $paymentIntentId = $validated['payment_intent_id'];
 
-        return response()->json([
-            'message' => 'Gift card created successfully',
-            'data' => $giftCard
-        ], 201);
+        try {
+            // Retrieve the payment intent from Stripe
+            $paymentIntent = $paymentService->getPaymentIntent($paymentIntentId);
+            
+            if (!$paymentIntent) {
+                throw new \Exception('Payment intent not found');
+            }
+
+            // Get the stored gift card data from the session
+            $sessionKey = 'gift_card_data_' . $paymentIntentId;
+            $giftCardData = session($sessionKey);
+            
+            if (!$giftCardData) {
+                throw new \Exception('Invalid session data or session expired');
+            }
+
+            // Create the gift card
+            $giftCard = $paymentService->handleSuccessfulGiftCardPayment(
+                $paymentIntent,
+                $giftCardData
+            );
+
+            // Clear the session data
+            session()->forget($sessionKey);
+
+            return response()->json([
+                'message' => 'Gift card created successfully',
+                'gift_card' => $giftCard,
+                'gift_card_code' => $giftCard->code,
+                'is_guest' => !auth()->check(),
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error handling successful payment: ' . $e->getMessage(), [
+                'exception' => $e,
+                'payment_intent_id' => $paymentIntentId ?? 'unknown',
+                'user_id' => auth()->id()
+            ]);
+            
+            // Attempt to refund the payment if we have a valid payment intent
+            if (isset($paymentIntent) && $paymentIntent) {
+                try {
+                    $paymentService->refundPayment($paymentIntent->id);
+                } catch (\Exception $refundException) {
+                    \Log::error('Error refunding payment: ' . $refundException->getMessage());
+                }
+            }
+            
+            return response()->json([
+                'message' => 'Failed to process gift card. Your payment has been refunded.',
+                'error' => config('app.debug') ? $e->getMessage() : 'An error occurred while processing your gift card.',
+            ], 500);
+        }
     }
 
     /**

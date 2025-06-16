@@ -11,6 +11,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('/gift-cards/purchase', function () {
+    return view('gift-cards.purchase');
+})->middleware(['throttle:gift-card-purchase'])->name('gift-cards.purchase');
+
 // Debug route to check authentication and token status
 Route::middleware(['auth'])->get('/debug-auth', function () {
     return response()->json([
@@ -33,13 +37,13 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
         Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
-        
+
         // Category reordering API routes
         Route::post('/categories/reorder', [\App\Http\Controllers\Inventory\CategoryController::class, 'reorder'])
             ->name('categories.reorder');
         Route::get('/categories/tree', [\App\Http\Controllers\Inventory\CategoryController::class, 'tree'])
             ->name('categories.tree');
-        
+
         // Payroll Routes
         Route::prefix('payroll')->name('payroll.')->group(function () {
             Route::get('/records', [\App\Http\Controllers\PayrollController::class, 'payrollIndex'])->name('records.index');
@@ -51,7 +55,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/time-clock', [\App\Http\Controllers\PayrollController::class, 'timeClockIndex'])->name('time-clock.index');
             Route::get('/time-clock/entry', [\App\Http\Controllers\PayrollController::class, 'timeClockEntry'])->name('time-clock.entry');
             Route::get('/reports', [\App\Http\Controllers\PayrollController::class, 'payrollReports'])->name('reports.index');
-            
+
             // Reports
             Route::get('/reports/tax', [\App\Http\Controllers\Admin\ReportController::class, 'tax'])->name('reports.tax');
         });
@@ -62,7 +66,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [PosController::class, 'index'])->name('index');
         Route::get('/receipt/{order}', [PosController::class, 'receipt'])->name('receipt');
         Route::get('/receipt/{order}/print', [PosController::class, 'printReceipt'])->name('receipt.print');
-        
+
         // API endpoints for POS
         Route::get('/products', [PosController::class, 'getProducts']);
         Route::get('/services', [PosController::class, 'getServices']);
@@ -79,31 +83,31 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth', 'role:admin|staff'])->prefix('inventory')->name('inventory.')->group(function () {
         // Main inventory dashboard
         Route::get('/', [InventoryController::class, 'index'])->name('index');
-        
+
         // Product resource routes
         Route::resource('products', InventoryController::class)->except(['index', 'show']);
-        
+
         // Product details and actions
         Route::get('products/{product}/details', [InventoryController::class, 'show'])->name('products.details');
         Route::post('products/{product}/adjust', [InventoryController::class, 'updateInventory'])->name('products.adjust');
-        
+
         // Inventory reports
         Route::get('reports/low-stock', [InventoryController::class, 'lowStockReport'])->name('reports.low-stock');
-        
+
         // Bulk actions
         Route::post('bulk-actions', [InventoryController::class, 'bulkActions'])->name('bulk-actions');
-        
+
         // Categories management
         Route::resource('categories', 'Inventory\CategoryController')->except(['show']);
-        
+
         // Bulk actions for categories
         Route::post('categories/bulk', [\App\Http\Controllers\Inventory\CategoryController::class, 'bulkActions'])
             ->name('categories.bulk');
-        
+
         // API endpoint to get product count for a category
         Route::get('api/categories/{category}/products/count', [\App\Http\Controllers\Inventory\CategoryController::class, 'getProductCount'])
             ->name('categories.products.count');
-        
+
         // Suppliers management
         Route::resource('suppliers', 'App\Http\Controllers\SupplierController')->except(['show']);
     });
@@ -171,16 +175,16 @@ Route::middleware(['auth:web', 'verified'])->group(function () {
         Route::get('/employees', [\App\Http\Controllers\PayrollController::class, 'employeeIndex'])->name('employees.index');
         Route::get('/employees/create', [\App\Http\Controllers\PayrollController::class, 'employeeCreate'])->name('employees.create');
         Route::get('/employees/{id}/edit', [\App\Http\Controllers\PayrollController::class, 'employeeEdit'])->name('employees.edit');
-        
+
         // Time Clock Management
         Route::get('/time-clock', [\App\Http\Controllers\PayrollController::class, 'timeClockIndex'])->name('time-clock.index');
         Route::get('/time-clock/entry', [\App\Http\Controllers\PayrollController::class, 'timeClockEntry'])->name('time-clock.entry');
-        
+
         // Payroll Records Management
         Route::get('/records', [\App\Http\Controllers\PayrollController::class, 'payrollIndex'])->name('records.index');
         Route::get('/records/generate', [\App\Http\Controllers\PayrollController::class, 'payrollGenerate'])->name('records.generate');
         Route::get('/records/{id}', [\App\Http\Controllers\PayrollController::class, 'payrollShow'])->name('records.show');
-        
+
         // Payroll Reports
         Route::get('/reports', [\App\Http\Controllers\PayrollController::class, 'payrollReports'])->name('reports.index');
     });

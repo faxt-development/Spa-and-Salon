@@ -35,4 +35,18 @@ return [
         ],
     ],
 
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'currency' => env('STRIPE_CURRENCY', 'usd'),
+    ],
+
+    'gift_cards' => [
+        'min_amount' => env('GIFT_CARD_MIN_AMOUNT', 5), // Minimum gift card amount in currency units
+        'max_amount' => env('GIFT_CARD_MAX_AMOUNT', 1000), // Maximum gift card amount in currency units
+        'max_validity_years' => env('GIFT_CARD_MAX_VALIDITY_YEARS', 2), // Maximum validity period in years
+        'default_validity_days' => env('GIFT_CARD_DEFAULT_VALIDITY_DAYS', 365), // Default validity period in days
+    ],
+
 ];
