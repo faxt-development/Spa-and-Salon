@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PayrollController;
+use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\TaxController;
 
 /*
 |--------------------------------------------------------------------------
@@ -114,4 +116,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/time-clock/{id}/approve', [\App\Http\Controllers\Api\TimeClockController::class, 'approve']);
     Route::get('/time-clock/employee/{employeeId}/status', [\App\Http\Controllers\Api\TimeClockController::class, 'status']);
     Route::get('/time-clock/employee/{employeeId}/weekly-report', [\App\Http\Controllers\Api\TimeClockController::class, 'weeklyReport']);
+    
+    // Tax Reports
+    Route::prefix('reports')->group(function () {
+        Route::get('/tax/summary', [ReportController::class, 'taxSummary']);
+        Route::get('/tax/detailed', [ReportController::class, 'taxDetailed']);
+    });
 });
