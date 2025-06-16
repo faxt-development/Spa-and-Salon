@@ -61,10 +61,10 @@ class AuthenticatedSessionController extends Controller
       return redirect()->route('admin.dashboard');
   } elseif ($user->hasRole('staff')) {
       Log::info('LoginController@authenticated: Redirecting to staff dashboard');
-      return redirect()->route('staff.dashboard');
+      return redirect()->route('admin.dashboard');
   } elseif ($user->hasRole('client')) {
       Log::info('LoginController@authenticated: Redirecting to client dashboard');
-      return redirect()->route('client.dashboard');
+      return redirect()->route('dashboard');
   }
 
   Log::info('LoginController@authenticated: Redirecting to default dashboard');
