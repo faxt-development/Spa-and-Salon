@@ -60,4 +60,118 @@ class OrderItem extends Model
     {
         return $this->morphTo();
     }
+    
+    /**
+     * Calculate the subtotal for this order item.
+     */
+    public function calculateSubtotal(): float
+    {
+        return $this->quantity * $this->unit_price;
+    }
+    
+    /**
+     * Calculate the taxable amount for this order item.
+     */
+    public function calculateTaxableAmount(): float
+    {
+        $subtotal = $this->calculateSubtotal();
+        return max(0, $subtotal - $this->discount);
+    }
+    
+    /**
+     * Calculate the tax amount for this order item.
+     * 
+     * @param bool $forceRecalculation If true, will recalculate tax even if it's already set
+     * @return float
+     */
+    public function calculateTaxAmount(bool $forceRecalculation = false): float
+    {
+        if (!$forceRecalculation && $this->tax_amount !== null) {
+            return (float) $this->tax_amount;
+        }
+        
+        if ($this->order) {
+            $taxRates = $this->order->getApplicableTaxRates($this);
+            $taxableAmount = $this->calculateTaxableAmount();
+            $taxAmount = 0;
+            
+            foreach ($taxRates as $taxRate) {
+                $taxAmount += $taxRate->calculateTax($taxableAmount);
+            }
+            
+            return $taxAmount;
+        }
+        
+        return 0;
+    }
+    
+    /**
+     * Calculate the total for this order item including tax and after discounts.
+     */
+    public function calculateTotal(): float
+    {
+        $subtotal = $this->calculateSubtotal();
+        $taxAmount = $this->calculateTaxAmount();
+        return ($subtotal - $this->discount) + $taxAmount;
+    }
+    
+    /**
+     * Get the formatted price with currency symbol.
+     */
+    public function getFormattedPriceAttribute(): string
+    {
+        $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+        return $formatter->formatCurrency($this->unit_price, 'USD');
+    }
+    
+    /**
+     * Get the formatted subtotal (price × quantity).
+     */
+    public function getFormattedSubtotalAttribute(): string
+    {
+        $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+        return $formatter->formatCurrency($this->calculateSubtotal(), 'USD');
+    }
+    
+    /**
+     * Get the formatted tax amount.
+     */
+    public function getFormattedTaxAmountAttribute(): string
+    {
+        $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+        return $formatter->formatCurrency($this->tax_amount, 'USD');
+    }
+    
+    /**
+     * Get the formatted total amount.
+     */
+    public function getFormattedTotalAttribute(): string
+    {
+        $formatter = new NumberFormatter('en_US', NumberFormatter::CURRENCY);
+        return $formatter->formatCurrency($this->calculateTotal(), 'USD');
+    }
+    
+    /**
+     * Get the tax rate as a percentage.
+     */
+    public function getTaxRatePercentageAttribute(): string
+    {
+        return number_format($this->tax_rate, 2) . '%';
+    }
+    
+    /**
+     * Scope a query to only include items with a specific itemable type.
+     */
+    public function scopeOfType($query, string $type)
+    {
+        return $query->where('itemable_type', $type);
+    }
+    
+    /**
+     * Scope a query to only include items with tax applied.
+     */
+    public function scopeWithTax($query)
+    {
+        return $query->where('tax_amount', '>', 0);
+    }
 }

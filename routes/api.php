@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\PayrollController;
 
 /*
 |--------------------------------------------------------------------------
