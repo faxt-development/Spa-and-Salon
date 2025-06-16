@@ -18,14 +18,16 @@ class GiftCard extends Model
         'code',
         'amount',
         'balance',
-        'expires_at',
-        'purchaser_name',
-        'purchaser_email',
         'recipient_name',
         'recipient_email',
+        'sender_name',
         'message',
+        'expires_at',
         'is_active',
-        'used_at',
+        'is_redeemed',
+        'redeemed_at',
+        'redeemed_by',
+        'notes',
     ];
 
     /**
@@ -36,9 +38,10 @@ class GiftCard extends Model
     protected $casts = [
         'amount' => 'decimal:2',
         'balance' => 'decimal:2',
-        'expires_at' => 'datetime',
+        'expires_at' => 'date',
         'is_active' => 'boolean',
-        'used_at' => 'datetime',
+        'is_redeemed' => 'boolean',
+        'redeemed_at' => 'datetime',
     ];
 
     /**
@@ -48,7 +51,7 @@ class GiftCard extends Model
      */
     protected $dates = [
         'expires_at',
-        'used_at',
+        'redeemed_at',
         'deleted_at',
     ];
 
@@ -67,7 +70,7 @@ class GiftCard extends Model
      */
     public function isExpired(): bool
     {
-        return $this->expires_at && $this->expires_at->isPast();
+        return $this->expires_at && now()->gt($this->expires_at);
     }
 
     /**
@@ -77,6 +80,6 @@ class GiftCard extends Model
      */
     public function hasAvailableBalance(): bool
     {
-        return $this->balance > 0 && !$this->isExpired() && $this->is_active;
+        return $this->balance > 0 && !$this->isExpired() && $this->is_active && !$this->is_redeemed;
     }
 }

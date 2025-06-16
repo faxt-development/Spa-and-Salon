@@ -47,8 +47,16 @@ Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{service}', [ServiceController::class, 'show']);
 Route::post('/booking/availability', [BookingController::class, 'checkAvailability']);
 
+// Gift Card Routes (public for checking balance, protected for management)
+Route::get('/gift-cards/check-balance/{code}', [\App\Http\Controllers\Api\GiftCardController::class, 'checkBalance']);
+Route::get('/gift-cards/{code}', [\App\Http\Controllers\Api\GiftCardController::class, 'show']);
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+    // Gift Card Management
+    Route::apiResource('gift-cards', \App\Http\Controllers\Api\GiftCardController::class)->except(['show']);
+    Route::post('/gift-cards/{code}/redeem', [\App\Http\Controllers\Api\GiftCardController::class, 'redeem']);
+    Route::post('/gift-cards/{id}/deactivate', [\App\Http\Controllers\Api\GiftCardController::class, 'deactivate']);
     // Tax routes
     Route::get('/orders/{order}/tax-breakdown', [TaxController::class, 'orderBreakdown']);
     // Appointments
