@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @push('styles')
+<!-- Include the tax calculator styles -->
+@vite(['resources/js/components/tax-calculator.js'])
+
 <style>
     /* Custom scrollbar for cart */
     .cart-scroll {
@@ -38,26 +41,26 @@
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold">Products & Services</h2>
                     <div class="relative">
-                        <input type="text" 
-                               x-model="searchQuery" 
+                        <input type="text"
+                               x-model="searchQuery"
                                @input="filterProducts()"
-                               placeholder="Search products..." 
+                               placeholder="Search products..."
                                class="w-64 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     </div>
                 </div>
-                
+
                 <!-- Categories Tabs -->
                 <div class="flex flex-wrap gap-2 mb-4">
-                    <button 
-                        @click="setActiveCategory('all')" 
+                    <button
+                        @click="setActiveCategory('all')"
                         :class="{'bg-blue-600 text-white': activeCategory === 'all'}"
                         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
                         All
                     </button>
                     <template x-for="category in categories" :key="category.id">
-                        <button 
-                            @click="setActiveCategory(category.id)" 
+                        <button
+                            @click="setActiveCategory(category.id)"
                             :class="{'bg-blue-600 text-white': activeCategory === category.id}"
                             class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                             x-text="category.name"
@@ -85,7 +88,7 @@
         <div class="w-full md:w-1/3">
             <div class="bg-white rounded-lg shadow-md p-4 sticky top-4">
                 <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
-                
+
                 <!-- Customer Selection -->
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Customer</label>
@@ -131,18 +134,18 @@
                                 </div>
                                 <p class="mt-1 text-sm text-gray-500" x-text="formatPrice(item.price) + ' each'"></p>
                                 <div class="mt-2 flex items-center">
-                                    <button @click="updateQuantity(index, item.quantity - 1)" 
+                                    <button @click="updateQuantity(index, item.quantity - 1)"
                                             class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
                                         </svg>
                                     </button>
-                                    <input type="number" 
-                                           x-model="item.quantity" 
-                                           @change="updateQuantity(index, parseInt($event.target.value) || 1)" 
-                                           class="w-12 mx-2 text-center border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" 
+                                    <input type="number"
+                                           x-model="item.quantity"
+                                           @change="updateQuantity(index, parseInt($event.target.value) || 1)"
+                                           class="w-12 mx-2 text-center border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                                            min="1">
-                                    <button @click="updateQuantity(index, item.quantity + 1)" 
+                                    <button @click="updateQuantity(index, item.quantity + 1)"
                                             class="text-gray-500 hover:text-blue-600 p-1 rounded-full hover:bg-gray-100">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -161,11 +164,14 @@
                     <div class="space-y-2">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-500">Subtotal (<span x-text="cart.reduce((sum, item) => sum + item.quantity, 0) + ' items'"></span>)</span>
-                            <span x-text="formatPrice(subtotal)" class="font-medium"></span>
+                            <span x-text="formatPrice(cartSubtotal)" class="font-medium"></span>
                         </div>
-                        <div class="flex justify-between text-sm">
+                        <div class="flex justify-between text-sm" x-show="taxBreakdown.length > 0">
                             <span class="text-gray-500">Tax</span>
-                            <span x-text="formatPrice(tax)" class="font-medium"></span>
+                            <span x-text="formatPrice(totalTax)"
+                                  :title="getTaxBreakdownText()"
+                                  class="cursor-help border-b border-dashed border-gray-500"
+                                  x-tooltip.placement.top="getTaxBreakdownText()"></span>
                         </div>
                         <div class="flex justify-between text-sm" x-show="discount > 0">
                             <span class="text-green-600">Discount</span>
@@ -173,14 +179,14 @@
                         </div>
                         <div class="border-t border-gray-200 pt-3 mt-2 flex justify-between">
                             <span class="text-base font-medium text-gray-900">Total</span>
-                            <span class="text-base font-bold text-gray-900" x-text="formatPrice(total)"></span>
+                            <span class="text-base font-bold text-gray-900" x-text="formatPrice(cartTotal)"></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="space-y-2">
-                    <button @click="openPaymentModal()" 
+                    <button @click="openPaymentModal()"
                             :disabled="cart.length === 0"
                             :class="{
                                 'opacity-50 cursor-not-allowed': cart.length === 0,
@@ -192,8 +198,8 @@
                         </svg>
                         Checkout (Ctrl+Alt+P)
                     </button>
-                    
-                    <button @click="clearCart()" 
+
+                    <button @click="clearCart()"
                             :disabled="cart.length === 0"
                             class="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-base font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,14 +213,14 @@
     </div>
 
     <!-- Payment Modal -->
-    <div x-show="showPaymentModal" 
+    <div x-show="showPaymentModal"
          class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50"
          @click.self="showPaymentModal = false">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden" @click.stop>
             <div class="px-6 py-4 border-b border-gray-200">
                 <h3 class="text-lg font-medium text-gray-900">Complete Payment</h3>
             </div>
-            
+
             <div class="px-6 py-4 space-y-4">
                 <!-- Order Summary -->
                 <div class="bg-gray-50 p-4 rounded-lg">
@@ -232,6 +238,11 @@
                             <span class="font-medium">Total</span>
                             <span class="font-bold" x-text="formatPrice(total)"></span>
                         </div>
+                        <!-- Add this near the tax line in your order summary -->
+<div x-show="isLoadingTaxRates" class="text-sm text-gray-500">
+    Calculating taxes...
+</div>
+<div x-show="taxError" class="text-sm text-red-500" x-text="taxError"></div>
                     </div>
                 </div>
 
@@ -248,8 +259,8 @@
                             Email Address
                         </label>
                         <div class="mt-1">
-                            <input type="email" 
-                                   id="customerEmail" 
+                            <input type="email"
+                                   id="customerEmail"
                                    x-model="customerEmail"
                                    :value="currentCustomerEmail"
                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
@@ -265,14 +276,14 @@
                 <div class="pt-2">
                     <h4 class="text-sm font-medium text-gray-700 mb-2">Payment Method</h4>
                     <div class="grid grid-cols-2 gap-2">
-                        <button @click="processPayment('cash')" 
+                        <button @click="processPayment('cash')"
                                 class="flex-1 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                             Cash
                         </button>
-                        <button @click="processPayment('card')" 
+                        <button @click="processPayment('card')"
                                 class="flex-1 flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <svg class="h-5 w-5 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -282,7 +293,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-3">
                 <button @click="showPaymentModal = false" type="button" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Cancel
@@ -299,14 +310,14 @@
             // Create toast element
             const toast = document.createElement('div');
             toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white ${
-                type === 'success' ? 'bg-green-500' : 
+                type === 'success' ? 'bg-green-500' :
                 type === 'error' ? 'bg-red-500' : 'bg-blue-500'
             }`;
             toast.textContent = message;
-            
+
             // Add to DOM
             document.body.appendChild(toast);
-            
+
             // Remove after delay
             setTimeout(() => {
                 toast.remove();
@@ -327,21 +338,35 @@ function posApp() {
         currentCustomer: '',
         currentCustomerEmail: '',
         cart: [],
+
         taxRate: 0.1, // 10% tax rate
+        // Tax-related properties
+taxRates: [],
+totalTax: 0,
+taxBreakdown: [],
+isLoadingTaxRates: false,
+taxError: null,
         showPaymentModal: false,
         emailReceipt: false,
         customerEmail: '',
         isSendingEmail: false,
+// Computed properties
+get cartSubtotal() {
+    return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+},
 
+get cartTotal() {
+    return this.cartSubtotal + this.totalTax;
+}
         // Computed properties
         get subtotal() {
             return this.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         },
-        
+
         get tax() {
             return this.subtotal * this.taxRate;
         },
-        
+
         get total() {
             return this.subtotal + this.tax;
         },
@@ -350,8 +375,98 @@ function posApp() {
         async init() {
             await this.fetchData();
             this.filterProducts();
+            await this.loadTaxRates();
         },
+// Format currency
+formatCurrency(amount) {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2
+    }).format(amount);
+},
 
+// Get tax breakdown as text for tooltip
+getTaxBreakdownText() {
+    if (!this.taxBreakdown || this.taxBreakdown.length === 0) return 'No tax applied';
+    return this.taxBreakdown.map(tax =>
+        `${tax.name} (${tax.rate}%): ${this.formatCurrency(tax.amount)}`
+    ).join('\n');
+},
+
+// Load tax rates from the API
+async loadTaxRates() {
+    this.isLoadingTaxRates = true;
+    this.taxError = null;
+
+    try {
+        const response = await fetch('/api/tax-rates');
+        const data = await response.json();
+
+        if (data.success) {
+            this.taxRates = data.data;
+            await this.calculateTaxes();
+        } else {
+            this.taxError = data.message || 'Failed to load tax rates';
+            console.error('Failed to load tax rates:', this.taxError);
+        }
+    } catch (error) {
+        this.taxError = 'Error loading tax rates';
+        console.error('Error loading tax rates:', error);
+    } finally {
+        this.isLoadingTaxRates = false;
+    }
+},
+
+// Calculate taxes for the cart
+async calculateTaxes() {
+    if (this.cart.length === 0) {
+        this.totalTax = 0;
+        this.taxBreakdown = [];
+        return;
+    }
+
+    try {
+        // Group items by tax rate
+        const itemsByTax = {};
+        let subtotal = 0;
+
+        // Calculate subtotal and group items
+        this.cart.forEach(item => {
+            const itemSubtotal = item.price * item.quantity;
+            subtotal += itemSubtotal;
+
+            // For each item, determine its tax rate
+            // In a real app, you'd look up the correct tax rate for each item
+            const taxRate = this.taxRates[0] || { id: 'default', rate: 0, name: 'Tax' };
+            const taxKey = `${taxRate.id}-${taxRate.rate}`;
+
+            if (!itemsByTax[taxKey]) {
+                itemsByTax[taxKey] = {
+                    ...taxRate,
+                    amount: 0,
+                    taxableAmount: 0
+                };
+            }
+
+            itemsByTax[taxKey].taxableAmount += itemSubtotal;
+        });
+
+        // Calculate tax for each group
+        this.taxBreakdown = Object.values(itemsByTax).map(group => ({
+            ...group,
+            amount: group.taxableAmount * (group.rate / 100)
+        }));
+
+        // Calculate total tax
+        this.totalTax = this.taxBreakdown.reduce((sum, tax) => sum + tax.amount, 0);
+
+    } catch (error) {
+        console.error('Error calculating taxes:', error);
+        this.totalTax = 0;
+        this.taxBreakdown = [];
+    }
+}
         async fetchData() {
             try {
                 // Fetch products and categories
@@ -364,7 +479,7 @@ function posApp() {
                 this.products = productsRes.data || [];
                 this.categories = categoriesRes.data || [];
                 this.customers = customersRes.data || [];
-                
+
                 // Set current customer email if a customer is selected
                 if (this.currentCustomer) {
                     const customer = this.customers.find(c => c.id == this.currentCustomer);
@@ -383,7 +498,7 @@ function posApp() {
             this.filteredProducts = this.products.filter(product => {
                 const matchesSearch = product.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                                    product.description?.toLowerCase().includes(this.searchQuery.toLowerCase());
-                const matchesCategory = this.activeCategory === 'all' || 
+                const matchesCategory = this.activeCategory === 'all' ||
                                        product.category_id == this.activeCategory;
                 return matchesSearch && matchesCategory;
             });
@@ -405,10 +520,10 @@ function posApp() {
             }
             this.showPaymentModal = true;
         },
-        
+
         addToCart(product) {
             const existingItem = this.cart.find(item => item.id === product.id && item.type === product.type);
-            
+            this.calculateTaxes();
             if (existingItem) {
                 existingItem.quantity += 1;
             } else {
@@ -425,10 +540,12 @@ function posApp() {
         updateQuantity(index, newQuantity) {
             if (newQuantity < 1) return;
             this.cart[index].quantity = newQuantity;
+            this.calculateTaxes();
         },
 
         removeFromCart(index) {
             this.cart.splice(index, 1);
+            this.calculateTaxes();
         },
 
         async processPayment(paymentMethod) {
@@ -436,6 +553,9 @@ function posApp() {
                 this.showToast('Your cart is empty', 'error');
                 return;
             }
+
+            // Ensure taxes are up to date before processing payment
+            await this.calculateTaxes();
 
             // Validate email if email receipt is requested
             if (this.emailReceipt && !this.validateEmail(this.customerEmail)) {
@@ -489,7 +609,7 @@ function posApp() {
                         successMessage += ' Receipt has been sent to ' + this.customerEmail;
                     }
                     this.showToast(successMessage, 'success');
-                    
+
                     // Open receipt in new tab for printing
                     if (result.receipt_url) {
                         const receiptWindow = window.open(result.receipt_url, '_blank');
@@ -498,14 +618,14 @@ function posApp() {
                             receiptWindow.focus();
                         }
                     }
-                    
+
                     // Reset the cart and form
                     this.cart = [];
                     this.currentCustomer = '';
                     this.searchQuery = '';
                     this.emailReceipt = false;
                     this.customerEmail = '';
-                    
+
                     // Close payment modal if open
                     this.showPaymentModal = false;
                 } else {
@@ -525,7 +645,7 @@ function posApp() {
                 currency: 'USD'
             }).format(price);
         },
-        
+
         validateEmail(email) {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(String(email).toLowerCase());

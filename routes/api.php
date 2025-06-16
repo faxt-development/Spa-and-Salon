@@ -38,12 +38,17 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Public routes
+Route::get('/tax-rates', [TaxController::class, 'index']);
+Route::post('/tax/calculate', [TaxController::class, 'calculate']);
+
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{service}', [ServiceController::class, 'show']);
 Route::post('/booking/availability', [BookingController::class, 'checkAvailability']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+    // Tax routes
+    Route::get('/orders/{order}/tax-breakdown', [TaxController::class, 'orderBreakdown']);
     // Appointments
     Route::apiResource('appointments', AppointmentController::class);
     Route::get('/appointments/calendar/{year}/{month}', [AppointmentController::class, 'calendar']);
