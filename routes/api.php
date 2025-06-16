@@ -50,6 +50,8 @@ Route::post('/booking/availability', [BookingController::class, 'checkAvailabili
 // Gift Card Routes (public for checking balance, protected for management)
 Route::get('/gift-cards/check-balance/{code}', [\App\Http\Controllers\Api\GiftCardController::class, 'checkBalance']);
 Route::get('/gift-cards/{code}', [\App\Http\Controllers\Api\GiftCardController::class, 'show']);
+Route::post('/gift-cards/payment-intent', [\App\Http\Controllers\Api\GiftCardController::class, 'createPaymentIntent'])->name('gift-cards.create-payment-intent');
+Route::post('/gift-cards/handle-payment', [\App\Http\Controllers\Api\GiftCardController::class, 'handleSuccessfulPayment'])->name('gift-cards.handle-payment');
 
 // Payment-related routes
 Route::post('/gift-cards/create-payment-intent', [\App\Http\Controllers\Api\GiftCardController::class, 'createPaymentIntent']);
@@ -69,6 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders/{order}/tax-breakdown', [TaxController::class, 'orderBreakdown']);
     // Appointments
     Route::apiResource('appointments', AppointmentController::class);
+
     Route::get('/appointments/calendar/{year}/{month}', [AppointmentController::class, 'calendar']);
     Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel']);
     Route::post('/appointments/{appointment}/complete', [AppointmentController::class, 'complete']);
@@ -96,35 +99,35 @@ Route::middleware('auth:sanctum')->group(function () {
     // Products
     Route::apiResource('products', ProductController::class);
     Route::post('/products/{product}/inventory', [ProductController::class, 'updateInventory']);
-    
+
     // Product Categories
     Route::apiResource('product-categories', \App\Http\Controllers\Api\ProductCategoryController::class);
     Route::get('/product-categories/hierarchy', [\App\Http\Controllers\Api\ProductCategoryController::class, 'hierarchy']);
-    
+
     // Suppliers
     Route::apiResource('suppliers', \App\Http\Controllers\Api\SupplierController::class);
-    
+
     // Orders
     Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class);
-    
+
     // Payments
     Route::apiResource('payments', \App\Http\Controllers\Api\PaymentController::class);
     Route::post('/payments/{id}/refund', [\App\Http\Controllers\Api\PaymentController::class, 'refund']);
-    
+
     // Inventory Transactions
     Route::apiResource('inventory-transactions', \App\Http\Controllers\Api\InventoryTransactionController::class, ['only' => ['index', 'show']]);
     Route::get('/inventory-transactions/product/{productId}', [\App\Http\Controllers\Api\InventoryTransactionController::class, 'productHistory']);
     Route::get('/inventory-transactions/summary', [\App\Http\Controllers\Api\InventoryTransactionController::class, 'summary']);
-    
+
     // Employees
     Route::apiResource('employees', \App\Http\Controllers\Api\EmployeeController::class);
-    
+
     // Payroll
     Route::apiResource('payroll', \App\Http\Controllers\Api\PayrollController::class);
     Route::post('/payroll/{id}/process', [\App\Http\Controllers\Api\PayrollController::class, 'process']);
     Route::post('/payroll/{id}/cancel', [\App\Http\Controllers\Api\PayrollController::class, 'cancel']);
     Route::post('/payroll/generate', [\App\Http\Controllers\Api\PayrollController::class, 'generatePayroll']);
-    
+
     // Time Clock
     Route::apiResource('time-clock', \App\Http\Controllers\Api\TimeClockController::class, ['only' => ['index', 'update']]);
     Route::post('/time-clock/clock-in', [\App\Http\Controllers\Api\TimeClockController::class, 'clockIn']);
@@ -132,7 +135,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/time-clock/{id}/approve', [\App\Http\Controllers\Api\TimeClockController::class, 'approve']);
     Route::get('/time-clock/employee/{employeeId}/status', [\App\Http\Controllers\Api\TimeClockController::class, 'status']);
     Route::get('/time-clock/employee/{employeeId}/weekly-report', [\App\Http\Controllers\Api\TimeClockController::class, 'weeklyReport']);
-    
+
     // Tax Reports
     Route::prefix('reports')->group(function () {
         Route::get('/tax/summary', [ReportController::class, 'taxSummary']);

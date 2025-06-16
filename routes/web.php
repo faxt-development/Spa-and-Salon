@@ -5,6 +5,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PosController;
 use App\Http\Controllers\InventoryController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GiftCardWebController;
+use App\Http\Controllers\Inventory\CategoryController;
+use App\Http\Controllers\PromotionController;
 
 // Public routes
 Route::get('/', function () {
@@ -12,18 +15,18 @@ Route::get('/', function () {
 })->name('home');
 
 // Gift card routes
-Route::controller(\App\Http\Controllers\GiftCardWebController::class)->group(function () {
+Route::controller(GiftCardWebController::class)->group(function () {
     Route::get('/gift-cards/purchase', 'purchaseForm')
         ->middleware('throttle:gift-card-purchase')
         ->name('gift-cards.purchase');
-    
+
     Route::get('/gift-cards/history', 'history')
-        ->middleware('auth')
+        ->middleware('auth:web')
         ->name('gift-cards.history');
 });
 
 // Debug route to check authentication and token status
-Route::middleware(['auth'])->get('/debug-auth', function () {
+Route::middleware(['auth:web'])->get('/debug-auth', function () {
     return response()->json([
         'user' => auth()->user(),
         'token_in_session' => session()->has('api_token') ? 'Yes' : 'No',
@@ -36,12 +39,12 @@ Route::middleware(['auth'])->get('/debug-auth', function () {
 });
 
 // Dashboard routes
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth:web'])->group(function () {
     // Common authenticated user routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Gift card history for authenticated users
-    Route::get('/gift-cards/history', [App\Http\Controllers\GiftCardController::class, 'history'])
+    Route::get('/gift-cards/history', [GiftCardWebController::class, 'history'])
         ->name('gift-cards.history');
 
     // Admin routes
@@ -50,9 +53,9 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
 
         // Category reordering API routes
-        Route::post('/categories/reorder', [\App\Http\Controllers\Inventory\CategoryController::class, 'reorder'])
+        Route::post('/categories/reorder', [CategoryController::class, 'reorder'])
             ->name('categories.reorder');
-        Route::get('/categories/tree', [\App\Http\Controllers\Inventory\CategoryController::class, 'tree'])
+        Route::get('/categories/tree', [CategoryController::class, 'tree'])
             ->name('categories.tree');
 
         // Payroll Routes
@@ -80,18 +83,16 @@ Route::middleware(['auth'])->group(function () {
 
         // API endpoints for POS
         Route::get('/products', [PosController::class, 'getProducts']);
-        Route::get('/gift-cards/purchase', [GiftCardController::class, 'purchaseForm'])->name('gift-cards.purchase');
-        Route::post('/gift-cards/payment-intent', [GiftCardController::class, 'createPaymentIntent'])->name('gift-cards.create-payment-intent');
-        Route::post('/gift-cards/handle-payment', [GiftCardController::class, 'handleSuccessfulPayment'])->name('gift-cards.handle-payment');
-    });
+        Route::get('/gift-cards/purchase', [GiftCardWebController::class, 'purchaseForm'])->name('gift-cards.purchase');
+      });
 
     // Staff routes
-    Route::middleware(['auth', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
+    Route::middleware(['auth:web', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
     });
 
     // Inventory Management Routes
-    Route::middleware(['auth', 'role:admin|staff'])->prefix('inventory')->name('inventory.')->group(function () {
+    Route::middleware(['auth:web', 'role:admin|staff'])->prefix('inventory')->name('inventory.')->group(function () {
         // Main inventory dashboard
         Route::get('/', [InventoryController::class, 'index'])->name('index');
 
@@ -109,29 +110,42 @@ Route::middleware(['auth'])->group(function () {
         Route::post('bulk-actions', [InventoryController::class, 'bulkActions'])->name('bulk-actions');
 
         // Categories management
-        Route::resource('categories', 'Inventory\CategoryController')->except(['show']);
+        Route::resource('categories', CategoryController::class)->except(['show']);
 
         // Bulk actions for categories
-        Route::post('categories/bulk', [\App\Http\Controllers\Inventory\CategoryController::class, 'bulkActions'])
+        Route::post('categories/bulk', [CategoryController::class, 'bulkActions'])
             ->name('categories.bulk');
 
         // API endpoint to get product count for a category
-        Route::get('api/categories/{category}/products/count', [\App\Http\Controllers\Inventory\CategoryController::class, 'getProductCount'])
+        Route::get('api/categories/{category}/products/count', [CategoryController::class, 'getProductCount'])
             ->name('categories.products.count');
 
         // Suppliers management
-        Route::resource('suppliers', 'App\Http\Controllers\SupplierController')->except(['show']);
+       // Route::resource('suppliers', 'App\Http\Controllers\SupplierController')->except(['show']);
     });
 
     // Appointments routes for both admin and staff
-    Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
-        ->middleware(['auth:web', 'role:admin|staff'])
-        ->except(['destroy']);
-
+    Route::name('web.')->group(function () {
+        Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
+            ;
+    });
     // Client routes
-    Route::middleware(['auth:web', 'role:client'])->prefix('client')->name('client.')->group(function () {
+    Route::middleware(['auth:web', 'role:client'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
         // Add more client routes here
+    });
+
+    // Promotions routes
+    Route::middleware(['auth:web', 'role:admin'])->group(function () {
+        Route::resource('promotions', PromotionController::class);
+
+        // Additional promotion routes
+        Route::post('promotions/{promotion}/apply', [PromotionController::class, 'applyCode'])
+            ->name('promotions.apply');
+
+        // Promotion usage report
+        Route::get('promotions/{promotion}/usage', [PromotionController::class, 'usageReport'])
+            ->name('promotions.usage');
     });
 });
 

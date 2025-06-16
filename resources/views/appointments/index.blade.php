@@ -10,19 +10,19 @@
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold">Appointments Calendar</h2>
-                    <a href="{{ route('appointments.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    <a href="{{ route('web.appointments.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
                         New Appointment
                     </a>
                 </div>
-                
+
                 <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
                     <!-- Calendar Filters -->
                     <div class="w-full md:w-1/4 bg-gray-50 p-4 rounded-lg">
                         <h3 class="text-lg font-medium mb-4">Filters</h3>
-                        
+
                         <form id="calendar-filters">
                             <div class="mb-4">
                                 <label for="staff" class="block text-sm font-medium text-gray-700 mb-1">Staff</label>
@@ -33,7 +33,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                            
+
                             <div class="mb-4">
                                 <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                                 <select id="status" name="status" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
@@ -44,12 +44,12 @@
                                     <option value="cancelled">Cancelled</option>
                                 </select>
                             </div>
-                            
+
                             <button type="submit" class="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Apply Filters
                             </button>
                         </form>
-                        
+
                         <div class="mt-6">
                             <h4 class="text-sm font-medium text-gray-700 mb-2">Legend</h4>
                             <div class="space-y-2">
@@ -72,7 +72,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Calendar -->
                     <div class="w-full md:w-3/4">
                         <div id="calendar"></div>
@@ -139,14 +139,14 @@
                 // Get filter values
                 const staffId = document.getElementById('staff').value;
                 const status = document.getElementById('status').value;
-                
+
                 // Build query parameters
                 let params = new URLSearchParams();
                 params.append('start', info.startStr);
                 params.append('end', info.endStr);
                 if (staffId) params.append('staff_id', staffId);
                 if (status) params.append('status', status);
-                
+
                 // Fetch appointments from API
                 fetch(`/api/appointments/calendar?${params.toString()}`)
                     .then(response => response.json())
@@ -183,10 +183,10 @@
                 document.getElementById('modal-status').textContent = capitalizeFirstLetter(info.event.extendedProps.status);
                 document.getElementById('modal-total').textContent = `$${info.event.extendedProps.total}`;
                 document.getElementById('modal-notes').textContent = info.event.extendedProps.notes || 'None';
-                
+
                 // Set view link
                 document.getElementById('modal-view-link').href = `/appointments/${info.event.id}`;
-                
+
                 // Show modal
                 document.getElementById('appointment-modal').classList.remove('hidden');
             },
@@ -195,20 +195,20 @@
                 window.location.href = `/appointments/create?date=${info.dateStr}`;
             }
         });
-        
+
         calendar.render();
-        
+
         // Handle filter form submission
         document.getElementById('calendar-filters').addEventListener('submit', function(e) {
             e.preventDefault();
             calendar.refetchEvents();
         });
-        
+
         // Handle modal close button
         document.getElementById('modal-close').addEventListener('click', function() {
             document.getElementById('appointment-modal').classList.add('hidden');
         });
-        
+
         // Helper function to get color based on appointment status
         function getStatusColor(status) {
             switch (status) {
@@ -219,7 +219,7 @@
                 default: return '#9CA3AF'; // gray-400
             }
         }
-        
+
         // Helper function to capitalize first letter
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);

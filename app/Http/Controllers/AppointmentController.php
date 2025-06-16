@@ -114,7 +114,7 @@ class AppointmentController extends Controller
 
             DB::commit();
 
-            return redirect()->route('appointments.show', $appointment->id)
+            return redirect()->route('web.appointments.show', $appointment->id)
                 ->with('success', 'Appointment created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -199,7 +199,7 @@ class AppointmentController extends Controller
 
             DB::commit();
 
-            return redirect()->route('appointments.show', $appointment->id)
+            return redirect()->route('web.appointments.show', $appointment->id)
                 ->with('success', 'Appointment updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -222,7 +222,7 @@ class AppointmentController extends Controller
 
         $appointment->delete();
 
-        return redirect()->route('appointments.index')
+        return redirect()->route('web.appointments.index')
             ->with('success', 'Appointment deleted successfully.');
     }
 
@@ -247,7 +247,7 @@ class AppointmentController extends Controller
             'cancellation_reason' => $request->cancellation_reason
         ]);
 
-        return redirect()->route('appointments.show', $appointment->id)
+        return redirect()->route('web.appointments.show', $appointment->id)
             ->with('success', 'Appointment cancelled successfully.');
     }
 
@@ -272,7 +272,7 @@ class AppointmentController extends Controller
             'last_visit' => now()
         ]);
 
-        return redirect()->route('appointments.show', $appointment->id)
+        return redirect()->route('web.appointments.show', $appointment->id)
             ->with('success', 'Appointment marked as completed.');
     }
 }

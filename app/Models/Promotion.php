@@ -66,52 +66,97 @@ class Promotion extends Model
     /**
      * Discount type constants.
      */
-    public const DISCOUNT_TYPE_PERCENTAGE = 'percentage';
-    public const DISCOUNT_TYPE_FIXED = 'fixed_amount';
-    public const DISCOUNT_TYPE_FREE_SERVICE = 'free_service';
-    public const DISCOUNT_TYPE_BUY_X_GET_Y = 'buy_x_get_y';
+    public const TYPE_PERCENTAGE = 'percentage';
+    public const TYPE_FIXED = 'fixed_amount';
+    public const TYPE_BOGO = 'buy_one_get_one';
+    public const TYPE_PACKAGE = 'package_deal';
 
     /**
-     * The services that the promotion applies to.
+     * The services that this promotion applies to.
      */
-    public function services(): BelongsToMany
+    public function services()
     {
-        return $this->belongsToMany(Service::class, 'promotion_service');
+        return $this->belongsToMany(Service::class);
     }
 
     /**
-     * The products that the promotion applies to.
+     * The usages of this promotion.
      */
-    public function products(): BelongsToMany
+    public function usages()
     {
-        return $this->belongsToMany(Product::class, 'promotion_product');
+        return $this->hasMany(PromotionUsage::class)->with('user');
     }
-
+    
     /**
-     * The appointments that used this promotion.
+     * Scope a query to only include active promotions.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function appointments()
+    public function scopeActive($query)
     {
-        return $this->belongsToMany(Appointment::class, 'appointment_promotion')
-            ->withPivot('discount_amount', 'applied_at')
-            ->withTimestamps();
+        $now = now();
+        
+        return $query->where('is_active', true)
+            ->where(function($q) use ($now) {
+                $q->whereNull('starts_at')
+                  ->orWhere('starts_at', '<=', $now);
+            })
+            ->where(function($q) use ($now) {
+                $q->whereNull('ends_at')
+                  ->orWhere('ends_at', '>=', $now);
+            })
+            ->where(function($q) {
+                $q->whereNull('usage_limit')
+                  ->orWhereRaw('(SELECT COUNT(*) FROM promotion_usages WHERE promotion_id = promotions.id) < usage_limit');
+            });
+    }
+    
+    /**
+     * Scope a query to only include public promotions.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePublic($query)
+    {
+        return $query->where('is_public', true);
     }
 
     /**
      * Check if the promotion is currently active.
-     *
-     * @return bool
      */
     public function isActive(): bool
     {
+        return $this->status() === 'active';
+    }
+    
+    /**
+     * Get the current status of the promotion
+     * 
+     * @return string 'active'|'scheduled'|'expired'|'inactive'
+     */
+    public function status(): string
+    {
         if (!$this->is_active) {
-            return false;
+            return 'inactive';
         }
 
         $now = now();
-        return $this->start_date <= $now && 
-               ($this->end_date === null || $this->end_date >= $now) &&
-               ($this->usage_limit === null || $this->usage_count < $this->usage_limit);
+        
+        if ($this->start_date && $this->start_date->gt($now)) {
+            return 'scheduled';
+        }
+        
+        if ($this->end_date && $this->end_date->lt($now)) {
+            return 'expired';
+        }
+        
+        if ($this->usage_limit !== null && $this->usages()->count() >= $this->usage_limit) {
+            return 'expired';
+        }
+        
+        return 'active';
     }
 
     /**

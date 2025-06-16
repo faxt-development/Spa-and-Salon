@@ -11,13 +11,13 @@
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-semibold">Appointment Details</h2>
                         <div class="flex space-x-2">
-                            <a href="{{ route('appointments.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <a href="{{ route('web.appointments.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                                 </svg>
                                 Back to Calendar
                             </a>
-                            <a href="{{ route('appointments.edit', $appointment->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            <a href="{{ route('web.appointments.edit', $appointment->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                                 </svg>
@@ -28,7 +28,7 @@
                             </svg>
                             Back to Calendar
                         </a>
-                        <a href="{{ route('appointments.edit', $appointment->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        <a href="{{ route('web.appointments.edit', $appointment->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
@@ -36,32 +36,32 @@
                         </a>
                     </div>
                 </div>
-                
+
                 @if (session('success'))
                     <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
                         <strong>Success!</strong> {{ session('success') }}
                     </div>
                 @endif
-                
+
                 @if ($errors->any())
                     <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
                         <strong>Error!</strong> {{ $errors->first() }}
                     </div>
                 @endif
-                
+
                 <div class="bg-gray-50 p-6 rounded-lg shadow-sm mb-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium">Appointment #{{ $appointment->id }}</h3>
-                        <span class="px-3 py-1 rounded-full text-xs font-medium 
-                            @if($appointment->status == 'scheduled') bg-yellow-100 text-yellow-800 
-                            @elseif($appointment->status == 'confirmed') bg-green-100 text-green-800 
-                            @elseif($appointment->status == 'completed') bg-blue-100 text-blue-800 
-                            @elseif($appointment->status == 'cancelled') bg-red-100 text-red-800 
+                        <span class="px-3 py-1 rounded-full text-xs font-medium
+                            @if($appointment->status == 'scheduled') bg-yellow-100 text-yellow-800
+                            @elseif($appointment->status == 'confirmed') bg-green-100 text-green-800
+                            @elseif($appointment->status == 'completed') bg-blue-100 text-blue-800
+                            @elseif($appointment->status == 'cancelled') bg-red-100 text-red-800
                             @else bg-gray-100 text-gray-800 @endif">
                             {{ ucfirst($appointment->status) }}
                         </span>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Appointment Details -->
                         <div>
@@ -97,7 +97,7 @@
                                 @endif
                             </div>
                         </div>
-                        
+
                         <!-- Client Information -->
                         <div>
                             <h4 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Client Information</h4>
@@ -118,7 +118,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Services -->
                 <div class="bg-white rounded-lg shadow-sm mb-6">
                     <div class="px-6 py-4 border-b border-gray-200">
@@ -154,7 +154,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Notes -->
                 @if($appointment->notes)
                 <div class="bg-white rounded-lg shadow-sm mb-6">
@@ -166,7 +166,7 @@
                     </div>
                 </div>
                 @endif
-                
+
                 <!-- Action Buttons -->
                 <div class="flex justify-end space-x-3">
                     @if($appointment->status == 'scheduled' || $appointment->status == 'confirmed')
@@ -177,9 +177,9 @@
                         Cancel Appointment
                     </button>
                     @endif
-                    
+
                     @if($appointment->status == 'scheduled' || $appointment->status == 'confirmed')
-                    <form action="{{ route('appointments.complete', $appointment->id) }}" method="POST">
+                    <form action="{{ route('web.appointments.complete', $appointment->id) }}" method="POST">
                         @csrf
                         <button type="submit" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-900 focus:outline-none focus:border-green-900 focus:ring ring-green-300 disabled:opacity-25 transition ease-in-out duration-150">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -189,8 +189,8 @@
                         </button>
                     </form>
                     @endif
-                    
-                    <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this appointment?');">
+
+                    <form action="{{ route('web.appointments.destroy', $appointment->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this appointment?');">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
@@ -211,7 +211,7 @@
     <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div class="mt-3">
             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Cancel Appointment</h3>
-            <form action="{{ route('appointments.cancel', $appointment->id) }}" method="POST">
+            <form action="{{ route('web.appointments.cancel', $appointment->id) }}" method="POST">
                 @csrf
                 <div class="mb-4">
                     <label for="cancellation_reason" class="block text-sm font-medium text-gray-700 mb-1">Reason for Cancellation</label>

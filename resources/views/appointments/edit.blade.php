@@ -10,7 +10,7 @@
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800">Edit Appointment</h2>
-                    <a href="{{ route('appointments.index') }}" class="text-gray-600 hover:text-gray-900">
+                    <a href="{{ route('web.appointments.index') }}" class="text-gray-600 hover:text-gray-900">
                         &larr; Back to Appointments
                     </a>
                 </div>
@@ -39,7 +39,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('appointments.update', $appointment) }}" method="POST">
+                <form action="{{ route('web.appointments.update', $appointment) }}" method="POST">
                     @csrf
                     @method('PUT')
 
@@ -73,7 +73,7 @@
                         <!-- Date -->
                         <div class="col-span-1">
                             <label for="date" class="block text-sm font-medium text-gray-700">Date <span class="text-red-500">*</span></label>
-                            <input type="date" name="date" id="date" required 
+                            <input type="date" name="date" id="date" required
                                 value="{{ old('date', $appointment->start_time->format('Y-m-d')) }}"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         </div>
@@ -81,7 +81,7 @@
                         <!-- Start Time -->
                         <div class="col-span-1">
                             <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time <span class="text-red-500">*</span></label>
-                            <input type="time" name="start_time" id="start_time" required 
+                            <input type="time" name="start_time" id="start_time" required
                                 value="{{ old('start_time', $appointment->start_time->format('H:i')) }}"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         </div>
@@ -89,7 +89,7 @@
                         <!-- End Time -->
                         <div class="col-span-1">
                             <label for="end_time" class="block text-sm font-medium text-gray-700">End Time <span class="text-red-500">*</span></label>
-                            <input type="time" name="end_time" id="end_time" required 
+                            <input type="time" name="end_time" id="end_time" required
                                 value="{{ old('end_time', $appointment->end_time->format('H:i')) }}"
                                 class="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         </div>
@@ -133,7 +133,7 @@
                     </div>
 
                     <div class="mt-8 flex justify-end space-x-4">
-                        <a href="{{ route('appointments.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <a href="{{ route('web.appointments.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Cancel
                         </a>
                         <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
@@ -152,26 +152,26 @@
     document.addEventListener('DOMContentLoaded', function() {
         const today = new Date().toISOString().split('T')[0];
         const dateInput = document.getElementById('date');
-        
+
         // Set min date to today
         dateInput.min = today;
-        
+
         // If the current date is before today, update it to today
         if (dateInput.value && dateInput.value < today) {
             dateInput.value = today;
         }
-        
+
         // Update end time when start time changes
         const startTimeInput = document.getElementById('start_time');
         const endTimeInput = document.getElementById('end_time');
-        
+
         startTimeInput.addEventListener('change', function() {
             // If end time is before start time or not set, set it to 1 hour after start time
             if (!endTimeInput.value || endTimeInput.value <= startTimeInput.value) {
                 const [hours, minutes] = startTimeInput.value.split(':').map(Number);
                 const endTime = new Date();
                 endTime.setHours(hours + 1, minutes);
-                
+
                 // Format the time to HH:MM
                 const endHours = String(endTime.getHours()).padStart(2, '0');
                 const endMinutes = String(endTime.getMinutes()).padStart(2, '0');
