@@ -275,6 +275,70 @@ class EmailTrackingController extends Controller
     }
     
     /**
+     * Resubscribe a user to emails
+     * 
+     * @param string $token
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resubscribe($token)
+    {
+        $recipient = EmailRecipient::where('token', $token)
+                                 ->orWhere('unsubscribe_token', $token)
+                                 ->orWhere('preferences_token', $token)
+                                 ->first();
+        
+        if (!$recipient) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired token.'
+            ], 404);
+        }
+        
+        try {
+            // Clear unsubscribe status for this recipient
+            $recipient->update([
+                'unsubscribed_at' => null,
+                'unsubscribed_ip' => null,
+            ]);
+            
+            // If this is a global token, also update all other recipients with this email
+            if ($recipient->unsubscribe_token === $token) {
+                EmailRecipient::where('email', $recipient->email)
+                            ->where('id', '!=', $recipient->id)
+                            ->update([
+                                'unsubscribed_at' => null,
+                                'unsubscribed_ip' => null,
+                            ]);
+                
+                // Also update the client record if it exists
+                if ($recipient->client) {
+                    $recipient->client->update([
+                        'unsubscribed_at' => null,
+                        'unsubscribed_ip' => null,
+                    ]);
+                }
+            }
+            
+            // Update campaign stats if applicable
+            if ($recipient->email_campaign_id) {
+                $this->updateCampaignStats($recipient->email_campaign_id);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'You have been successfully resubscribed.',
+                'preferences_url' => route('email.preferences', $recipient->preferences_token ?: $token)
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while processing your request.'
+            ], 500);
+        }
+    }
+    
+    /**
      * Update campaign statistics
      * 
      * @param int $campaignId

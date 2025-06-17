@@ -132,33 +132,30 @@ Route::middleware(['auth:web'])->group(function () {
             ;
     });
     // Email Campaign Routes
-    Route::middleware(['auth', 'verified'])->group(function () {
-        // Email Campaigns
-        Route::resource('email-campaigns', EmailCampaignController::class)->except(['show']);
-        Route::get('email-campaigns/{emailCampaign}', [EmailCampaignController::class, 'show'])
-            ->name('email-campaigns.show');
-        Route::post('email-campaigns/{emailCampaign}/send', [EmailCampaignController::class, 'send'])
-            ->name('email-campaigns.send');
-        Route::post('email-campaigns/{emailCampaign}/cancel', [EmailCampaignController::class, 'cancel'])
-            ->name('email-campaigns.cancel');
-        Route::post('email-campaigns/{emailCampaign}/duplicate', [EmailCampaignController::class, 'duplicate'])
-            ->name('email-campaigns.duplicate');
-        Route::get('email-campaigns/{emailCampaign}/preview', [EmailCampaignController::class, 'preview'])
-            ->name('email-campaigns.preview');
-        Route::get('email-campaigns/{emailCampaign}/export', [EmailCampaignController::class, 'export'])
-            ->name('email-campaigns.export');
+    Route::resource('email-campaigns', EmailCampaignController::class);
+    
+    // Email Campaign Actions
+    Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
+        Route::post('/{campaign}/send', [EmailCampaignController::class, 'send'])->name('send');
+        Route::post('/{campaign}/cancel', [EmailCampaignController::class, 'cancel'])->name('cancel');
+        Route::post('/{campaign}/duplicate', [EmailCampaignController::class, 'duplicate'])->name('duplicate');
+    });
+    
+    // Email Campaign Additional Actions
+    Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
+        Route::get('/{emailCampaign}/preview', [EmailCampaignController::class, 'preview'])->name('preview');
+        Route::get('/{emailCampaign}/export', [EmailCampaignController::class, 'export'])->name('export');
+    });
             
-        // Email Tracking Routes (public routes that don't require authentication)
-        Route::get('/track/email/open/{token}.gif', [EmailTrackingController::class, 'trackOpen'])
-            ->name('track.email.open');
-        Route::get('/track/email/click/{token}/{url}', [EmailTrackingController::class, 'trackClick'])
-            ->name('track.email.click');
-        Route::get('/unsubscribe/{token}', [EmailTrackingController::class, 'unsubscribe'])
-            ->name('email.unsubscribe');
-        Route::get('/email-preferences/{token}', [EmailTrackingController::class, 'preferences'])
-            ->name('email.preferences');
-        Route::post('/email-preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])
-            ->name('email.preferences.update');
+    // Email Tracking Routes (public routes that don't require authentication)
+    Route::prefix('email')->name('email.')->group(function () {
+        Route::get('/track/open/{token}.gif', [EmailTrackingController::class, 'trackOpen'])->name('track.open');
+        Route::get('/track/click/{token}/{url}', [EmailTrackingController::class, 'trackClick'])->name('track.click');
+        Route::get('/unsubscribe/{token}', [EmailTrackingController::class, 'unsubscribe'])->name('unsubscribe');
+        Route::post('/resubscribe/{token}', [EmailTrackingController::class, 'resubscribe'])->name('resubscribe');
+        Route::get('/preferences/{token}', [EmailTrackingController::class, 'preferences'])->name('preferences');
+        Route::post('/preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])->name('preferences.update');
+    });
     });
     
     // Client routes

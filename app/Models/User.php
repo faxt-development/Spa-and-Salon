@@ -24,6 +24,19 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'birthday',
+        'phone_number',
+        'address',
+        'city',
+        'state',
+        'zip_code',
+        'sms_notifications',
+        'email_notifications',
+        'appointment_reminders',
+        'promotional_emails',
+        'receive_newsletter',
+        'receive_special_offers',
+        'receive_product_updates',
     ];
 
     /**
@@ -46,6 +59,14 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birthday' => 'date',
+            'sms_notifications' => 'boolean',
+            'email_notifications' => 'boolean',
+            'appointment_reminders' => 'boolean',
+            'promotional_emails' => 'boolean',
+            'receive_newsletter' => 'boolean',
+            'receive_special_offers' => 'boolean',
+            'receive_product_updates' => 'boolean',
         ];
     }
 }
