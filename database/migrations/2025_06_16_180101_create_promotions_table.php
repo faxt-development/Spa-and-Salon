@@ -37,7 +37,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('promotion_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('booking_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('appointment_id')->nullable()->constrained('appointments')->nullOnDelete();
             $table->decimal('discount_amount', 10, 2);
             $table->json('applied_to');
             $table->timestamps();
