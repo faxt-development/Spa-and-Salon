@@ -8,33 +8,33 @@
 
             <div>
                 <label for="client_name" class="block text-sm font-medium text-gray-700 mb-1">Client Name</label>
-                <input type="text" 
-                    id="client_name" 
-                    name="client_name" 
+                <input type="text"
+                    id="client_name"
+                    name="client_name"
                     x-model="formData.client_name"
-                    value="{{ auth()->user()->name }}" 
+                    value="{{ auth()->user()->name }}"
                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md"
                     placeholder="Enter client name">
             </div>
 
             <div>
                 <label for="client_email" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" 
-                    name="client_email" 
-                    id="client_email" 
+                <input type="email"
+                    name="client_email"
+                    id="client_email"
                     x-model="formData.client_email"
-                    value="{{ auth()->user()->email }}" 
+                    value="{{ auth()->user()->email }}"
                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md"
                     placeholder="Enter client email (optional)">
             </div>
 
             <div>
                 <label for="client_phone" class="block text-sm font-medium text-gray-700">Phone</label>
-                <input type="tel" 
-                    name="client_phone" 
-                    id="client_phone" 
+                <input type="tel"
+                    name="client_phone"
+                    id="client_phone"
                     x-model="formData.client_phone"
-                    value="{{ old('client_phone') }}" 
+                    value="{{ old('client_phone') }}"
                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md"
                     placeholder="Enter client phone"
                     required
@@ -113,7 +113,7 @@
 
     <!-- Form Actions -->
     <div class="flex justify-between pt-4 border-t border-gray-200 mt-6">
-        <button type="button" @click="$parent.showModal = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+        <button type="button" @click="$store.bookingModal.close()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
             {{ __('Cancel') }}
         </button>
         <div class="flex space-x-3">
@@ -124,7 +124,7 @@
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                 <span x-text="loading ? 'Checking...' : 'Check Availability'"></span>
             </button>
-            <button type="submit" 
+            <button type="submit"
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Create Appointment
             </button>

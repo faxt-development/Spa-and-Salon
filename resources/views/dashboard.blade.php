@@ -7,27 +7,24 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div x-data="{}" class="flex justify-between items-center">
             <h2 class="font-semibold text-2xl text-gray-900">
                 {{ __('Welcome back, ') }} {{ Auth::user()->name }}!
             </h2>
-            <button @click="showModal = true" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                {{ __('New Booking') }}
-            </button>
         </div>
     </x-slot>
 
     <div x-data="dashboard()" class="py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Status Messages -->
-            <div x-show="message && message.text" 
+            <div x-show="message && message.text"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0 transform translate-y-2"
                  x-transition:enter-end="opacity-100 transform translate-y-0"
                  x-transition:leave="transition ease-in duration-200"
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
-                 class="mb-6 p-4 rounded-md cursor-pointer" 
+                 class="mb-6 p-4 rounded-md cursor-pointer"
                  :class="message && message.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'"
                  x-text="message?.text || ''"
                  @click="message = null"
@@ -43,7 +40,7 @@
                     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div class="p-6 border-b border-gray-200">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Upcoming Appointments</h3>
-                            
+
                             <!-- Loading State -->
                             <div x-show="loading" class="text-center py-8">
                                 <svg class="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -61,7 +58,7 @@
                                 <h3 class="mt-2 text-sm font-medium text-gray-900">No upcoming appointments</h3>
                                 <p class="mt-1 text-sm text-gray-500">Get started by booking your next appointment</p>
                                 <div class="mt-6">
-                                    <button @click="showBookingModal = true" type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    <button @click="$store.bookingModal.open()" type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                         <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                                         </svg>
@@ -104,7 +101,7 @@
                         <div class="p-6">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
                             <div class="space-y-3">
-                                <button @click="showBookingModal = true" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <button @click="$store.bookingModal.open()" class="w-full flex items-center justify-between px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     <span>Book New Appointment</span>
                                     <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                         <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -126,7 +123,6 @@
     </div>
 
     <div x-data="{
-        showModal: false,
         flatpickrInstance: null,
         initFlatpickr() {
             // Clean up any existing instance
@@ -134,26 +130,21 @@
                 this.flatpickrInstance.destroy();
                 this.flatpickrInstance = null;
             }
-            
-            // Initialize flatpickr for date picker
-            const dateInput = document.querySelector('.datepicker');
-            if (dateInput) {
-                this.flatpickrInstance = flatpickr(dateInput, {
-                    dateFormat: 'Y-m-d',
-                    minDate: 'today',
-                    disableMobile: true,
-                    static: true,
-                    appendTo: dateInput.closest('.date-picker-wrapper'),
-                    position: 'auto',
-                    onOpen: () => {
-                        const calendar = document.querySelector('.flatpickr-calendar');
-                        if (calendar) {
-                            calendar.style.position = 'absolute';
-                            calendar.style.zIndex = '9999';
-                        }
-                    }
-                });
-            }
+
+            // Initialize date picker
+            this.flatpickrInstance = flatpickr('.datepicker', {
+                dateFormat: 'Y-m-d',
+                minDate: 'today'
+            });
+
+            // Initialize time pickers
+            flatpickr('.timepicker', {
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: 'H:i',
+                time_24hr: true,
+                minuteIncrement: 15
+            });
         },
         destroyFlatpickr() {
             if (this.flatpickrInstance) {
@@ -161,36 +152,31 @@
                 this.flatpickrInstance = null;
             }
         }
-    }" 
-    x-init="() => {
-        // Initialize flatpickr when modal opens
-        $watch('showModal', value => {
-            if (value) {
-                // Small delay to ensure modal is fully rendered
-                setTimeout(() => this.initFlatpickr(), 50);
-            } else {
-                this.destroyFlatpickr();
-            }
-        });
-    }">
+    }" x-init="$watch('$store.bookingModal.open', value => {
+        if (value) {
+            setTimeout(() => initFlatpickr(), 50);
+        } else {
+            destroyFlatpickr();
+        }
+    });">
 
         <!-- Modal Overlay -->
-        <div x-show="showModal" 
+        <div x-show="$store.bookingModal.open"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-200"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 overflow-y-auto" 
-             aria-labelledby="modal-title" 
-             role="dialog" 
+             class="fixed inset-0 z-50 overflow-y-auto"
+             aria-labelledby="modal-title"
+             role="dialog"
              aria-modal="true"
-             @click.self="showModal = false">
-            
+             @click.self="$store.bookingModal.close()">
+
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Background overlay -->
-                <div x-show="showModal"
+                <div x-show="$store.bookingModal.open"
                      x-transition:enter="ease-out duration-300"
                      x-transition:enter-start="opacity-0"
                      x-transition:enter-end="opacity-100"
@@ -198,12 +184,12 @@
                      x-transition:leave-start="opacity-100"
                      x-transition:leave-end="opacity-0"
                      class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-                     @click="showModal = false"
+                     @click="$store.bookingModal.close()"
                      aria-hidden="true">
                 </div>
 
                 <!-- Modal panel -->
-                <div x-show="showModal"
+                <div x-show="$store.bookingModal.open"
                      x-transition:enter="ease-out duration-300"
                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -212,10 +198,10 @@
                      x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                      class="modal-panel inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-visible shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6"
                      style="position: relative;">
-                    
+
                     <!-- Close button -->
                     <div class="absolute top-0 right-0 pt-4 pr-4">
-                        <button @click="showModal = false" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <button @click="$store.bookingModal.close()" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             <span class="sr-only">Close</span>
                             <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -229,7 +215,7 @@
                             <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
                                 New Appointment
                             </h3>
-                            
+
                             <!-- Form with date input -->
                             <div class="date-picker-wrapper relative">
                                 @include('appointments.partials.form', [
@@ -249,11 +235,22 @@
         [x-cloak] { display: none !important; }
     </style>
     @endpush
-    
+
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener('alpine:init', () => {
+            // Initialize bookingModal store
+            Alpine.store('bookingModal', {
+                open: false,
+                open() {
+                    this.open = true;
+                },
+                close() {
+                    this.open = false;
+                }
+            });
+
             // Appointment Form Component
             Alpine.data('appointmentForm', () => ({
                 loading: false,
@@ -266,7 +263,7 @@
 
                 init() {
                     // Initialize flatpickr for date picker when modal opens
-                    this.$watch('showModal', (isOpen) => {
+                    this.$watch('$store.bookingModal.open', (isOpen) => {
                         if (isOpen) {
                             this.$nextTick(() => {
                                 const dateInput = document.querySelector('.datepicker');
@@ -275,7 +272,7 @@
                                     if (dateInput._flatpickr) {
                                         dateInput._flatpickr.destroy();
                                     }
-                                    
+
                                     // Initialize flatpickr
                                     flatpickr(dateInput, {
                                         dateFormat: 'Y-m-d',
@@ -301,7 +298,7 @@
                                     if (timeInput._flatpickr) {
                                         timeInput._flatpickr.destroy();
                                     }
-                                    
+
                                     flatpickr(timeInput, {
                                         enableTime: true,
                                         noCalendar: true,
@@ -327,7 +324,7 @@
                             if (dateInput && dateInput._flatpickr) {
                                 dateInput._flatpickr.destroy();
                             }
-                            
+
                             const timeInput = document.querySelector('.timepicker');
                             if (timeInput && timeInput._flatpickr) {
                                 timeInput._flatpickr.destroy();
@@ -339,7 +336,7 @@
                     const clientNameInput = document.getElementById('client_name');
                     const clientEmailInput = document.getElementById('client_email');
                     const clientPhoneInput = document.getElementById('client_phone');
-                    
+
                     if (clientNameInput) this.formData.client_name = clientNameInput.value;
                     if (clientEmailInput) this.formData.client_email = clientEmailInput.value;
                     if (clientPhoneInput) this.formData.client_phone = clientPhoneInput.value;
@@ -388,7 +385,7 @@
                             e.preventDefault();
                             this.loading = true;
                             this.validationError = '';
-                            
+
                             try {
                                 const response = await fetch(form.action, {
                                     method: 'POST',
@@ -405,10 +402,10 @@
                                 if (response.ok) {
                                     // Close the modal on success
                                     window.showBookingModal.value = false;
-                                    
+
                                     // Show success message
                                     this.showMessage('Appointment booked successfully!');
-                                    
+
                                     // Reset the form
                                     form.reset();
                                     this.formData = {
@@ -416,7 +413,7 @@
                                         client_email: '{{ auth()->user()->email }}',
                                         client_phone: ''
                                     };
-                                    
+
                                     // Refresh the appointments list
                                     this.fetchUpcomingAppointments();
                                 } else {
@@ -440,7 +437,7 @@
                             try {
                                 // Create FormData from the form
                                 const formData = new FormData(form);
-                                
+
                                 // Add client information from the Alpine.js data
                                 formData.set('client_name', this.formData.client_name);
                                 formData.set('client_email', this.formData.client_email);
@@ -463,7 +460,7 @@
 
                                 // Success - show success message and close modal
                                 window.showBookingModal.value = false;
-                                
+
                                 // Show success message
                                 const messageContainer = document.querySelector('[x-data="dashboard()"]');
                                 if (messageContainer) {
@@ -471,19 +468,19 @@
                                         text: 'Appointment booked successfully!',
                                         type: 'success'
                                     };
-                                    
+
                                     // Clear the message after 5 seconds
                                     setTimeout(() => {
                                         messageContainer.__x.$data.message = '';
                                     }, 5000);
                                 }
-                                
+
                                 // Reload the page to show the new appointment
                                 window.location.reload();
                             } catch (error) {
                                 this.validationError = error.message || 'An error occurred while saving the appointment';
                                 console.error('Error:', error);
-                                
+
                                 // Scroll to the top of the form to show the error
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                             } finally {
@@ -562,7 +559,7 @@
                             });
 
                             html += '</div>';
-                            
+
                             if (availabilityResults) {
                                 availabilityResults.innerHTML = html;
 
@@ -577,7 +574,7 @@
                                         if (endTimeInput && endTimeInput._flatpickr) {
                                             endTimeInput._flatpickr.setDate(this.dataset.endTime);
                                         }
-                                        
+
                                         // Hide the availability results
                                         const availabilityModal = document.querySelector('[x-data]');
                                         if (availabilityModal) {
@@ -614,16 +611,16 @@
                 loading: true,
                 message: null,
                 upcomingAppointments: [],
-                
+
                 init() {
                     this.fetchUpcomingAppointments();
                 },
-                
+
                 async fetchUpcomingAppointments() {
                     try {
                         // Simulate API call - replace with actual API endpoint
                         await new Promise(resolve => setTimeout(resolve, 1000));
-                        
+
                         // Mock data - replace with actual API call
                         this.upcomingAppointments = [
                             {
@@ -650,42 +647,42 @@
                         this.loading = false;
                     }
                 },
-                
+
                 formatDateTime(dateStr, timeStr) {
                     if (!dateStr) return '';
                     const date = new Date(dateStr);
                     const options = { weekday: 'short', month: 'short', day: 'numeric' };
                     return `${date.toLocaleDateString('en-US', options)} at ${timeStr || ''}`;
                 },
-                
+
                 rescheduleAppointment(appointmentId) {
                     // Implement reschedule functionality
                     this.showMessage('Reschedule functionality coming soon!', 'info');
                 },
-                
+
                 confirmCancel(appointmentId) {
                     if (confirm('Are you sure you want to cancel this appointment?')) {
                         this.cancelAppointment(appointmentId);
                     }
                 },
-                
+
                 async cancelAppointment(appointmentId) {
                     try {
                         // Simulate API call
                         await new Promise(resolve => setTimeout(resolve, 500));
-                        
+
                         // Remove from local state
                         this.upcomingAppointments = this.upcomingAppointments.filter(
                             appt => appt.id !== appointmentId
                         );
-                        
+
                         this.showMessage('Appointment cancelled successfully', 'success');
                     } catch (error) {
                         this.showMessage('Error cancelling appointment', 'error');
                         console.error('Error cancelling appointment:', error);
                     }
                 },
-                
+
                 showMessage(text, type = 'info') {
                     this.message = { text, type };
                     setTimeout(() => {
