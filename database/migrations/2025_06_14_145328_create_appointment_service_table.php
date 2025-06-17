@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('appointment_service', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('appointment_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('service_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('staff_id')->nullable()->constrained('staff')->nullOnDelete();
+            $table->decimal('price', 10, 2);
+            $table->integer('duration')->comment('Duration in minutes');
+            $table->text('notes')->nullable();
             $table->timestamps();
+            
+            // Add unique constraint to prevent duplicate service assignments
+            $table->unique(['appointment_id', 'service_id']);
         });
     }
 

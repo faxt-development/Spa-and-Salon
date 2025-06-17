@@ -18,30 +18,34 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleAndPermissionSeeder::class,
             ServiceSeeder::class,
+            StaffSeeder::class,
+            AppointmentSeeder::class,
         ]);
 
         // Create admin user
-        $admin = User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password'),
-        ]);
-        $admin->assignRole('admin');
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        if (!$admin->hasRole('admin')) {
+            $admin->assignRole('admin');
+        }
 
-        // Create staff user
-        $staff = User::factory()->create([
-            'name' => 'Staff Member',
-            'email' => 'staff@example.com',
-            'password' => Hash::make('password'),
-        ]);
-        $staff->assignRole('staff');
-
-        // Create client user
-        $client = User::factory()->create([
-            'name' => 'Client User',
-            'email' => 'client@example.com',
-            'password' => Hash::make('password'),
-        ]);
-        $client->assignRole('client');
+        // Client user will be created by the StaffSeeder if needed
+        $client = User::firstOrCreate(
+            ['email' => 'client@example.com'],
+            [
+                'name' => 'Client User',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        if (!$client->hasRole('client')) {
+            $client->assignRole('client');
+        }
     }
 }

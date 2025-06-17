@@ -19,6 +19,54 @@ class AppointmentController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+    /**
+     * Get upcoming appointments for the authenticated client
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function clientAppointments(Request $request)
+    {
+        // Get the authenticated user
+        $user = $request->user();
+        
+        // Get the client associated with the user
+        $client = Client::where('user_id', $user->id)->first();
+        
+        if (!$client) {
+            return response()->json([
+                'message' => 'Client not found for this user',
+                'appointments' => []
+            ], 200);
+        }
+        
+        // Get future appointments for the client
+        $appointments = Appointment::with(['staff', 'services'])
+            ->where('client_id', $client->id)
+            ->where('start_time', '>=', now())
+            ->orderBy('start_time')
+            ->get()
+            ->map(function ($appointment) {
+                return [
+                    'id' => $appointment->id,
+                    'service_name' => $appointment->services->first()?->name ?? 'Service',
+                    'appointment_date' => $appointment->start_time->format('Y-m-d'),
+                    'appointment_time' => $appointment->start_time->format('H:i'),
+                    'staff_name' => $appointment->staff ? $appointment->staff->first_name . ' ' . $appointment->staff->last_name : 'Staff',
+                    'notes' => $appointment->notes,
+                ];
+            });
+        
+        return response()->json([
+            'appointments' => $appointments
+        ]);
+    }
+    
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request)
     {
         $query = Appointment::with(['client', 'staff', 'services']);

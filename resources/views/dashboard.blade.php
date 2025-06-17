@@ -618,31 +618,39 @@
 
                 async fetchUpcomingAppointments() {
                     try {
-                        // Simulate API call - replace with actual API endpoint
-                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        this.loading = true;
+                        this.message = null;
 
-                        // Mock data - replace with actual API call
-                        this.upcomingAppointments = [
-                            {
-                                id: 1,
-                                service_name: 'Haircut & Styling',
-                                appointment_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                                appointment_time: '14:30',
-                                staff_name: 'Alex Johnson',
-                                notes: 'Please arrive 10 minutes early for a consultation.'
+                        // Fetch appointments from the API with proper headers for Sanctum
+                        const response = await fetch('/api/client/appointments', {
+                            headers: {
+                                'Accept': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                                'Authorization': 'Bearer ' + document.querySelector('meta[name="csrf-token"]')?.content || ''
                             },
-                            {
-                                id: 2,
-                                service_name: 'Hair Color',
-                                appointment_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                                appointment_time: '11:00',
-                                staff_name: 'Taylor Smith',
-                                notes: 'Bring reference photos if you have any.'
-                            }
-                        ];
+                            credentials: 'include' // Required for Sanctum session-based auth
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            console.error('API Error Response:', data);
+                            throw new Error(data.message || 'Failed to fetch appointments');
+                        }
+
+                        this.upcomingAppointments = data.appointments || [];
+
+                        if (this.upcomingAppointments.length === 0) {
+                            this.message = 'No upcoming appointments found.';
+                        }
+
+                        if (this.upcomingAppointments.length === 0) {
+                            this.showMessage('You have no upcoming appointments.', 'info');
+                        }
                     } catch (error) {
-                        this.showMessage('Error loading appointments. Please try again.', 'error');
                         console.error('Error fetching appointments:', error);
+                        this.showMessage('Error loading appointments. Please try again.', 'error');
                     } finally {
                         this.loading = false;
                     }

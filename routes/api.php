@@ -47,6 +47,9 @@ Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{service}', [ServiceController::class, 'show']);
 Route::post('/booking/availability', [BookingController::class, 'checkAvailability']);
 
+// Client appointments
+Route::middleware('auth:sanctum')->get('/client/appointments', [AppointmentController::class, 'clientAppointments']);
+
 // Gift Card Routes (public for checking balance, protected for management)
 Route::get('/gift-cards/check-balance/{code}', [\App\Http\Controllers\Api\GiftCardController::class, 'checkBalance']);
 Route::get('/gift-cards/{code}', [\App\Http\Controllers\Api\GiftCardController::class, 'show']);
