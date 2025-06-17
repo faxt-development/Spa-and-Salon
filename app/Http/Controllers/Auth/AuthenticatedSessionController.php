@@ -47,6 +47,7 @@ class AuthenticatedSessionController extends Controller
   $deviceName = $request->userAgent() ?? 'Web Browser';
   $token = $user->createToken($deviceName)->plainTextToken;
   Log::info('LoginController@authenticated: Sanctum token generated', ['token_length' => strlen($token)]);
+  Log::info('Api\AuthController@login: Sanctum token generated', ['token' => $token]);
 
   // Store the token in the session for later use
   session(['api_token' => $token]);

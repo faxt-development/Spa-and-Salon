@@ -21,7 +21,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         Log::info('Api\AuthController@login: API login attempt', ['email' => $request->email]);
-        
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -37,13 +37,13 @@ class AuthController extends Controller
                 'email' => ['The provided credentials are incorrect.'],
             ]);
         }
-        
+
         Log::info('Api\AuthController@login: Authentication successful', ['user_id' => $user->id]);
 
         $deviceName = $request->device_name ?? $request->userAgent() ?? 'Unknown Device';
         $token = $user->createToken($deviceName)->plainTextToken;
         Log::info('Api\AuthController@login: Sanctum token generated', ['token_length' => strlen($token)]);
-
+        Log::info('Api\AuthController@login: Sanctum token generated', ['token' => $token]);
         return response()->json([
             'user' => $user,
             'token' => $token,
@@ -60,7 +60,7 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         Log::info('Api\AuthController@register: API registration attempt', ['email' => $request->email]);
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -100,7 +100,7 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Log::info('Api\AuthController@logout: API logout attempt', ['user_id' => $request->user()->id]);
-        
+
         $request->user()->currentAccessToken()->delete();
         Log::info('Api\AuthController@logout: Token deleted');
 

@@ -392,7 +392,8 @@
                                     headers: {
                                         'Content-Type': 'application/json',
                                         'Accept': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                        'Authorization': 'Bearer {{ session()->get('api_token') }}',
                                     },
                                     body: JSON.stringify(this.formData)
                                 });
@@ -447,7 +448,8 @@
                                     method: 'POST',
                                     headers: {
                                         'Accept': 'application/json',
-                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                        'Authorization': 'Bearer {{ session()->get('api_token') }}'
                                     },
                                     body: formData
                                 });
@@ -620,14 +622,13 @@
                     try {
                         this.loading = true;
                         this.message = null;
-
+                        alert("{{ json_encode(Auth::user()->tokens->pluck('name')) }}");
                         // Fetch appointments from the API with proper headers for Sanctum
                         const response = await fetch('/api/client/appointments', {
                             headers: {
                                 'Accept': 'application/json',
                                 'X-Requested-With': 'XMLHttpRequest',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
-                                'Authorization': 'Bearer ' + document.querySelector('meta[name="csrf-token"]')?.content || ''
+                                'Authorization': 'Bearer {{ session()->get('api_token') }}'
                             },
                             credentials: 'include' // Required for Sanctum session-based auth
                         });
