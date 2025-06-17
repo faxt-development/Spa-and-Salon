@@ -10,6 +10,8 @@ use App\Http\Controllers\Inventory\CategoryController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\EmailCampaignController;
 use App\Http\Controllers\EmailTrackingController;
+use App\Http\Controllers\EmailMarketingDashboardController;
+use App\Http\Controllers\DripCampaignController;
 
 // Public routes
 Route::get('/', function () {
@@ -156,7 +158,12 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/preferences/{token}', [EmailTrackingController::class, 'preferences'])->name('preferences');
         Route::post('/preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])->name('preferences.update');
     });
-    });
+    
+    // Email Marketing Dashboard
+    Route::get('/email-marketing/dashboard', [EmailMarketingDashboardController::class, 'index'])->name('email-marketing.dashboard');
+    
+    // Drip Campaign Routes
+    Route::resource('drip-campaigns', DripCampaignController::class);
     
     // Client routes
     Route::middleware(['auth:web', 'role:client'])->group(function () {

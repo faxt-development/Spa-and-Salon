@@ -159,22 +159,98 @@ class EmailCampaignController extends Controller
      */
     public function show(EmailCampaign $emailCampaign)
     {
-        $emailCampaign->load(['user', 'recipients' => function($query) {
-            $query->latest()->take(10);
-        }]);
+        $emailCampaign->load(['user']);
         
+        // Basic stats
         $stats = [
             'sent' => $emailCampaign->recipients_count,
             'opened' => $emailCampaign->opened_recipients_count ?? 0,
             'clicked' => $emailCampaign->clicked_recipients_count ?? 0,
             'bounced' => $emailCampaign->bounced_recipients_count ?? 0,
             'unsubscribed' => $emailCampaign->unsubscribed_recipients_count ?? 0,
+            'complained' => $emailCampaign->recipients()->whereNotNull('complained_at')->count(),
         ];
         
         // Calculate rates
         $stats['open_rate'] = $stats['sent'] > 0 ? round(($stats['opened'] / $stats['sent']) * 100, 2) : 0;
         $stats['click_rate'] = $stats['sent'] > 0 ? round(($stats['clicked'] / $stats['sent']) * 100, 2) : 0;
         $stats['bounce_rate'] = $stats['sent'] > 0 ? round(($stats['bounced'] / $stats['sent']) * 100, 2) : 0;
+        $stats['unsubscribe_rate'] = $stats['sent'] > 0 ? round(($stats['unsubscribed'] / $stats['sent']) * 100, 2) : 0;
+        $stats['complaint_rate'] = $stats['sent'] > 0 ? round(($stats['complained'] / $stats['sent']) * 100, 2) : 0;
+        $stats['click_to_open_rate'] = $stats['opened'] > 0 ? round(($stats['clicked'] / $stats['opened']) * 100, 2) : 0;
+        
+        // Get engagement timeline data for the chart
+        $timeline = [];
+        if ($emailCampaign->sent_at) {
+            $startDate = $emailCampaign->sent_at->copy()->subDay();
+            $endDate = now()->gt($emailCampaign->sent_at->copy()->addDays(14)) ? 
+                $emailCampaign->sent_at->copy()->addDays(14) : now();
+            
+            // Get daily counts
+            $dailyOpens = $emailCampaign->recipients()
+                ->select(DB::raw('DATE(opened_at) as date'), DB::raw('count(*) as count'))
+                ->whereNotNull('opened_at')
+                ->whereBetween('opened_at', [$startDate, $endDate])
+                ->groupBy('date')
+                ->pluck('count', 'date')
+                ->toArray();
+                
+            $dailyClicks = $emailCampaign->recipients()
+                ->select(DB::raw('DATE(clicked_at) as date'), DB::raw('count(*) as count'))
+                ->whereNotNull('clicked_at')
+                ->whereBetween('clicked_at', [$startDate, $endDate])
+                ->groupBy('date')
+                ->pluck('count', 'date')
+                ->toArray();
+                
+            // Build timeline data
+            $currentDate = $startDate->copy();
+            while ($currentDate <= $endDate) {
+                $dateStr = $currentDate->format('Y-m-d');
+                $timeline[] = [
+                    'date' => $dateStr,
+                    'opens' => $dailyOpens[$dateStr] ?? 0,
+                    'clicks' => $dailyClicks[$dateStr] ?? 0,
+                    'label' => $currentDate->format('M j')
+                ];
+                $currentDate->addDay();
+            }
+        }
+        
+        // Get device and platform data
+        $devices = $emailCampaign->recipients()
+            ->select('device_type', DB::raw('count(*) as count'))
+            ->whereNotNull('device_type')
+            ->groupBy('device_type')
+            ->pluck('count', 'device_type')
+            ->toArray();
+            
+        $platforms = $emailCampaign->recipients()
+            ->select('platform', DB::raw('count(*) as count'))
+            ->whereNotNull('platform')
+            ->groupBy('platform')
+            ->pluck('count', 'platform')
+            ->toArray();
+        
+        // Get top links clicked
+        $topLinks = $emailCampaign->recipients()
+            ->select('clicked_links')
+            ->whereNotNull('clicked_links')
+            ->get()
+            ->flatMap(function($recipient) {
+                return json_decode($recipient->clicked_links, true) ?? [];
+            })
+            ->groupBy('url')
+            ->map(function($clicks, $url) {
+                return [
+                    'url' => $url,
+                    'clicks' => count($clicks),
+                    'unique_clicks' => collect($clicks)->unique('ip')->count()
+                ];
+            })
+            ->sortByDesc('clicks')
+            ->take(5)
+            ->values();
         
         // Get recent activity
         $recentActivity = $emailCampaign->recipients()
@@ -190,18 +266,31 @@ class EmailCampaignController extends Controller
             ->get()
             ->map(function($recipient) {
                 return [
+                    'id' => $recipient->id,
                     'email' => $recipient->email,
                     'name' => $recipient->name,
-                    'opened_at' => $recipient->opened_at?->format('M j, Y g:i A'),
-                    'clicked_at' => $recipient->clicked_at?->format('M j, Y g:i A'),
-                    'bounced_at' => $recipient->bounced_at?->format('M j, Y g:i A'),
-                    'unsubscribed_at' => $recipient->unsubscribed_at?->format('M j, Y g:i A'),
+                    'opened_at' => $recipient->opened_at,
+                    'clicked_at' => $recipient->clicked_at,
+                    'bounced_at' => $recipient->bounced_at,
+                    'unsubscribed_at' => $recipient->unsubscribed_at,
+                    'complained_at' => $recipient->complained_at,
+                    'device_type' => $recipient->device_type,
+                    'platform' => $recipient->platform,
+                    'client' => $recipient->client ? [
+                        'id' => $recipient->client->id,
+                        'name' => $recipient->client->name,
+                        'email' => $recipient->client->email
+                    ] : null
                 ];
             });
         
         return view('email-campaigns.show', [
             'campaign' => $emailCampaign,
             'stats' => $stats,
+            'timeline' => $timeline,
+            'devices' => $devices,
+            'platforms' => $platforms,
+            'topLinks' => $topLinks,
             'recentActivity' => $recentActivity,
             'canEdit' => $emailCampaign->status === 'draft',
             'canSend' => in_array($emailCampaign->status, ['draft', 'scheduled']),

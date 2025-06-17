@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.css">
+@endpush
+
 @section('content')
-<div class="py-6">
+<div class="py-6" x-data="campaignData()" x-init="init()">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
@@ -72,45 +76,85 @@
                 </div>
 
                 <!-- Campaign Stats -->
-                @if($campaign->isSent())
+                @if($campaign->isSent() || $campaign->isSending())
                 <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
-                    <div class="px-4 py-5 sm:px-6">
+                    <div class="px-6 py-5 border-b border-gray-200">
                         <h3 class="text-lg leading-6 font-medium text-gray-900">Campaign Performance</h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500">Overview of how your email campaign is performing</p>
+                        <p class="mt-1 text-sm text-gray-500">Overview of how your email campaign is performing</p>
                     </div>
-                    <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
-                        <dl class="sm:divide-y sm:divide-gray-200">
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt class="text-sm font-medium text-gray-500">Recipients</dt>
-                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    {{ number_format($campaign->sent_count) }} sent
-                                    @if($campaign->failed_count > 0)
-                                        <span class="text-red-600 ml-2">({{ number_format($campaign->failed_count) }} failed)</span>
+                    
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
+                        <!-- Sent -->
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-50 text-blue-600">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Sent</p>
+                                    <p class="text-2xl font-semibold text-gray-900">{{ number_format($stats['sent']) }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Open Rate -->
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-50 text-green-600">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Open Rate</p>
+                                    <div class="flex items-baseline">
+                                        <p class="text-2xl font-semibold text-gray-900">{{ $stats['open_rate'] }}%</p>
+                                        <p class="ml-2 text-sm text-gray-500">{{ number_format($stats['opened']) }} opened</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Click Rate -->
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-50 text-purple-600">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Click Rate</p>
+                                    <div class="flex items-baseline">
+                                        <p class="text-2xl font-semibold text-gray-900">{{ $stats['click_rate'] }}%</p>
+                                        <p class="ml-2 text-sm text-gray-500">{{ number_format($stats['clicked']) }} clicked</p>
+                                    </div>
+                                    @if($stats['opened'] > 0)
+                                    <p class="mt-1 text-xs text-gray-500">
+                                        {{ $stats['click_to_open_rate'] }}% of opens
+                                    </p>
                                     @endif
-                                </dd>
+                                </div>
                             </div>
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt class="text-sm font-medium text-gray-500">Open Rate</dt>
-                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    <div class="flex items-center">
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5 mr-4">
-                                            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {{ $campaign->open_rate }}%"></div>
-                                        </div>
-                                        <span>{{ number_format($campaign->open_rate, 1) }}% ({{ number_format($campaign->opened_count) }} opened)</span>
-                                    </div>
-                                </dd>
-                            </div>
-                            <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt class="text-sm font-medium text-gray-500">Click Rate</dt>
-                                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    <div class="flex items-center">
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5 mr-4">
-                                            <div class="bg-green-600 h-2.5 rounded-full" style="width: {{ $campaign->click_rate }}%"></div>
-                                        </div>
-                                        <span>{{ number_format($campaign->click_rate, 1) }}% ({{ number_format($campaign->clicked_count) }} clicked)</span>
-                                    </div>
-                                </dd>
-                            </div>
+                        </div>
+                        
+                        <!-- Bounce/Unsubscribe -->
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-amber-50 text-amber-600">
+                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-500">Bounced</p>
+                                    <div class="flex items-baseline">
+                                        <p class="text-2xl font-semibold text-gray-900">{{ $stats['bounce_rate'] }}%</p>
+                                        <p class="ml-2 text-sm text-gray-500">{{ number_format($stats['bounced']) }} emails</p>
                             <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                 <dt class="text-sm font-medium text-gray-500">Bounce Rate</dt>
                                 <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -134,6 +178,111 @@
                                 </dd>
                             </div>
                         </dl>
+                    </div>
+                </div>
+                @endif
+
+                @if($campaign->isSent() && count($timeline) > 0)
+                <!-- Engagement Timeline -->
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Engagement Over Time</h3>
+                        <p class="mt-1 text-sm text-gray-500">Track how recipients are interacting with your campaign over time</p>
+                    </div>
+                    <div class="p-6">
+                        <div id="engagement-timeline" class="h-80"></div>
+                    </div>
+                </div>
+                @endif
+
+                @if($campaign->isSent() && (count($devices) > 0 || count($platforms) > 0))
+                <!-- Device & Platform Distribution -->
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Device & Platform Distribution</h3>
+                        <p class="mt-1 text-sm text-gray-500">See which devices and platforms your recipients are using</p>
+                    </div>
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        @if(count($devices) > 0)
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-900 mb-4">Devices</h4>
+                            <div id="device-distribution" class="h-64"></div>
+                        </div>
+                        @endif
+                        
+                        @if(count($platforms) > 0)
+                        <div>
+                            <h4 class="text-sm font-medium text-gray-900 mb-4">Platforms</h4>
+                            <div id="platform-distribution" class="h-64"></div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
+                @if($campaign->isSent() && count($topLinks) > 0)
+                <!-- Top Clicked Links -->
+                <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
+                    <div class="px-6 py-5 border-b border-gray-200">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">Top Clicked Links</h3>
+                        <p class="mt-1 text-sm text-gray-500">See which links were clicked the most in your email</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Link</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Clicks</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unique Clicks</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CTR</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach($topLinks as $link)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-purple-100">
+                                                <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                                </svg>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900 truncate max-w-xs" x-data="{ showFull: false }" @click="showFull = !showFull">
+                                                    <span x-show="!showFull" class="cursor-pointer hover:text-purple-600">
+                                                        {{ Str::limit(parse_url($link['url'], PHP_URL_PATH) ?: $link['url'], 50) }}
+                                                    </span>
+                                                    <span x-show="showFull" class="cursor-pointer text-purple-600 break-all">
+                                                        {{ $link['url'] }}
+                                                    </span>
+                                                </div>
+                                                <div class="text-xs text-gray-500">
+                                                    {{ parse_url($link['url'], PHP_URL_HOST) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ $link['clicks'] }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ $link['unique_clicks'] }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @php
+                                            $ctr = $stats['sent'] > 0 ? ($link['clicks'] / $stats['sent']) * 100 : 0;
+                                        @endphp
+                                        <div class="flex items-center">
+                                            <div class="w-24 bg-gray-200 rounded-full h-2.5 mr-2">
+                                                <div class="bg-purple-600 h-2.5 rounded-full" style="width: {{ min($ctr, 100) }}%"></div>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-700">{{ number_format($ctr, 1) }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 @endif
@@ -303,6 +452,278 @@
 
 @if($campaign->isSent())
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.js"></script>
+<script>
+function campaignData() {
+    return {
+        init() {
+            this.initEngagementChart();
+            this.initDistributionCharts();
+        },
+        initEngagementChart() {
+            @if($campaign->isSent() && count($timeline) > 0)
+            const options = {
+                series: [{
+                    name: 'Opens',
+                    data: @json(array_column($timeline, 'opens')),
+                    color: '#3B82F6'
+                }, {
+                    name: 'Clicks',
+                    data: @json(array_column($timeline, 'clicks')),
+                    color: '#8B5CF6'
+                }],
+                chart: {
+                    height: '100%',
+                    type: 'area',
+                    fontFamily: 'Inter, sans-serif',
+                    toolbar: {
+                        show: true,
+                        tools: {
+                            download: true,
+                            selection: true,
+                            zoom: true,
+                            zoomin: true,
+                            zoomout: true,
+                            pan: false,
+                            reset: true
+                        }
+                    },
+                    zoom: {
+                        enabled: true
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2
+                },
+                xaxis: {
+                    type: 'datetime',
+                    categories: @json(array_column($timeline, 'date')),
+                    labels: {
+                        format: 'MMM dd',
+                        style: {
+                            colors: '#6B7280',
+                            fontSize: '12px',
+                            fontFamily: 'Inter, sans-serif',
+                        },
+                    },
+                    axisBorder: {
+                        show: false
+                    },
+                    axisTicks: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: {
+                            colors: ['#6B7280'],
+                            fontSize: '12px',
+                            fontFamily: 'Inter, sans-serif',
+                        },
+                        formatter: function(value) {
+                            return Math.round(value);
+                        }
+                    },
+                    min: 0,
+                    tickAmount: 5
+                },
+                tooltip: {
+                    enabled: true,
+                    x: {
+                        format: 'MMM dd, yyyy'
+                    }
+                },
+                legend: {
+                    position: 'top',
+                    horizontalAlign: 'right',
+                    offsetY: 0,
+                    itemMargin: {
+                        horizontal: 10,
+                        vertical: 5
+                    }
+                },
+                grid: {
+                    borderColor: '#F3F4F6',
+                    strokeDashArray: 4,
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
+                },
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.7,
+                        opacityTo: 0.1,
+                        stops: [0, 90, 100]
+                    }
+                }
+            };
+
+            const chart = new ApexCharts(document.querySelector("#engagement-timeline"), options);
+            chart.render();
+            
+            // Cleanup on component destroy
+            this.$watch('$store.sidebar.isOpen', () => {
+                setTimeout(() => {
+                    chart.updateOptions({
+                        chart: {
+                            width: '100%'
+                        }
+                    });
+                }, 300);
+            });
+            @endif
+        },
+        initDistributionCharts() {
+            @if($campaign->isSent() && count($devices) > 0)
+            // Device Distribution Chart
+            const deviceOptions = {
+                series: @json(array_values($devices)),
+                labels: @json(array_keys($devices)),
+                chart: {
+                    type: 'donut',
+                    height: '100%',
+                    fontFamily: 'Inter, sans-serif',
+                },
+                colors: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'],
+                legend: {
+                    position: 'right',
+                    offsetY: 0,
+                    height: 230,
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    showAlways: false,
+                                    label: 'Total',
+                                    fontSize: '14px',
+                                    fontWeight: 600,
+                                    color: '#6B7280',
+                                }
+                            }
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                tooltip: {
+                    enabled: true,
+                    y: {
+                        formatter: function(value, { seriesIndex, w }) {
+                            const total = w.config.series.reduce((a, b) => a + b, 0);
+                            const percent = Math.round((value / total) * 100);
+                            return `${value} (${percent}%)`;
+                        }
+                    }
+                },
+                responsive: [{
+                    breakpoint: 640,
+                    options: {
+                        chart: {
+                            width: '100%',
+                            height: '300px'
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center'
+                        }
+                    }
+                }]
+            };
+
+            const deviceChart = new ApexCharts(document.querySelector("#device-distribution"), deviceOptions);
+            deviceChart.render();
+            @endif
+
+            @if($campaign->isSent() && count($platforms) > 0)
+            // Platform Distribution Chart
+            const platformOptions = {
+                series: @json(array_values($platforms)),
+                labels: @json(array_keys($platforms)),
+                chart: {
+                    type: 'pie',
+                    height: '100%',
+                    fontFamily: 'Inter, sans-serif',
+                },
+                colors: ['#8B5CF6', '#EC4899', '#3B82F6', '#10B981', '#F59E0B'],
+                legend: {
+                    position: 'right',
+                    offsetY: 0,
+                    height: 230,
+                },
+                plotOptions: {
+                    pie: {
+                        donut: {
+                            size: '65%',
+                            labels: {
+                                show: true,
+                                total: {
+                                    show: true,
+                                    showAlways: false,
+                                    label: 'Total',
+                                    fontSize: '14px',
+                                    fontWeight: 600,
+                                    color: '#6B7280',
+                                }
+                            }
+                        }
+                    }
+                },
+                dataLabels: {
+                    enabled: true,
+                    formatter: function(val, { seriesIndex, w }) {
+                        return w.config.labels[seriesIndex] + ': ' + w.config.series[seriesIndex];
+                    },
+                    dropShadow: {
+                        enabled: false
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    y: {
+                        formatter: function(value, { seriesIndex, w }) {
+                            const total = w.config.series.reduce((a, b) => a + b, 0);
+                            const percent = Math.round((value / total) * 100);
+                            return `${value} (${percent}%)`;
+                        }
+                    }
+                },
+                responsive: [{
+                    breakpoint: 640,
+                    options: {
+                        chart: {
+                            width: '100%',
+                            height: '300px'
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center'
+                        }
+                    }
+                }]
+            };
+
+            const platformChart = new ApexCharts(document.querySelector("#platform-distribution"), platformOptions);
+            platformChart.render();
+            @endif
+        }
+    };
+}
+</script>
+
 <script>
     // Auto-refresh the page every 60 seconds to update stats
     setTimeout(function() {

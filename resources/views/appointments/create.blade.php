@@ -30,6 +30,9 @@
                     </div>
                 @endif
 
+                @if(isset($isClient) && $isClient)
+                    @include('appointments.partials.form', ['staff' => $staff, 'services' => $services])
+                @else
                 <form id="appointmentForm" method="POST" action="/appointments" class="space-y-6" x-data="appointmentForm">
                     @csrf
 
@@ -166,6 +169,7 @@
                         Create Appointment
                     </button>
                 </form>
+                @endif
             </div>
         </div>
     </div>
@@ -326,20 +330,25 @@
             disableMobile: true
         });
 
+        // Only initialize new client functionality for staff members
+        @if(!isset($isClient) || !$isClient)
         // Toggle new client fields
         const newClientCheckbox = document.getElementById('new_client');
         const newClientFields = document.getElementById('new-client-fields');
         const clientSelect = document.getElementById('client_id');
 
-        newClientCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                newClientFields.classList.remove('hidden');
-                clientSelect.disabled = true;
-            } else {
-                newClientFields.classList.add('hidden');
-                clientSelect.disabled = false;
-            }
-        });
+        if (newClientCheckbox && newClientFields && clientSelect) {
+            newClientCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    newClientFields.classList.remove('hidden');
+                    clientSelect.disabled = true;
+                } else {
+                    newClientFields.classList.add('hidden');
+                    clientSelect.disabled = false;
+                }
+            });
+        }
+        @endif
 
         // Calculate total duration and price when services change
         const servicesSelect = document.getElementById('services');
