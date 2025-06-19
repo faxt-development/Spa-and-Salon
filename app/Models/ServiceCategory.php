@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ServiceCategory extends Model
 {
@@ -68,9 +69,9 @@ class ServiceCategory extends Model
     /**
      * Get all services in this category.
      */
-    public function services(): HasMany
+    public function services(): BelongsToMany
     {
-        return $this->hasMany(Service::class, 'category_id')->orderBy('name');
+        return $this->belongsToMany(Service::class, 'service_service_category')->orderBy('name');
     }
 
     /**

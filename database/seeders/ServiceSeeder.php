@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Service;
+use App\Models\ServiceCategory;
 use Illuminate\Database\Seeder;
 
 class ServiceSeeder extends Seeder
@@ -12,127 +13,181 @@ class ServiceSeeder extends Seeder
      */
     public function run(): void
     {
-        $services = [
-            // Hair Services
-            [
-                'name' => 'Women\'s Haircut',
-                'description' => 'Professional haircut with shampoo, cut, and style',
-                'price' => 65.00,
-                'duration' => 60,
-                'category' => 'Hair',
-                'active' => true,
+        // Get all categories first
+        $categories = ServiceCategory::all()->keyBy('name');
+        
+        // Define services grouped by category
+        $servicesByCategory = [
+            'Hair Services' => [
+                [
+                    'name' => 'Women\'s Haircut',
+                    'description' => 'Professional haircut with shampoo, cut, and style',
+                    'price' => 65.00,
+                    'duration' => 60,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Men\'s Haircut',
+                    'description' => 'Classic men\'s haircut with clipper and scissor work',
+                    'price' => 40.00,
+                    'duration' => 30,
+                    'active' => true,
+                ],
             ],
-            [
-                'name' => 'Men\'s Haircut',
-                'description' => 'Classic men\'s haircut with clipper and scissor work',
-                'price' => 40.00,
-                'duration' => 30,
-                'category' => 'Hair',
-                'active' => true,
+            'Hair Color' => [
+                [
+                    'name' => 'Root Touch Up',
+                    'description' => 'Color touch up for roots with single process color',
+                    'price' => 75.00,
+                    'duration' => 90,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Full Highlight',
+                    'description' => 'Full head highlights with foils',
+                    'price' => 120.00,
+                    'duration' => 150,
+                    'active' => true,
+                ],
             ],
-            [
-                'name' => 'Root Touch Up',
-                'description' => 'Color touch up for roots with single process color',
-                'price' => 75.00,
-                'duration' => 90,
-                'category' => 'Color',
-                'active' => true,
+            'Massage' => [
+                [
+                    'name' => 'Swedish Massage',
+                    'description' => '60-minute relaxing full body massage',
+                    'price' => 90.00,
+                    'duration' => 60,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Deep Tissue Massage',
+                    'description' => '60-minute therapeutic massage targeting deep muscle tension',
+                    'price' => 110.00,
+                    'duration' => 60,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Hot Stone Massage',
+                    'description' => '90-minute massage with heated stones for deep relaxation',
+                    'price' => 135.00,
+                    'duration' => 90,
+                    'active' => true,
+                ],
             ],
-            [
-                'name' => 'Full Highlight',
-                'description' => 'Full head highlights with foils',
-                'price' => 120.00,
-                'duration' => 150,
-                'category' => 'Color',
-                'active' => true,
+            'Facials' => [
+                [
+                    'name' => 'Classic Facial',
+                    'description' => 'Deep cleansing facial with steam, extraction, and mask',
+                    'price' => 85.00,
+                    'duration' => 60,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Anti-Aging Facial',
+                    'description' => 'Advanced facial targeting fine lines and wrinkles',
+                    'price' => 120.00,
+                    'duration' => 75,
+                    'active' => true,
+                ],
             ],
-            
-            // Spa Services
-            [
-                'name' => 'Swedish Massage',
-                'description' => '60-minute full body relaxation massage',
-                'price' => 95.00,
-                'duration' => 60,
-                'category' => 'Spa',
-                'active' => true,
+            'Body Treatments' => [
+                [
+                    'name' => 'Body Scrub',
+                    'description' => 'Full body exfoliation treatment',
+                    'price' => 95.00,
+                    'duration' => 60,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Detox Body Wrap',
+                    'description' => 'Purifying and detoxifying full body wrap treatment',
+                    'price' => 110.00,
+                    'duration' => 75,
+                    'active' => true,
+                ],
             ],
-            [
-                'name' => 'Deep Tissue Massage',
-                'description' => 'Therapeutic deep tissue massage for muscle tension',
-                'price' => 110.00,
-                'duration' => 60,
-                'category' => 'Spa',
-                'active' => true,
+            'Nails' => [
+                [
+                    'name' => 'Manicure',
+                    'description' => 'Classic nail shaping, cuticle care, and polish',
+                    'price' => 35.00,
+                    'duration' => 30,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Pedicure',
+                    'description' => 'Foot soak, exfoliation, nail care, and polish',
+                    'price' => 45.00,
+                    'duration' => 45,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Gel Manicure',
+                    'description' => 'Long-lasting gel polish manicure',
+                    'price' => 50.00,
+                    'duration' => 45,
+                    'active' => true,
+                ],
             ],
-            [
-                'name' => 'Classic Facial',
-                'description' => 'Cleansing, exfoliation, extractions, and hydration',
-                'price' => 85.00,
-                'duration' => 60,
-                'category' => 'Spa',
-                'active' => true,
+            'Waxing' => [
+                [
+                    'name' => 'Eyebrow Wax',
+                    'description' => 'Eyebrow shaping with wax',
+                    'price' => 20.00,
+                    'duration' => 15,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Lip Wax',
+                    'description' => 'Upper lip hair removal with wax',
+                    'price' => 15.00,
+                    'duration' => 10,
+                    'active' => true,
+                ],
+                [
+                    'name' => 'Full Leg Wax',
+                    'description' => 'Hair removal for entire legs',
+                    'price' => 65.00,
+                    'duration' => 45,
+                    'active' => true,
+                ],
             ],
-            
-            // Nail Services
-            [
-                'name' => 'Classic Manicure',
-                'description' => 'Basic manicure with nail shaping, cuticle care, and polish',
-                'price' => 35.00,
-                'duration' => 45,
-                'category' => 'Nails',
-                'active' => true,
+            'Makeup' => [
+                [
+                    'name' => 'Teen Makeup Lesson',
+                    'description' => 'Personalized makeup application lesson',
+                    'price' => 85.00,
+                    'duration' => 90,
+                    'active' => true,
+                ],
             ],
-            [
-                'name' => 'Spa Pedicure',
-                'description' => 'Luxurious pedicure with exfoliation, mask, and massage',
-                'price' => 55.00,
-                'duration' => 60,
-                'category' => 'Nails',
-                'active' => true,
-            ],
-            
-            // Waxing Services
-            [
-                'name' => 'Eyebrow Wax',
-                'description' => 'Precise eyebrow shaping with warm wax',
-                'price' => 25.00,
-                'duration' => 20,
-                'category' => 'Waxing',
-                'active' => true,
-            ],
-            [
-                'name' => 'Brazilian Wax',
-                'description' => 'Complete waxing service',
-                'price' => 65.00,
-                'duration' => 45,
-                'category' => 'Waxing',
-                'active' => true,
-            ],
-            
-            // Specialty Services
-            [
-                'name' => 'Bridal Package',
-                'description' => 'Hair, makeup, and trial session',
-                'price' => 350.00,
-                'duration' => 240,
-                'category' => 'Specialty',
-                'active' => true,
-            ],
-            [
-                'name' => 'Teen Makeup Lesson',
-                'description' => 'Personalized makeup application lesson',
-                'price' => 85.00,
-                'duration' => 90,
-                'category' => 'Specialty',
-                'active' => true,
+            'Specialty' => [
+                [
+                    'name' => 'Bridal Package',
+                    'description' => 'Hair, makeup, and trial session',
+                    'price' => 350.00,
+                    'duration' => 240,
+                    'active' => true,
+                ],
             ],
         ];
 
-        foreach ($services as $service) {
-            Service::updateOrCreate(
-                ['name' => $service['name']],
-                $service
-            );
+        // Create services and attach categories
+        foreach ($servicesByCategory as $categoryName => $services) {
+            // Find the category
+            $category = $categories->get($categoryName);
+            
+            if (!$category) {
+                continue; // Skip if category doesn't exist
+            }
+            
+            // Create each service in this category
+            foreach ($services as $serviceData) {
+                // Create the service
+                $service = Service::create($serviceData);
+                
+                // Attach the category
+                $service->categories()->attach($category->id);
+            }
         }
     }
 }

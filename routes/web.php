@@ -12,11 +12,16 @@ use App\Http\Controllers\EmailCampaignController;
 use App\Http\Controllers\EmailTrackingController;
 use App\Http\Controllers\EmailMarketingDashboardController;
 use App\Http\Controllers\DripCampaignController;
+use App\Http\Controllers\ServiceController;
+
 
 // Public routes
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
+
+
+Route::get('/services', [ServiceController::class, 'index'])->name('services');
 
 // Gift card routes
 Route::controller(GiftCardWebController::class)->group(function () {
@@ -135,20 +140,20 @@ Route::middleware(['auth:web'])->group(function () {
     });
     // Email Campaign Routes
     Route::resource('email-campaigns', EmailCampaignController::class);
-    
+
     // Email Campaign Actions
     Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
         Route::post('/{campaign}/send', [EmailCampaignController::class, 'send'])->name('send');
         Route::post('/{campaign}/cancel', [EmailCampaignController::class, 'cancel'])->name('cancel');
         Route::post('/{campaign}/duplicate', [EmailCampaignController::class, 'duplicate'])->name('duplicate');
     });
-    
+
     // Email Campaign Additional Actions
     Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
         Route::get('/{emailCampaign}/preview', [EmailCampaignController::class, 'preview'])->name('preview');
         Route::get('/{emailCampaign}/export', [EmailCampaignController::class, 'export'])->name('export');
     });
-            
+
     // Email Tracking Routes (public routes that don't require authentication)
     Route::prefix('email')->name('email.')->group(function () {
         Route::get('/track/open/{token}.gif', [EmailTrackingController::class, 'trackOpen'])->name('track.open');
@@ -158,13 +163,13 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/preferences/{token}', [EmailTrackingController::class, 'preferences'])->name('preferences');
         Route::post('/preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])->name('preferences.update');
     });
-    
+
     // Email Marketing Dashboard
     Route::get('/email-marketing/dashboard', [EmailMarketingDashboardController::class, 'index'])->name('email-marketing.dashboard');
-    
+
     // Drip Campaign Routes
     Route::resource('drip-campaigns', DripCampaignController::class);
-    
+
     // Client routes
     Route::middleware(['auth:web', 'role:client'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');

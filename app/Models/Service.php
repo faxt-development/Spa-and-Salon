@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Service extends Model
 {
@@ -67,11 +68,11 @@ class Service extends Model
     ];
 
     /**
-     * Get the category that owns the service.
+     * The categories that this service belongs to.
      */
-    public function category(): BelongsTo
+    public function categories(): BelongsToMany
     {
-        return $this->belongsTo(ServiceCategory::class, 'category_id');
+        return $this->belongsToMany(ServiceCategory::class, 'service_service_category');
     }
 
     /**
@@ -144,10 +145,10 @@ class Service extends Model
         
         $parts = [];
         if ($hours > 0) {
-            $parts[] = $hours . ' ' . str_plural('hr', $hours);
+            $parts[] = $hours . ' ' . Str::plural('hr', $hours);
         }
         if ($minutes > 0) {
-            $parts[] = $minutes . ' ' . str_plural('min', $minutes);
+            $parts[] = $minutes . ' ' . Str::plural('min', $minutes);
         }
         
         return implode(' ', $parts) ?: '0 min';
@@ -194,6 +195,8 @@ class Service extends Model
      */
     public function scopeInCategory($query, $categoryId)
     {
-        return $query->where('category_id', $categoryId);
+        return $query->whereHas('categories', function($q) use ($categoryId) {
+            $q->where('service_categories.id', $categoryId);
+        });
     }
 }

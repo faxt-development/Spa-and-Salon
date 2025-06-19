@@ -203,6 +203,7 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                @auth
                 <div class="relative ml-3" x-data="{ open: false }" @keydown.escape="open = false" @click.away="open = false">
                     <button @click="open = !open"
                             @keydown.enter.prevent="open = !open"
@@ -242,6 +243,18 @@
                         </div>
                     </div>
                 </div>
+                @else
+                <div class="ml-3">
+                    <a href="{{ route('login') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150">
+                        Login
+                    </a>
+                    @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150">
+                        Register
+                    </a>
+                    @endif
+                </div>
+                @endauth
             </div>
 
             <!-- Hamburger -->
@@ -266,6 +279,7 @@
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
+            @auth
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
                 <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
@@ -287,6 +301,18 @@
                     </x-responsive-nav-link>
                 </form>
             </div>
+            @else
+            <div class="px-4 py-2">
+                <x-responsive-nav-link :href="route('login')">
+                    {{ __('Login') }}
+                </x-responsive-nav-link>
+                @if (Route::has('register'))
+                <x-responsive-nav-link :href="route('register')">
+                    {{ __('Register') }}
+                </x-responsive-nav-link>
+                @endif
+            </div>
+            @endauth
         </div>
     </div>
 </nav>

@@ -1,10 +1,13 @@
 {
+    "name": "faxtina-spa-and-salon",
     "$schema": "https://json.schemastore.org/package.json",
     "private": true,
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "concurrently \"vite\" \"php artisan serve\"",
+        "dev:vite": "vite",
+        "dev:server": "php artisan serve"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",

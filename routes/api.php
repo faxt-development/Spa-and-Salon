@@ -43,8 +43,12 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/tax-rates', [TaxController::class, 'index']);
 Route::post('/tax/calculate', [TaxController::class, 'calculate']);
 
+// Public services endpoints
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/services/{service}', [ServiceController::class, 'show']);
+Route::get('/public/services', [ServiceController::class, 'publicServices']);
+Route::get('/public/services/categories', [ServiceController::class, 'publicCategories']);
+Route::get('/public/services/category/{category}', [ServiceController::class, 'servicesByCategory']);
 Route::post('/booking/availability', [BookingController::class, 'checkAvailability']);
 
 // Client appointments

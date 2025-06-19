@@ -100,6 +100,9 @@
                         <span class="block">Welcome to</span>
                         <span class="block text-purple-600 dark:text-purple-400">Cleo's Salon & Spa</span>
                     </h1>
+                    <div class="mt-8 mb-8 mx-auto max-w-3xl">
+                        <img src="https://images.prasso.io/cleos/ai_generated_1750345785_ZpeE5xTM.png" alt="Luxury hair style" class="rounded-lg shadow-xl w-full h-auto">
+                    </div>
                     <p class="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-300 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
                         Experience luxury and relaxation with our premium beauty and wellness services.
                     </p>
@@ -120,6 +123,70 @@
         </section>
 
         <main class="flex-1">
+
+        <!-- Services Section -->
+        <section id="services" class="py-16 bg-white dark:bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Our Services</h2>
+                    <p class="text-lg text-gray-600 dark:text-gray-300 mb-12">Discover our range of premium beauty and wellness services</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Hair Services -->
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md transition-transform hover:scale-105">
+                        <div class="h-12 w-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-4">
+                            ✂️
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Hair Services</h3>
+                        <ul class="space-y-2 text-gray-600 dark:text-gray-300">
+                            <li>• Haircut & Styling</li>
+                            <li>• Hair Coloring</li>
+                            <li>• Highlights & Balayage</li>
+                            <li>• Keratin Treatments</li>
+                            <li>• Hair Extensions</li>
+                        </ul>
+                    </div>
+
+                    <!-- Spa Services -->
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md transition-transform hover:scale-105">
+                        <div class="h-12 w-12 bg-pink-100 dark:bg-pink-900 rounded-full flex items-center justify-center mb-4">
+                            💆
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Spa Treatments</h3>
+                        <ul class="space-y-2 text-gray-600 dark:text-gray-300">
+                            <li>• Facials</li>
+                            <li>• Body Treatments</li>
+                            <li>• Massage Therapy</li>
+                            <li>• Waxing</li>
+                            <li>• Skin Care</li>
+                        </ul>
+                    </div>
+
+                    <!-- Nail Services -->
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md transition-transform hover:scale-105">
+                        <div class="h-12 w-12 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center mb-4">
+                            💅
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Nail Care</h3>
+                        <ul class="space-y-2 text-gray-600 dark:text-gray-300">
+                            <li>• Manicure</li>
+                            <li>• Pedicure</li>
+                            <li>• Gel Polish</li>
+                            <li>• Nail Art</li>
+                            <li>• Spa Mani/Pedi</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-12 text-center">
+                    <a href="{{ route('services') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700">
+                        View All Services
+                        <svg class="ml-2 -mr-1 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </section>
 
         <!-- Testimonials Section -->
         <div class="py-16 bg-gray-50 dark:bg-gray-900">

@@ -17,8 +17,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('price', 8, 2);
             $table->integer('duration')->comment('Duration in minutes');
-            $table->string('category')->nullable();
             $table->boolean('active')->default(true);
+            $table->string('image_url')->nullable();
+            $table->boolean('is_featured')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
