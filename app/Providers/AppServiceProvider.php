@@ -28,7 +28,11 @@ class AppServiceProvider extends ServiceProvider
         // Trust all proxies or specify your proxy IPs
         Request::setTrustedProxies(
             [request()->getClientIp()],
-            SymfonyRequest::HEADER_X_FORWARDED_ALL
+            SymfonyRequest::HEADER_X_FORWARDED_FOR |
+            SymfonyRequest::HEADER_X_FORWARDED_HOST |
+            SymfonyRequest::HEADER_X_FORWARDED_PORT |
+            SymfonyRequest::HEADER_X_FORWARDED_PROTO |
+            SymfonyRequest::HEADER_X_FORWARDED_AWS_ELB
         );
 
         // Force HTTPS if your app should always use HTTPS
