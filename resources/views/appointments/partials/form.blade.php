@@ -55,12 +55,12 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time</label>
-                    <input type="time" name="start_time" id="start_time" value="{{ old('start_time') }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md timepicker">
+                    <input type="time" name="start_time" id="start_time" value="{{ old('start_time') }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md">
                 </div>
 
                 <div>
                     <label for="end_time" class="block text-sm font-medium text-gray-700">End Time</label>
-                    <input type="time" name="end_time" id="end_time" value="{{ old('end_time') }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md timepicker" readonly>
+                    <input type="time" name="end_time" id="end_time" value="{{ old('end_time') }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md" readonly>
                 </div>
             </div>
 

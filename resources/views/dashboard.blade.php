@@ -457,7 +457,9 @@
                                 const data = await response.json();
 
                                 if (!response.ok) {
-                                    throw new Error(data.message || 'Something went wrong while saving the appointment');
+                                    console.log(data.message || 'Something went wrong while saving the appointment');
+                                  //  throw new Error(data.message || 'Something went wrong while saving the appointment');
+                               return;
                                 }
 
                                 // Success - show success message and close modal
@@ -622,7 +624,7 @@
                     try {
                         this.loading = true;
                         this.message = null;
-                        alert("{{ json_encode(Auth::user()->tokens->pluck('name')) }}");
+
                         // Fetch appointments from the API with proper headers for Sanctum
                         const response = await fetch('/api/client/appointments', {
                             headers: {

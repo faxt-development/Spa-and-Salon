@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Services\AppointmentService;
 use Illuminate\Http\Request;
 use App\Models\Appointment;
 use App\Models\Client;
@@ -108,10 +109,20 @@ class AppointmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    protected $appointmentService;
+
+    public function __construct(AppointmentService $appointmentService)
+    {
+        $this->appointmentService = $appointmentService;
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'client_id' => 'required|exists:clients,id',
+            'client_id' => 'nullable|exists:clients,id',
+            'client_name' => 'required_without:client_id|string|max:255',
+            'client_email' => 'required_without:client_id|email|max:255',
+            'client_phone' => 'nullable|string|max:20',
             'staff_id' => 'required|exists:staff,id',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
@@ -128,7 +139,7 @@ class AppointmentController extends Controller
         }
 
         // Check if staff is available during the requested time slot
-        $isAvailable = $this->checkStaffAvailability(
+        $isAvailable = $this->appointmentService->checkStaffAvailability(
             $request->staff_id,
             $request->start_time,
             $request->end_time
@@ -141,43 +152,24 @@ class AppointmentController extends Controller
             ], 422);
         }
 
-        // Calculate total price based on selected services
-        $services = Service::whereIn('id', array_column($request->services, 'id'))->get();
-        $totalPrice = $services->sum('price');
-
-        DB::beginTransaction();
 
         try {
-            // Create the appointment
-            $appointment = Appointment::create([
-                'client_id' => $request->client_id,
-                'staff_id' => $request->staff_id,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-                'status' => 'scheduled',
-                'notes' => $request->notes,
-                'total_price' => $totalPrice,
-                'is_paid' => false,
-            ]);
+            // Create the appointment using the service
+            $result = $this->appointmentService->createAppointment($request->all());
 
-            // Attach services to the appointment
-            foreach ($services as $service) {
-                $appointment->services()->attach($service->id, [
-                    'price' => $service->price,
-                    'duration' => $service->duration
-                ]);
+            if (!$result['success']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $result['message']
+                ], 500);
             }
-
-            DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Appointment created successfully',
-                'data' => $appointment->load(['client', 'staff', 'services'])
+                'data' => $result['appointment']
             ], 201);
         } catch (\Exception $e) {
-            DB::rollBack();
-            
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create appointment',

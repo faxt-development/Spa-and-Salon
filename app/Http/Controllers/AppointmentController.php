@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Services\AppointmentService;
 use App\Models\Client;
 use App\Models\Staff;
 use App\Models\Service;
@@ -55,6 +56,13 @@ class AppointmentController extends Controller
     /**
      * Store a newly created appointment in storage.
      */
+    protected $appointmentService;
+
+    public function __construct(AppointmentService $appointmentService)
+    {
+        $this->appointmentService = $appointmentService;
+    }
+
     public function store(Request $request)
     {
         Log::info('AppointmentController@store: Storing new appointment', [
@@ -75,71 +83,33 @@ class AppointmentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        DB::beginTransaction();
+        // Format the request data to match the service expectations
+        $appointmentData = [
+            'client_name' => $validated['client_name'],
+            'client_email' => $validated['client_email'],
+            'client_phone' => $validated['client_phone'],
+            'staff_id' => $validated['staff_id'],
+            'date' => $validated['date'],
+            'start_time' => $validated['start_time'],
+            'end_time' => $validated['end_time'],
+            'service_ids' => $validated['service_ids'],
+            'notes' => $validated['notes'] ?? null,
+        ];
 
         try {
-            // Split full name into first and last name
-            $nameParts = explode(' ', trim($validated['client_name']), 2);
-            $firstName = $nameParts[0] ?? '';
-            $lastName = $nameParts[1] ?? '';
-            
-            // Find or create client
-            $client = Client::firstOrCreate(
-                ['email' => $validated['client_email']],
-                [
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'phone' => $validated['client_phone'],
-                ]
-            );
-            
-            // If client exists but details have changed, update them
-            if ($client->wasRecentlyCreated === false) {
-                $client->update([
-                    'first_name' => $firstName,
-                    'last_name' => $lastName,
-                    'phone' => $validated['client_phone'],
-                ]);
-            }
-            
-            $clientId = $client->id;
+            // Create the appointment using the service
+            $result = $this->appointmentService->createAppointment($appointmentData);
 
-            // Format start and end times
-            $startDateTime = Carbon::parse($request->date . ' ' . $request->start_time);
-            $endDateTime = Carbon::parse($request->date . ' ' . $request->end_time);
-
-            // Calculate total price based on selected services
-            $services = Service::whereIn('id', $request->service_ids)->get();
-            $totalPrice = $services->sum('price');
-
-            // Create the appointment
-            $appointment = Appointment::create([
-                'client_id' => $clientId,
-                'staff_id' => $request->staff_id,
-                'start_time' => $startDateTime,
-                'end_time' => $endDateTime,
-                'status' => 'scheduled',
-                'notes' => $request->notes,
-                'total_price' => $totalPrice,
-                'is_paid' => false,
-            ]);
-
-            // Attach services to the appointment
-            foreach ($services as $service) {
-                $appointment->services()->attach($service->id, [
-                    'price' => $service->price,
-                    'duration' => $service->duration
-                ]);
+            if (!$result['success']) {
+                throw new \Exception($result['message']);
             }
 
-            DB::commit();
-
-            return redirect()->route('web.appointments.show', $appointment->id)
+            return redirect()->route('web.appointments.show', $result['appointment']->id)
                 ->with('success', 'Appointment created successfully.');
         } catch (\Exception $e) {
-            DB::rollBack();
-
-            return back()->withInput()->withErrors(['error' => 'Failed to create appointment: ' . $e->getMessage()]);
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to create appointment: ' . $e->getMessage()]);
         }
     }
 
