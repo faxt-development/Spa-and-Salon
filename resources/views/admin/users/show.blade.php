@@ -125,8 +125,8 @@
                                     @if($user->roles->count() > 0)
                                         <div class="flex flex-wrap gap-2">
                                             @foreach($user->roles as $role)
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                    {{ $role->name === 'admin' ? 'bg-purple-100 text-purple-800' : 
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                    {{ $role->name === 'admin' ? 'bg-purple-100 text-purple-800' :
                                                        ($role->name === 'staff' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
                                                     {{ $role->name }}
                                                 </span>
@@ -175,12 +175,7 @@
                                             {{ $user->staff->position ?? 'Not specified' }}
                                         </dd>
                                     </div>
-                                    <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                        <dt class="text-sm font-medium text-gray-500">Hire Date</dt>
-                                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                            {{ $user->staff->hire_date ? $user->staff->hire_date->format('F j, Y') : 'Not specified' }}
-                                        </dd>
-                                    </div>
+
                                     <div class="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                                         <dt class="text-sm font-medium text-gray-500">Bio</dt>
                                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">

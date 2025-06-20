@@ -60,6 +60,12 @@ Route::middleware(['auth:web'])->group(function () {
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
         Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
+        
+        // Staff Management Routes
+        Route::resource('staff', 'App\Http\Controllers\StaffController');
+        Route::get('/roles-permissions', [App\Http\Controllers\StaffController::class, 'rolesAndPermissions'])->name('staff.roles');
+        Route::post('/roles', [App\Http\Controllers\StaffController::class, 'storeRole'])->name('staff.roles.store');
+        Route::put('/roles/{role}', [App\Http\Controllers\StaffController::class, 'updateRole'])->name('staff.roles.update');
 
         // Category reordering API routes
         Route::post('/categories/reorder', [CategoryController::class, 'reorder'])

@@ -35,7 +35,6 @@ class DashboardController extends Controller
      */
     public function admin()
     {
-        info('admin');
         if (!auth()->user()->hasRole('admin')) {
             abort(403, 'Unauthorized action.');
         }

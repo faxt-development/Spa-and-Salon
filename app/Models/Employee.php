@@ -17,6 +17,7 @@ class Employee extends Model
      */
     protected $fillable = [
         'user_id',
+        'staff_id',
         'first_name',
         'last_name',
         'email',
@@ -26,7 +27,6 @@ class Employee extends Model
         'hire_date',
         'termination_date',
         'hourly_rate',
-        'salary',
         'payment_frequency',
         'tax_id',
         'address',
@@ -44,7 +44,6 @@ class Employee extends Model
         'hire_date' => 'date',
         'termination_date' => 'date',
         'hourly_rate' => 'decimal:2',
-        'salary' => 'decimal:2',
         'is_active' => 'boolean',
     ];
 

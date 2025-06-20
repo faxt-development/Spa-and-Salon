@@ -13,14 +13,14 @@ use Carbon\Carbon;
 class Staff extends Model
 {
     use SoftDeletes;
-    
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
     protected $table = 'staff';
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -34,12 +34,11 @@ class Staff extends Model
         'position',
         'bio',
         'profile_image',
-        'is_active',
+        'active',
         'work_start_time',
         'work_end_time',
         'work_days',
         'user_id',
-        'hire_date',
         'termination_date',
         'emergency_contact_name',
         'emergency_contact_phone',
@@ -48,7 +47,6 @@ class Staff extends Model
         'state',
         'postal_code',
         'country',
-        'hourly_rate',
         'salary',
         'commission_rate',
         'specialties',
@@ -56,40 +54,37 @@ class Staff extends Model
         'languages',
         'notes',
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active' => 'boolean',
+        'active' => 'boolean',
         'work_start_time' => 'datetime',
         'work_end_time' => 'datetime',
         'work_days' => 'array',
-        'hire_date' => 'date',
         'termination_date' => 'date',
-        'hourly_rate' => 'decimal:2',
         'salary' => 'decimal:2',
         'commission_rate' => 'decimal:2',
         'specialties' => 'array',
         'certifications' => 'array',
         'languages' => 'array',
     ];
-    
+
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
     protected $dates = [
-        'hire_date',
         'termination_date',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
-    
+
     /**
      * Default work days if not specified.
      *
@@ -98,7 +93,7 @@ class Staff extends Model
     protected $defaultWorkDays = [
         'monday', 'tuesday', 'wednesday', 'thursday', 'friday'
     ];
-    
+
     /**
      * Get the user account associated with the staff member.
      */
@@ -106,7 +101,7 @@ class Staff extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
+
     /**
      * Get the employee record associated with the staff member.
      * This is a one-to-one relationship where the employees table has a staff_id foreign key.
@@ -171,10 +166,10 @@ class Staff extends Model
     {
         $date = $date ?: now();
         $dayName = strtolower($date->format('l'));
-        
+
         $workDays = $this->work_days ?: $this->defaultWorkDays;
         $isWorkDay = in_array($dayName, $workDays);
-        
+
         return [
             'is_working' => $isWorkDay,
             'start_time' => $isWorkDay ? $this->work_start_time : null,
@@ -193,7 +188,7 @@ class Staff extends Model
      */
     public function isAvailable(Carbon $startTime, Carbon $endTime, ?int $excludeAppointmentId = null): bool
     {
-        if (!$this->is_active) {
+        if (!$this->active) {
             return false;
         }
 
@@ -205,10 +200,10 @@ class Staff extends Model
 
         $workStart = Carbon::parse($schedule['start_time']);
         $workEnd = Carbon::parse($schedule['end_time']);
-        
+
         $appointmentStart = $startTime->copy()->setDate($workStart->year, $workStart->month, $workStart->day);
         $appointmentEnd = $endTime->copy()->setDate($workEnd->year, $workEnd->month, $workEnd->day);
-        
+
         if ($appointmentStart->lt($workStart) || $appointmentEnd->gt($workEnd)) {
             return false;
         }
@@ -261,14 +256,14 @@ class Staff extends Model
 
         while ($currentDate->lte($endDate)) {
             $schedule = $this->getScheduleForDate($currentDate);
-            
+
             if ($schedule['is_working']) {
                 $startTime = Carbon::parse($schedule['start_time']);
                 $endTime = Carbon::parse($schedule['end_time']);
-                
+
                 $slots = [];
                 $currentSlot = $startTime->copy();
-                
+
                 while ($currentSlot->addMinutes($intervalMinutes)->lte($endTime)) {
                     $slotEnd = $currentSlot->copy()->addMinutes($intervalMinutes);
                     $slots[] = [
@@ -278,7 +273,7 @@ class Staff extends Model
                     ];
                     $currentSlot = $slotEnd->copy();
                 }
-                
+
                 $availability[$currentDate->format('Y-m-d')] = [
                     'date' => $currentDate->format('Y-m-d'),
                     'day_name' => $currentDate->format('l'),
@@ -293,10 +288,10 @@ class Staff extends Model
                     'slots' => [],
                 ];
             }
-            
+
             $currentDate->addDay();
         }
-        
+
         return $availability;
     }
 
@@ -308,7 +303,7 @@ class Staff extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('active', true);
     }
 
     /**
@@ -324,6 +319,6 @@ class Staff extends Model
             $q->where('service_id', $serviceId);
         });
     }
-    
+
     // Relationship methods are defined above with proper return type hints
 }
