@@ -57,6 +57,7 @@ class StaffController extends Controller
             'work_start_time' => 'nullable|date_format:H:i',
             'work_end_time' => 'nullable|date_format:H:i|after:work_start_time',
             'commission_rate' => 'nullable|numeric|min:0|max:100',
+            'employee.hourly_rate' => 'nullable|numeric|min:0|required_if:is_employee,on',
         ]);
 
         DB::beginTransaction();
@@ -99,6 +100,20 @@ class StaffController extends Controller
                 'languages' => $request->languages,
                 'notes' => $request->notes,
             ]);
+            
+            // Create employee record if is_employee is checked
+            if ($request->has('is_employee')) {
+                $staff->employee()->create([
+                    'user_id' => $user->id,
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'position' => $request->position,
+                    'hourly_rate' => $request->input('employee.hourly_rate'),
+                    'is_active' => $request->has('active'),
+                ]);
+            }
 
             DB::commit();
 
@@ -165,6 +180,7 @@ class StaffController extends Controller
             'work_start_time' => 'nullable|date_format:H:i',
             'work_end_time' => 'nullable|date_format:H:i|after:work_start_time',
             'commission_rate' => 'nullable|numeric|min:0|max:100',
+            'employee.hourly_rate' => 'nullable|numeric|min:0|required_if:is_employee,on',
         ]);
 
         DB::beginTransaction();
@@ -214,6 +230,33 @@ class StaffController extends Controller
                 'languages' => $request->languages,
                 'notes' => $request->notes,
             ]);
+            
+            // Handle employee record based on is_employee checkbox
+            if ($request->has('is_employee')) {
+                // Create or update employee record
+                if ($staff->employee) {
+                    // Update existing employee record
+                    $staff->employee->update([
+                        'hourly_rate' => $request->input('employee.hourly_rate'),
+                        'is_active' => $request->has('active'),
+                    ]);
+                } else {
+                    // Create new employee record
+                    $staff->employee()->create([
+                        'user_id' => $user->id,
+                        'first_name' => $request->first_name,
+                        'last_name' => $request->last_name,
+                        'email' => $request->email,
+                        'phone' => $request->phone,
+                        'position' => $request->position,
+                        'hourly_rate' => $request->input('employee.hourly_rate'),
+                        'is_active' => $request->has('active'),
+                    ]);
+                }
+            } else if ($staff->employee) {
+                // Remove employee record if exists and checkbox is unchecked
+                $staff->employee->delete();
+            }
 
             DB::commit();
 
