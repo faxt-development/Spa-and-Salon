@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+
 use App\Models\Appointment;
 use App\Services\AppointmentService;
 use App\Models\Client;
@@ -11,25 +13,224 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Policies\AppointmentPolicy;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class AppointmentController extends Controller
 {
+    /**
+     * Store a newly created appointment in storage.
+     */
+    protected $appointmentService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(AppointmentService $appointmentService)
+    {
+        $this->appointmentService = $appointmentService;
+
+        // Apply auth middleware to all methods except those specified
+        $this->middleware('auth');
+
+        // Apply role middleware to admin-only methods
+        $this->middleware('role:admin')->only([
+            'show', 'edit', 'update', 'destroy'
+        ]);
+    }
+    /**
+     * Display the specified appointment.
+     * Shows different views based on user role.
+     *
+     * @param string $id
+     * @return \Illuminate\View\View
+     */
+    public function show(string $id)
+    {
+        // Eager load all necessary relationships
+        $appointment = Appointment::with([
+            'client',
+            'staff',
+            'services',
+            'products',
+            'payments',
+            'transactions'
+        ])->findOrFail($id);
+
+        // Authorization check
+        $this->authorize('view', $appointment);
+
+        // Determine which view to show based on user role
+        if (auth()->check() && auth()->user()->hasRole('admin')) {
+            return view('admin.appointments.show', compact('appointment'));
+        }
+
+        // For non-admin users (staff or clients)
+        return view('appointments.show', compact('appointment'));
+    }
+
+    /**
+     * Update the specified appointment in storage.
+     * Handles both admin and non-admin updates with appropriate validation.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  string  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(Request $request, string $id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        // Authorization check
+        $this->authorize('update', $appointment);
+
+        // Common validation rules
+        $rules = [
+            'client_id' => 'required|exists:clients,id',
+            'staff_id' => 'required|exists:staff,id',
+            'status' => 'required|in:scheduled,confirmed,completed,cancelled,no_show',
+            'notes' => 'nullable|string',
+            'service_ids' => 'required|array',
+            'service_ids.*' => 'exists:services,id',
+        ];
+
+        // Add time validation based on input format
+        if ($request->has('date') && $request->has('start_time') && $request->has('end_time')) {
+            // Handle form with separate date and time fields
+            $rules['date'] = 'required|date';
+            $rules['start_time'] = 'required|string';
+            $rules['end_time'] = 'required|string';
+        } else {
+            // Handle form with datetime fields
+            $rules['start_time'] = 'required|date';
+            $rules['end_time'] = 'required|date|after:start_time';
+        }
+
+        // Validate the request
+        $validated = $request->validate($rules);
+
+        DB::beginTransaction();
+
+        try {
+            // Format start and end times based on input format
+            if (isset($validated['date'])) {
+                $startDateTime = Carbon::parse($validated['date'] . ' ' . $validated['start_time']);
+                $endDateTime = Carbon::parse($validated['date'] . ' ' . $validated['end_time']);
+            } else {
+                $startDateTime = Carbon::parse($validated['start_time']);
+                $endDateTime = Carbon::parse($validated['end_time']);
+            }
+
+            // Get services and calculate total price
+            $services = Service::whereIn('id', $validated['service_ids'])->get();
+            $totalPrice = $services->sum('price');
+
+            // Prepare update data
+            $updateData = [
+                'client_id' => $validated['client_id'],
+                'staff_id' => $validated['staff_id'],
+                'start_time' => $startDateTime,
+                'end_time' => $endDateTime,
+                'status' => $validated['status'],
+                'notes' => $validated['notes'] ?? null,
+                'total_price' => $totalPrice,
+            ];
+
+            // Update the appointment
+            $appointment->update($updateData);
+
+            // Update services
+            $appointment->services()->detach();
+            foreach ($services as $service) {
+                $appointment->services()->attach($service->id, [
+                    'price' => $service->price,
+                    'duration' => $service->duration
+                ]);
+            }
+
+            DB::commit();
+
+            // Determine redirect route based on user role
+            $route = auth()->user()->hasRole('admin')
+                ? 'admin.appointments.show'
+                : 'web.appointments.show';
+
+            return redirect()->route($route, $appointment->id)
+                ->with('success', 'Appointment updated successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Failed to update appointment: ' . $e->getMessage());
+
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update appointment. Please try again.']);
+        }
+
+        // Sync services
+        $appointment->services()->sync($request->services);
+
+        return redirect()->route('admin.appointments.show', $appointment->id)
+            ->with('success', 'Appointment updated successfully');
+    }
+
+
+    /**
+     * Remove the specified appointment from storage.
+     * Handles both admin and non-admin deletions with proper authorization.
+     *
+     * @param string $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(string $id)
+    {
+        $appointment = Appointment::findOrFail($id);
+
+        // Authorization check
+        $this->authorize('delete', $appointment);
+
+        // Additional validation for non-admin users
+        if (!auth()->user()->hasRole('admin') && $appointment->status === 'completed') {
+            return back()->withErrors(['error' => 'Completed appointments cannot be deleted.']);
+        }
+
+        try {
+            $appointment->delete();
+
+            // Determine redirect route based on user role
+            $route = auth()->user()->hasRole('admin')
+                ? 'admin.appointments.index'
+                : 'web.appointments.index';
+
+            return redirect()->route($route)
+                ->with('success', 'Appointment deleted successfully.');
+
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete appointment: ' . $e->getMessage());
+            return back()
+                ->withErrors(['error' => 'Failed to delete appointment. Please try again.']);
+        }
+    }
 
     /**
      * Display a listing of the appointments.
+     * Shows different views based on user role.
      */
     public function index()
     {
-        // Simplified authentication check
-        if (Auth::check()) {
-            $user = Auth::user();
-        } else {
-            Log::warning('AppointmentController@index: User is NOT authenticated', [
-                'session_id' => session()->getId()
-            ]);
+        // For admin users, show the admin appointments list
+        if (auth()->check() && auth()->user()->hasRole('admin')) {
+            $appointments = Appointment::with(['client', 'staff', 'services'])
+                ->latest()
+                ->paginate(15);
+
+            return view('admin.appointments.index', compact('appointments'));
         }
 
+        // For non-admin users, show the appointment booking form
         $staff = Staff::all();
         return view('appointments.index', compact('staff'));
     }
@@ -53,15 +254,6 @@ class AppointmentController extends Controller
         return view('appointments.create', compact('clients', 'staff', 'services', 'isClient'));
     }
 
-    /**
-     * Store a newly created appointment in storage.
-     */
-    protected $appointmentService;
-
-    public function __construct(AppointmentService $appointmentService)
-    {
-        $this->appointmentService = $appointmentService;
-    }
 
     public function store(Request $request)
     {
@@ -150,107 +342,37 @@ class AppointmentController extends Controller
     }
 
     /**
-     * Display the specified appointment.
-     */
-    public function show(string $id)
-    {
-        $appointment = Appointment::with(['client', 'staff', 'services', 'products', 'payments'])
-            ->findOrFail($id);
-
-        return view('appointments.show', compact('appointment'));
-    }
-
-    /**
      * Show the form for editing the specified appointment.
+     * Shows different edit forms based on user role.
+     *
+     * @param string $id
+     * @return \Illuminate\View\View
      */
     public function edit(string $id)
     {
         $appointment = Appointment::with(['client', 'staff', 'services'])->findOrFail($id);
+
+        // Authorization check
+        $this->authorize('update', $appointment);
+
+        // Common data for both views
         $clients = Client::orderBy('last_name')->get();
-        $staff = Staff::orderBy('last_name')->get();
         $services = Service::orderBy('name')->get();
+
+        // For admin users, show the admin edit form with all staff
+        if (auth()->check() && auth()->user()->hasRole('admin')) {
+            $staff = Staff::orderBy('last_name')->get();
+            return view('admin.appointments.edit', compact('appointment', 'clients', 'staff', 'services'));
+        }
+
+        // For non-admin users (staff), only show staff members that are active
+        $staff = Staff::where('is_active', true)
+            ->orderBy('last_name')
+            ->get();
 
         return view('appointments.edit', compact('appointment', 'clients', 'staff', 'services'));
     }
 
-    /**
-     * Update the specified appointment in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'staff_id' => 'required|exists:staff,id',
-            'date' => 'required|date',
-            'start_time' => 'required|string',
-            'end_time' => 'required|string',
-            'service_ids' => 'required|array',
-            'service_ids.*' => 'exists:services,id',
-            'status' => 'required|in:scheduled,confirmed,completed,cancelled,no_show',
-            'notes' => 'nullable|string',
-        ]);
-
-        $appointment = Appointment::findOrFail($id);
-
-        DB::beginTransaction();
-
-        try {
-            // Format start and end times
-            $startDateTime = Carbon::parse($request->date . ' ' . $request->start_time);
-            $endDateTime = Carbon::parse($request->date . ' ' . $request->end_time);
-
-            // Calculate total price based on selected services
-            $services = Service::whereIn('id', $request->service_ids)->get();
-            $totalPrice = $services->sum('price');
-
-            // Update the appointment
-            $appointment->update([
-                'client_id' => $request->client_id,
-                'staff_id' => $request->staff_id,
-                'start_time' => $startDateTime,
-                'end_time' => $endDateTime,
-                'status' => $request->status,
-                'notes' => $request->notes,
-                'total_price' => $totalPrice,
-            ]);
-
-            // Update services
-            $appointment->services()->detach();
-            foreach ($services as $service) {
-                $appointment->services()->attach($service->id, [
-                    'price' => $service->price,
-                    'duration' => $service->duration
-                ]);
-            }
-
-            DB::commit();
-
-            return redirect()->route('web.appointments.show', $appointment->id)
-                ->with('success', 'Appointment updated successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-
-            return back()->withInput()->withErrors(['error' => 'Failed to update appointment: ' . $e->getMessage()]);
-        }
-    }
-
-    /**
-     * Remove the specified appointment from storage.
-     */
-    public function destroy(string $id)
-    {
-        $appointment = Appointment::findOrFail($id);
-
-        // Check if appointment can be deleted (e.g., not completed)
-        if ($appointment->status === 'completed') {
-            return back()->withErrors(['error' => 'Completed appointments cannot be deleted.']);
-        }
-
-        $appointment->delete();
-
-        return redirect()->route('web.appointments.index')
-            ->with('success', 'Appointment deleted successfully.');
-    }
 
     /**
      * Cancel the specified appointment.

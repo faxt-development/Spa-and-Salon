@@ -59,13 +59,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
     Route::get('/dashboard/todays-schedule', [\App\Http\Controllers\Admin\DashboardController::class, 'getTodaysSchedule'])->name('dashboard.todays-schedule');
     Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('dashboard.alerts');
     
-    // Appointments routes
+    // Appointments routes - using consolidated AppointmentController
     Route::prefix('appointments')->name('appointments.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\Admin\AppointmentController::class, 'index'])->name('index');
-        Route::get('/{appointment}', [\App\Http\Controllers\Admin\AppointmentController::class, 'show'])->name('show');
-        Route::get('/{appointment}/edit', [\App\Http\Controllers\Admin\AppointmentController::class, 'edit'])->name('edit');
-        Route::put('/{appointment}', [\App\Http\Controllers\Admin\AppointmentController::class, 'update'])->name('update');
-        Route::delete('/{appointment}', [\App\Http\Controllers\Admin\AppointmentController::class, 'destroy'])->name('destroy');
+        Route::get('/', [\App\Http\Controllers\AppointmentController::class, 'index'])->name('index');
+        Route::get('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'show'])->name('show');
+        Route::get('/{appointment}/edit', [\App\Http\Controllers\AppointmentController::class, 'edit'])->name('edit');
+        Route::put('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'update'])->name('update');
+        Route::delete('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'destroy'])->name('destroy');
     });
 });
 
@@ -76,6 +76,8 @@ Route::middleware(['auth:web'])->group(function () {
     // Appointment routes
     Route::post('/appointments/{appointment}/complete', [\App\Http\Controllers\AppointmentController::class, 'complete'])
         ->name('web.appointments.complete');
+        
+    // Public appointment booking routes can be added here without admin middleware
 
     // Gift card history for authenticated users
     Route::get('/gift-cards/history-user', [GiftCardWebController::class, 'history'])
