@@ -74,6 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Dashboard statistics
     Route::get('/dashboard/appointments/stats', [AppointmentController::class, 'getTodaysAppointmentStats']);
     Route::get('/dashboard/staff/stats', [DashboardController::class, 'getStaffStats']);
+    Route::get('/dashboard/revenue/stats', [DashboardController::class, 'getRevenueStats']);
 
     // Gift Card Management
     Route::apiResource('gift-cards', \App\Http\Controllers\Api\GiftCardController::class)->except(['show', 'store']);
