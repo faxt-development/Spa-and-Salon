@@ -63,32 +63,32 @@ class DashboardController extends Controller
         try {
             // Get today's date at 00:00:00
             $today = now()->startOfDay();
-            
+
             // Calculate today's revenue by summing all completed payments for today
             $todayRevenue = \App\Models\Payment::where('status', 'completed')
-                ->whereDate('payment_date', $today)
+                ->whereDate('created_at', $today)
                 ->sum('amount');
-            
+
             // Define daily revenue target (in a real app, this might come from a settings table)
             $dailyTarget = 1500.00;
-            
+
             // Calculate target percentage (capped at 100%)
-            $targetPercentage = $dailyTarget > 0 
-                ? min(round(($todayRevenue / $dailyTarget) * 100), 100) 
+            $targetPercentage = $dailyTarget > 0
+                ? min(round(($todayRevenue / $dailyTarget) * 100), 100)
                 : 0;
-                
+
             // Check if target is reached
             $targetReached = $todayRevenue >= $dailyTarget;
-            
+
             return response()->json([
                 'today_revenue' => (float) number_format($todayRevenue, 2, '.', ''),
                 'target_percentage' => (int) $targetPercentage,
                 'target_reached' => $targetReached
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Error fetching revenue stats: ' . $e->getMessage());
-            
+
             // Return default values in case of error
             return response()->json([
                 'today_revenue' => 0,

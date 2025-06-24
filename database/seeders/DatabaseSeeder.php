@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ServiceSeeder::class,
             StaffSeeder::class,
             AppointmentSeeder::class,
+            SettingsTableSeeder::class,
         ]);
 
         // Create admin user

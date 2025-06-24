@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
 {
-    use SoftDeletes;
+    //use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -79,7 +79,7 @@ class Payment extends Model
     {
         return $this->belongsTo(Appointment::class);
     }
-    
+
     /**
      * Get the order that owns the payment.
      */
@@ -135,8 +135,8 @@ class Payment extends Model
      */
     public function isRefundable(): bool
     {
-        return $this->status === self::STATUS_COMPLETED && 
-               !$this->is_refunded && 
+        return $this->status === self::STATUS_COMPLETED &&
+               !$this->is_refunded &&
                $this->amount > 0;
     }
 
