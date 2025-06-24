@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
@@ -72,7 +73,8 @@ Route::post('/stripe/webhook', [\App\Http\Controllers\Api\StripeWebhookControlle
 Route::middleware('auth:sanctum')->group(function () {
     // Dashboard statistics
     Route::get('/dashboard/appointments/stats', [AppointmentController::class, 'getTodaysAppointmentStats']);
-    
+    Route::get('/dashboard/staff/stats', [DashboardController::class, 'getStaffStats']);
+
     // Gift Card Management
     Route::apiResource('gift-cards', \App\Http\Controllers\Api\GiftCardController::class)->except(['show', 'store']);
     Route::post('/gift-cards/{code}/redeem', [\App\Http\Controllers\Api\GiftCardController::class, 'redeem']);

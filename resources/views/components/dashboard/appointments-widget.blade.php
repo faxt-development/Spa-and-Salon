@@ -68,8 +68,6 @@ function appointmentsWidget() {
             })
             .then(response => {
                 if (!response.ok) {
-                //log the response
-                console.log(response);
                     throw new Error('Failed to fetch appointment statistics');
                 }
                 return response.json();
