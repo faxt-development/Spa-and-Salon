@@ -70,6 +70,9 @@ Route::post('/stripe/webhook', [\App\Http\Controllers\Api\StripeWebhookControlle
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
+    // Dashboard statistics
+    Route::get('/dashboard/appointments/stats', [AppointmentController::class, 'getTodaysAppointmentStats']);
+    
     // Gift Card Management
     Route::apiResource('gift-cards', \App\Http\Controllers\Api\GiftCardController::class)->except(['show', 'store']);
     Route::post('/gift-cards/{code}/redeem', [\App\Http\Controllers\Api\GiftCardController::class, 'redeem']);

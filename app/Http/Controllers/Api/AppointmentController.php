@@ -12,6 +12,7 @@ use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
 {
@@ -26,21 +27,70 @@ class AppointmentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
+    /**
+     * Get today's appointment statistics for dashboard
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getTodaysAppointmentStats()
+    {
+        try {
+            $today = Carbon::today();
+            $yesterday = Carbon::yesterday();
+
+            // Get today's appointments count
+            $todaysAppointments = Appointment::whereDate('start_time', $today)
+                ->whereIn('status', ['scheduled', 'confirmed'])
+                ->count();
+
+            // Get yesterday's appointments count
+            $yesterdaysAppointments = Appointment::whereDate('start_time', $yesterday)
+                ->whereIn('status', ['scheduled', 'confirmed'])
+                ->count();
+
+            // Calculate the difference
+            $difference = $todaysAppointments - $yesterdaysAppointments;
+
+            return response()->json([
+                'today_count' => $todaysAppointments,
+                'yesterday_count' => $yesterdaysAppointments,
+                'difference' => $difference,
+                'is_positive' => $difference >= 0
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error fetching appointment stats: ' . $e->getMessage());
+            return response()->json([
+                'today_count' => 0,
+                'yesterday_count' => 0,
+                'difference' => 0,
+                'is_positive' => true,
+                'error' => 'Failed to fetch appointment statistics'
+            ], 500);
+        }
+    }
+
+    /**
+     * Get upcoming appointments for the authenticated client
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function clientAppointments(Request $request)
     {
         // Get the authenticated user
         $user = $request->user();
-        
+
         // Get the client associated with the user
         $client = Client::where('user_id', $user->id)->first();
-        
+
         if (!$client) {
             return response()->json([
                 'message' => 'Client not found for this user',
                 'appointments' => []
             ], 200);
         }
-        
+
         // Get future appointments for the client
         $appointments = Appointment::with(['staff', 'services'])
             ->where('client_id', $client->id)
@@ -57,12 +107,12 @@ class AppointmentController extends Controller
                     'notes' => $appointment->notes,
                 ];
             });
-        
+
         return response()->json([
             'appointments' => $appointments
         ]);
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -72,7 +122,7 @@ class AppointmentController extends Controller
     {
         info('appointment');
         $query = Appointment::with(['client', 'staff', 'services']);
-        
+
         // Filter by date range if provided
         if ($request->has('start_date') && $request->has('end_date')) {
             $query->whereBetween('start_time', [
@@ -80,24 +130,24 @@ class AppointmentController extends Controller
                 Carbon::parse($request->end_date)->endOfDay()
             ]);
         }
-        
+
         // Filter by staff if provided
         if ($request->has('staff_id')) {
             $query->where('staff_id', $request->staff_id);
         }
-        
+
         // Filter by client if provided
         if ($request->has('client_id')) {
             $query->where('client_id', $request->client_id);
         }
-        
+
         // Filter by status if provided
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
-        
+
         $appointments = $query->orderBy('start_time')->paginate(15);
-        
+
         return response()->json([
             'success' => true,
             'data' => $appointments
@@ -206,7 +256,7 @@ class AppointmentController extends Controller
     public function update(Request $request, string $id)
     {
         $appointment = Appointment::findOrFail($id);
-        
+
         $validator = Validator::make($request->all(), [
             'client_id' => 'sometimes|required|exists:clients,id',
             'staff_id' => 'sometimes|required|exists:staff,id',
@@ -230,7 +280,7 @@ class AppointmentController extends Controller
             $staffId = $request->staff_id ?? $appointment->staff_id;
             $startTime = $request->start_time ?? $appointment->start_time;
             $endTime = $request->end_time ?? $appointment->end_time;
-            
+
             $isAvailable = $this->checkStaffAvailability(
                 $staffId,
                 $startTime,
@@ -258,10 +308,10 @@ class AppointmentController extends Controller
             // Update services if provided
             if ($request->has('services')) {
                 $services = Service::whereIn('id', array_column($request->services, 'id'))->get();
-                
+
                 // Detach existing services
                 $appointment->services()->detach();
-                
+
                 // Attach new services
                 foreach ($services as $service) {
                     $appointment->services()->attach($service->id, [
@@ -269,7 +319,7 @@ class AppointmentController extends Controller
                         'duration' => $service->duration
                     ]);
                 }
-                
+
                 // Recalculate total price
                 $appointment->total_price = $services->sum('price');
                 $appointment->save();
@@ -284,7 +334,7 @@ class AppointmentController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update appointment',
@@ -302,7 +352,7 @@ class AppointmentController extends Controller
     public function destroy(string $id)
     {
         $appointment = Appointment::findOrFail($id);
-        
+
         // Check if appointment can be deleted (e.g., not completed)
         if ($appointment->status === 'completed') {
             return response()->json([
@@ -310,15 +360,15 @@ class AppointmentController extends Controller
                 'message' => 'Completed appointments cannot be deleted.'
             ], 422);
         }
-        
+
         $appointment->delete();
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Appointment deleted successfully'
         ]);
     }
-    
+
     /**
      * Get appointments for calendar view by month.
      *
@@ -330,7 +380,7 @@ class AppointmentController extends Controller
     {
         $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
         $endDate = $startDate->copy()->endOfMonth();
-        
+
         $appointments = Appointment::with(['client', 'staff', 'services'])
             ->whereBetween('start_time', [$startDate, $endDate])
             ->get()
@@ -346,13 +396,13 @@ class AppointmentController extends Controller
                     'color' => $this->getStatusColor($appointment->status)
                 ];
             });
-        
+
         return response()->json([
             'success' => true,
             'data' => $appointments
         ]);
     }
-    
+
     /**
      * Cancel an appointment.
      *
@@ -372,9 +422,9 @@ class AppointmentController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-        
+
         $appointment = Appointment::findOrFail($id);
-        
+
         // Check if appointment can be cancelled
         if (in_array($appointment->status, ['completed', 'cancelled', 'no_show'])) {
             return response()->json([
@@ -382,19 +432,19 @@ class AppointmentController extends Controller
                 'message' => 'This appointment cannot be cancelled.'
             ], 422);
         }
-        
+
         $appointment->update([
             'status' => 'cancelled',
             'cancellation_reason' => $request->cancellation_reason
         ]);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Appointment cancelled successfully',
             'data' => $appointment
         ]);
     }
-    
+
     /**
      * Mark an appointment as completed.
      *
@@ -404,7 +454,7 @@ class AppointmentController extends Controller
     public function complete(string $id)
     {
         $appointment = Appointment::findOrFail($id);
-        
+
         // Check if appointment can be marked as completed
         if (in_array($appointment->status, ['completed', 'cancelled', 'no_show'])) {
             return response()->json([
@@ -412,24 +462,24 @@ class AppointmentController extends Controller
                 'message' => 'This appointment cannot be marked as completed.'
             ], 422);
         }
-        
+
         $appointment->update([
             'status' => 'completed',
             'last_visit' => now()
         ]);
-        
+
         // Update client's last visit date
         $appointment->client->update([
             'last_visit' => now()
         ]);
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Appointment marked as completed',
             'data' => $appointment
         ]);
     }
-    
+
     /**
      * Check if a staff member is available during a specific time slot.
      *
@@ -443,28 +493,28 @@ class AppointmentController extends Controller
     {
         $startTime = Carbon::parse($startTime);
         $endTime = Carbon::parse($endTime);
-        
+
         // Check if the staff member exists and is active
         $staff = Staff::find($staffId);
         if (!$staff || !$staff->active) {
             return false;
         }
-        
+
         // Check if the requested time is within the staff's working hours
         $dayOfWeek = $startTime->dayOfWeek;
         $workDays = $staff->work_days ?? [];
-        
+
         if (!in_array($dayOfWeek, $workDays)) {
             return false; // Staff doesn't work on this day
         }
-        
+
         $workStartTime = Carbon::parse($staff->work_start_time)->setDateFrom($startTime);
         $workEndTime = Carbon::parse($staff->work_end_time)->setDateFrom($startTime);
-        
+
         if ($startTime->lt($workStartTime) || $endTime->gt($workEndTime)) {
             return false; // Outside of working hours
         }
-        
+
         // Check for conflicting appointments
         $query = Appointment::where('staff_id', $staffId)
             ->where(function ($query) use ($startTime, $endTime) {
@@ -476,17 +526,17 @@ class AppointmentController extends Controller
                     });
             })
             ->whereNotIn('status', ['cancelled', 'no_show']);
-        
+
         // Exclude the current appointment if updating
         if ($excludeAppointmentId) {
             $query->where('id', '!=', $excludeAppointmentId);
         }
-        
+
         $conflictingAppointments = $query->count();
-        
+
         return $conflictingAppointments === 0;
     }
-    
+
     /**
      * Get color code for appointment status.
      *
@@ -502,7 +552,7 @@ class AppointmentController extends Controller
             'cancelled' => '#F44336',  // Red
             'no_show' => '#FF9800'     // Orange
         ];
-        
+
         return $colors[$status] ?? '#3788d8';
     }
 }
