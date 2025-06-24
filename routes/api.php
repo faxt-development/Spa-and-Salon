@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\WalkInController;
 use App\Http\Controllers\Api\StaffController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProductController;
@@ -75,6 +76,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/appointments/stats', [AppointmentController::class, 'getTodaysAppointmentStats']);
     Route::get('/dashboard/staff/stats', [DashboardController::class, 'getStaffStats']);
     Route::get('/dashboard/revenue/stats', [DashboardController::class, 'getRevenueStats']);
+    Route::get('/dashboard/walk-ins/queue-stats', [WalkInController::class, 'getQueueStats']);
 
     // Gift Card Management
     Route::apiResource('gift-cards', \App\Http\Controllers\Api\GiftCardController::class)->except(['show', 'store']);
