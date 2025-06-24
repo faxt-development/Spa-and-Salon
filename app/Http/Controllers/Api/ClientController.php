@@ -16,7 +16,7 @@ class ClientController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('role:admin|staff');
+        //
     }
 
     /**

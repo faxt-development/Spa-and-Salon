@@ -35,7 +35,7 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Tax Reports</h1>
+    <h1 class="mt-4">Sales Reports</h1>
     
     <!-- Loading Overlay -->
     <div x-data="{ isLoading: false }" 
@@ -146,9 +146,9 @@
             x-init="
                 // Chart initialization will be handled by the renderChart function
                 window.renderChart = function(data) {
-                    const ctx = document.getElementById('taxChart');
-                    if (window.taxChart) {
-                        window.taxChart.destroy();
+                    const ctx = document.getElementById(''salesChart');
+                    if (window.'salesChart) {
+                        window.'salesChart.destroy();
                     }
                     
                     if (!data || !data.results || data.results.length === 0) {
@@ -161,7 +161,7 @@
                     const labels = data.results.map(item => item.period);
                     const taxData = data.results.map(item => item.total_tax_amount);
                     
-                    window.taxChart = new Chart(ctx, {
+                    window.'salesChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: labels,
@@ -248,15 +248,6 @@
                         <input type="text" class="form-control" id="endDate" x-model="endDate" placeholder="End Date">
                     </div>
                     
-                    <div class="col-md-3">
-                        <label for="taxRate" class="form-label">Tax Rate</label>
-                        <select class="form-select" id="taxRate" x-model="taxRateId" @change="loadReport()">
-                            <option value="">All Tax Rates</option>
-                            @foreach($taxRates as $rate)
-                                <option value="{{ $rate->id }}">{{ $rate->name }} ({{ $rate->rate }}%)</option>
-                            @endforeach
-                        </select>
-                    </div>
                     
                     <div class="col-md-3" x-show="reportType === 'summary'">
                         <label for="groupBy" class="form-label">Group By</label>
@@ -266,7 +257,6 @@
                             <option value="month" selected>Monthly</option>
                             <option value="quarter">Quarterly</option>
                             <option value="year">Yearly</option>
-                            <option value="tax_rate">Tax Rate</option>
                         </select>
                     </div>
                     
@@ -325,38 +315,6 @@
         </div>
         
         <div class="col-xl-3 col-md-6">
-            <div class="card bg-success text-white summary-card h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase mb-1">Total Tax Collected</h6>
-                            <h2 class="mb-0">$<span x-text="new Intl.NumberFormat('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}).format(totalTaxAmount)"></span></h2>
-                        </div>
-                        <div class="icon-shape bg-white text-success rounded-circle p-3">
-                            <i class="fas fa-receipt fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6">
-            <div class="card bg-warning text-white summary-card h-100">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="text-uppercase mb-1">Avg. Tax Rate</h6>
-                            <h2 class="mb-0"><span x-text="averageTaxRate"></span>%</h2>
-                        </div>
-                        <div class="icon-shape bg-white text-warning rounded-circle p-3">
-                            <i class="fas fa-percentage fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-xl-3 col-md-6">
             <div class="card bg-info text-white summary-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
@@ -377,11 +335,11 @@
     <div class="card mb-4" x-show="reportType === 'summary'">
         <div class="card-header">
             <i class="fas fa-chart-bar me-1"></i>
-            Tax Collection Trend
+            Sales Trend
         </div>
         <div class="card-body">
             <div class="chart-container">
-                <canvas id="taxChart"></canvas>
+                <canvas id="salesChart"></canvas>
             </div>
         </div>
     </div>
@@ -453,7 +411,6 @@
             Alpine.store('filters', {
                 startDate: '{{ $defaultStartDate }}',
                 endDate: '{{ $defaultEndDate }}',
-                taxRateId: '',
                 reportType: 'summary',
                 groupBy: 'month',
                 
@@ -461,7 +418,6 @@
                     const params = new URLSearchParams();
                     params.append('start_date', this.startDate);
                     params.append('end_date', this.endDate);
-                    if (this.taxRateId) params.append('tax_rate_id', this.taxRateId);
                     if (this.reportType === 'summary') {
                         params.append('group_by', this.groupBy);
                     }

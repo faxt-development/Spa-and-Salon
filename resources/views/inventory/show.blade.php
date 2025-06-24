@@ -6,7 +6,7 @@
         <!-- Header with Back and Action Buttons -->
         <div class="flex justify-between items-center mb-6">
             <div class="flex items-center">
-                <a href="{{ route('inventory.products.index') }}" 
+                <a href="{{ route('admin.inventory.products.index') }}" 
                    class="text-gray-500 hover:text-gray-700 mr-4">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />

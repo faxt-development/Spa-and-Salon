@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\TaxRate;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class ReportController extends Controller
 {
@@ -27,6 +26,23 @@ class ReportController extends Controller
 
         return view('admin.reports.tax', [
             'taxRates' => $taxRates,
+            'defaultStartDate' => $defaultStartDate,
+            'defaultEndDate' => $defaultEndDate,
+        ]);
+    }
+
+    /**
+     * Display the sales reports page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function sales()
+    {
+        // Default date range (last 30 days)
+        $defaultStartDate = now()->subDays(30)->format('Y-m-d');
+        $defaultEndDate = now()->format('Y-m-d');
+
+        return view('admin.reports.sales', [
             'defaultStartDate' => $defaultStartDate,
             'defaultEndDate' => $defaultEndDate,
         ]);

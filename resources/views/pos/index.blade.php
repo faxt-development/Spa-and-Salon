@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
 @push('styles')
 <!-- Include the tax calculator styles -->

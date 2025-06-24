@@ -7,6 +7,7 @@ use App\Http\Controllers\InventoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GiftCardWebController;
 use App\Http\Controllers\Inventory\CategoryController;
+use App\Http\Controllers\Inventory\ProductController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\EmailCampaignController;
 use App\Http\Controllers\EmailTrackingController;
@@ -28,6 +29,10 @@ Route::controller(GiftCardWebController::class)->group(function () {
     Route::get('/gift-cards/purchase', 'purchaseForm')
         ->middleware('throttle:gift-card-purchase')
         ->name('gift-cards.purchase');
+
+    Route::get('/gift-cards/history-user', 'historyUser')
+        ->middleware('auth:web')
+        ->name('gift-cards.history-user');
 
     Route::get('/gift-cards/history', 'history')
         ->middleware('auth:web')
@@ -53,8 +58,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Gift card history for authenticated users
-    Route::get('/gift-cards/history', [GiftCardWebController::class, 'history'])
-        ->name('gift-cards.history');
+    Route::get('/gift-cards/history-user', [GiftCardWebController::class, 'history'])
+        ->name('gift-cards.history-user');
 
     // Admin routes
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -72,7 +77,7 @@ Route::middleware(['auth:web'])->group(function () {
             ->name('categories.reorder');
         Route::get('/categories/tree', [CategoryController::class, 'tree'])
             ->name('categories.tree');
-
+        
         // Payroll Routes
         Route::prefix('payroll')->name('payroll.')->group(function () {
             Route::get('/records', [\App\Http\Controllers\PayrollController::class, 'payrollIndex'])->name('records.index');
@@ -88,6 +93,37 @@ Route::middleware(['auth:web'])->group(function () {
             // Reports
             Route::get('/reports/tax', [\App\Http\Controllers\Admin\ReportController::class, 'tax'])->name('reports.tax');
         });
+   
+   
+        Route::get('/reports/sales', [\App\Http\Controllers\Admin\ReportController::class, 'sales'])->name('reports.sales');
+   
+
+          // Email Campaign Routes
+    Route::resource('email-campaigns', EmailCampaignController::class);
+
+    // Email Campaign Actions
+    Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
+        Route::post('/{campaign}/send', [EmailCampaignController::class, 'send'])->name('send');
+        Route::post('/{campaign}/cancel', [EmailCampaignController::class, 'cancel'])->name('cancel');
+        Route::post('/{campaign}/duplicate', [EmailCampaignController::class, 'duplicate'])->name('duplicate');
+    });
+
+    // Email Campaign Additional Actions
+    Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
+        Route::get('/{emailCampaign}/preview', [EmailCampaignController::class, 'preview'])->name('preview');
+        Route::get('/{emailCampaign}/export', [EmailCampaignController::class, 'export'])->name('export');
+    });
+
+    // Email Tracking Routes (public routes that don't require authentication)
+    Route::prefix('email')->name('email.')->group(function () {
+        Route::get('/track/open/{token}.gif', [EmailTrackingController::class, 'trackOpen'])->name('track.open');
+        Route::get('/track/click/{token}/{url}', [EmailTrackingController::class, 'trackClick'])->name('track.click');
+        Route::get('/unsubscribe/{token}', [EmailTrackingController::class, 'unsubscribe'])->name('unsubscribe');
+        Route::post('/resubscribe/{token}', [EmailTrackingController::class, 'resubscribe'])->name('resubscribe');
+        Route::get('/preferences/{token}', [EmailTrackingController::class, 'preferences'])->name('preferences');
+        Route::post('/preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])->name('preferences.update');
+    });
+
     });
 
         // POS Routes
@@ -98,6 +134,7 @@ Route::middleware(['auth:web'])->group(function () {
 
         // API endpoints for POS
         Route::get('/products', [PosController::class, 'getProducts']);
+        Route::post('/process-payment', [PosController::class, 'processPayment'])->name('process-payment');
         Route::get('/gift-cards/purchase', [GiftCardWebController::class, 'purchaseForm'])->name('gift-cards.purchase');
       });
 
@@ -113,6 +150,8 @@ Route::middleware(['auth:web'])->group(function () {
 
         // Product resource routes
         Route::resource('products', InventoryController::class)->except(['index', 'show']);
+        Route::get('/products/index', [ProductController::class, 'index'])
+                    ->name('products.index');
 
         // Product details and actions
         Route::get('products/{product}/details', [InventoryController::class, 'show'])->name('products.details');
@@ -144,31 +183,15 @@ Route::middleware(['auth:web'])->group(function () {
         Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
             ;
     });
-    // Email Campaign Routes
-    Route::resource('email-campaigns', EmailCampaignController::class);
+  
 
-    // Email Campaign Actions
-    Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
-        Route::post('/{campaign}/send', [EmailCampaignController::class, 'send'])->name('send');
-        Route::post('/{campaign}/cancel', [EmailCampaignController::class, 'cancel'])->name('cancel');
-        Route::post('/{campaign}/duplicate', [EmailCampaignController::class, 'duplicate'])->name('duplicate');
+    // Client routes
+    Route::middleware(['auth:web', 'role:admin|staff'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
+        // Add more client routes here
     });
 
-    // Email Campaign Additional Actions
-    Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
-        Route::get('/{emailCampaign}/preview', [EmailCampaignController::class, 'preview'])->name('preview');
-        Route::get('/{emailCampaign}/export', [EmailCampaignController::class, 'export'])->name('export');
-    });
-
-    // Email Tracking Routes (public routes that don't require authentication)
-    Route::prefix('email')->name('email.')->group(function () {
-        Route::get('/track/open/{token}.gif', [EmailTrackingController::class, 'trackOpen'])->name('track.open');
-        Route::get('/track/click/{token}/{url}', [EmailTrackingController::class, 'trackClick'])->name('track.click');
-        Route::get('/unsubscribe/{token}', [EmailTrackingController::class, 'unsubscribe'])->name('unsubscribe');
-        Route::post('/resubscribe/{token}', [EmailTrackingController::class, 'resubscribe'])->name('resubscribe');
-        Route::get('/preferences/{token}', [EmailTrackingController::class, 'preferences'])->name('preferences');
-        Route::post('/preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])->name('preferences.update');
-    });
+    Route::middleware(['auth:web', 'role:admin'])->group(function () {
 
     // Email Marketing Dashboard
     Route::get('/email-marketing/dashboard', [EmailMarketingDashboardController::class, 'index'])->name('email-marketing.dashboard');
@@ -176,14 +199,7 @@ Route::middleware(['auth:web'])->group(function () {
     // Drip Campaign Routes
     Route::resource('drip-campaigns', DripCampaignController::class);
 
-    // Client routes
-    Route::middleware(['auth:web', 'role:client'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
-        // Add more client routes here
-    });
 
-    // Promotions routes
-    Route::middleware(['auth:web', 'role:admin'])->group(function () {
         Route::resource('promotions', PromotionController::class);
 
         // Additional promotion routes

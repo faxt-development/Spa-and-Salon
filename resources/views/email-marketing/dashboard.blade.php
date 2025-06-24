@@ -54,7 +54,9 @@
                     <div class="text-gray-500 text-sm font-medium mb-1">Total Campaigns</div>
                     <div class="text-3xl font-bold text-gray-800">{{ number_format($stats['campaigns']['total']) }}</div>
                     <div class="mt-2 text-sm text-gray-500">
-                        <span class="font-medium">{{ number_format($stats['campaigns']['active']) }}</span> active campaigns
+                        <span class="font-medium">{{ number_format($stats['campaigns']['scheduled']) }}</span> scheduled campaigns
+                        <span class="font-medium">{{ number_format($stats['campaigns']['sending']) }}</span> sending campaigns
+                        <span class="font-medium">{{ number_format($stats['campaigns']['sent']) }}</span> sent campaigns
                     </div>
                 </div>
 
@@ -97,7 +99,7 @@
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="text-lg font-medium text-gray-900">Recent Campaigns</h3>
-                        <a href="{{ route('email-campaigns.index') }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">View All</a>
+                        <a href="{{ route('admin.email-campaigns.index') }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">View All</a>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">

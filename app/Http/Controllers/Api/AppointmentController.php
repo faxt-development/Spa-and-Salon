@@ -70,6 +70,7 @@ class AppointmentController extends Controller
      */
     public function index(Request $request)
     {
+        info('appointment');
         $query = Appointment::with(['client', 'staff', 'services']);
         
         // Filter by date range if provided

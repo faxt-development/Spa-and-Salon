@@ -6,7 +6,6 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class InventoryController extends Controller
 {
@@ -36,7 +35,8 @@ class InventoryController extends Controller
         $categories = ProductCategory::select('id', 'name')->get();
         $suppliers = Supplier::select('id', 'name')->get();
 
-        return Inertia::render('Inventory/Index', [
+
+        return view('inventory.index', [
             'products' => $products,
             'filters' => request()->only(['search', 'category', 'stock_status']),
             'categories' => $categories,
@@ -49,7 +49,7 @@ class InventoryController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Inventory/Edit', [
+        return view('inventory.edit', [
             'categories' => ProductCategory::select('id', 'name')->get(),
             'suppliers' => Supplier::select('id', 'name')->get(),
         ]);
@@ -94,7 +94,7 @@ class InventoryController extends Controller
     {
         $product->load(['category', 'supplier', 'inventory']);
         
-        return Inertia::render('Inventory/Show', [
+        return view('inventory.show', [
             'product' => $product,
         ]);
     }
@@ -104,7 +104,7 @@ class InventoryController extends Controller
      */
     public function edit(Product $product)
     {
-        return Inertia::render('Inventory/Edit', [
+        return view('inventory.edit', [
             'product' => $product->load(['category', 'supplier']),
             'categories' => ProductCategory::select('id', 'name')->get(),
             'suppliers' => Supplier::select('id', 'name')->get(),

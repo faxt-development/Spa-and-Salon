@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
-@section('title', 'My Gift Card History')
+@section('title', 'Gift Cards History')
 
 @section('content')
 <div class="py-6">

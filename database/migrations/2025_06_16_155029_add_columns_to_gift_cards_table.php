@@ -24,6 +24,7 @@ return new class extends Migration
             $table->boolean('is_redeemed')->default(false);
             $table->dateTime('redeemed_at')->nullable();
             $table->foreignId('redeemed_by')->nullable()->constrained('users');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('notes')->nullable();
         });
     }

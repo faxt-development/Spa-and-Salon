@@ -44,7 +44,7 @@
                         @role('admin')
                         <!-- Staff Management Dropdown -->
                         <div class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150" x-data="{ open: false }" @keydown.escape="open = false" @click.away="open = false">
-                            <x-nav-link href="#" @click.prevent="open = !open"
+                            <x-nav-link href="{{ route('admin.staff.index') }}" @click.prevent="open = !open"
                                     @keydown.enter.prevent="open = !open"
                                     @keydown.space.prevent="open = !open"
                                     :active="request()->routeIs('admin.staff.*')">
@@ -85,7 +85,7 @@
 
                         <!-- Reports Dropdown -->
                         <div class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150" x-data="{ open: false }" @keydown.escape="open = false" @click.away="open = false">
-                            <x-nav-link href="#" @click.prevent="open = !open"
+                            <x-nav-link href="{{ route('admin.payroll.reports.tax') }}" @click.prevent="open = !open"
                                     @keydown.enter.prevent="open = !open"
                                     @keydown.space.prevent="open = !open"
                                     :active="request()->routeIs('admin.reports.*')">
@@ -114,10 +114,10 @@
                                     <x-dropdown-link href="{{ route('admin.payroll.reports.tax') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Tax Reports') }}
                                     </x-dropdown-link>
-                                    <x-dropdown-link href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                    <x-dropdown-link href="{{ route('admin.reports.sales') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Sales Reports') }}
                                     </x-dropdown-link>
-                                    <x-dropdown-link href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                    <x-dropdown-link href="{{ route('admin.payroll.reports.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Payroll Reports') }}
                                     </x-dropdown-link>
                                     <x-dropdown-link href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
@@ -129,7 +129,7 @@
 
                         <!-- Business Management Dropdown -->
                         <div class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150" x-data="{ open: false }" @keydown.escape="open = false" @click.away="open = false">
-                            <x-nav-link href="#" @click.prevent="open = !open"
+                            <x-nav-link href="/gift-cards/history" @click.prevent="open = !open"
                                     @keydown.enter.prevent="open = !open"
                                     @keydown.space.prevent="open = !open"
                                     :active="request()->routeIs('admin.business.*')">
@@ -155,7 +155,7 @@
                                  tabindex="-1"
                                  x-cloak>
                                 <div class="py-1" role="none">
-                                    <x-dropdown-link href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                    <x-dropdown-link href="{{ route('services') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Services') }}
                                     </x-dropdown-link>
                                     <x-dropdown-link href="{{ route('gift-cards.history') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
@@ -164,10 +164,8 @@
                                     <x-dropdown-link href="{{ route('promotions.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Promotions') }}
                                     </x-dropdown-link>
-                                    <x-dropdown-link href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
-                                        {{ __('Products') }}
-                                    </x-dropdown-link>
-                                    <x-dropdown-link href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                    
+                                    <x-dropdown-link href="{{ route('inventory.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Inventory') }}
                                     </x-dropdown-link>
                                     <x-dropdown-link href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
@@ -179,7 +177,7 @@
 
                         <!-- Email Marketing Dropdown -->
                         <div class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150" x-data="{ open: false }" @keydown.escape="open = false" @click.away="open = false">
-                            <x-nav-link href="#" @click.prevent="open = !open"
+                            <x-nav-link href="{{ route('email-marketing.dashboard') }}" @click.prevent="open = !open"
                                     @keydown.enter.prevent="open = !open"
                                     @keydown.space.prevent="open = !open"
                                     :active="request()->routeIs('email-marketing.*')">
@@ -205,7 +203,7 @@
                                  tabindex="-1"
                                  x-cloak>
                                 <div class="py-1" role="none">
-                                    <x-dropdown-link href="{{ route('email-campaigns.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                    <x-dropdown-link href="{{ route('admin.email-campaigns.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Campaigns') }}
                                     </x-dropdown-link>
                                     <x-dropdown-link href="{{ route('drip-campaigns.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">

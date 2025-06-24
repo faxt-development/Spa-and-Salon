@@ -136,6 +136,7 @@
                 meridiem: 'short'
             },
             events: function(info, successCallback, failureCallback) {
+           alert('calling api');
                 // Get filter values
                 const staffId = document.getElementById('staff').value;
                 const status = document.getElementById('status').value;

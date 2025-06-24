@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -68,5 +69,13 @@ class User extends Authenticatable
             'receive_special_offers' => 'boolean',
             'receive_product_updates' => 'boolean',
         ];
+    }
+
+     /**
+     * Get the products supplied by this supplier.
+     */
+    public function giftcards(): HasMany
+    {
+        return $this->hasMany(GiftCard::class);
     }
 }

@@ -1,0 +1,247 @@
+
+  GET|HEAD        / ...................................................................................... home
+  GET|HEAD        _dusk/login/{userId}/{guard?} .............. dusk.login › Laravel\Dusk › UserController@login
+  GET|HEAD        _dusk/logout/{guard?} .................... dusk.logout › Laravel\Dusk › UserController@logout
+  GET|HEAD        _dusk/user/{guard?} .......................... dusk.user › Laravel\Dusk › UserController@user
+  POST            admin/categories/reorder .... admin.categories.reorder › Inventory\CategoryController@reorder
+  GET|HEAD        admin/categories/tree ............. admin.categories.tree › Inventory\CategoryController@tree
+  GET|HEAD        admin/clients ............................ admin.clients.index › Admin\ClientController@index
+  POST            admin/clients ............................ admin.clients.store › Admin\ClientController@store
+  GET|HEAD        admin/clients/create ................... admin.clients.create › Admin\ClientController@create
+  GET|HEAD        admin/clients/{client} ..................... admin.clients.show › Admin\ClientController@show
+  PUT|PATCH       admin/clients/{client} ................. admin.clients.update › Admin\ClientController@update
+  DELETE          admin/clients/{client} ............... admin.clients.destroy › Admin\ClientController@destroy
+  GET|HEAD        admin/clients/{client}/edit ................ admin.clients.edit › Admin\ClientController@edit
+  GET|HEAD        admin/dashboard ................................. admin.dashboard › DashboardController@admin
+  GET|HEAD        admin/email-campaigns ........... admin.email-campaigns.index › EmailCampaignController@index
+  POST            admin/email-campaigns ........... admin.email-campaigns.store › EmailCampaignController@store
+  GET|HEAD        admin/email-campaigns/create .. admin.email-campaigns.create › EmailCampaignController@create
+  POST            admin/email-campaigns/{campaign}/cancel admin.email-campaigns.cancel › EmailCampaignControll…
+  POST            admin/email-campaigns/{campaign}/duplicate admin.email-campaigns.duplicate › EmailCampaignCo…
+  POST            admin/email-campaigns/{campaign}/send admin.email-campaigns.send › EmailCampaignController@s…
+  GET|HEAD        admin/email-campaigns/{emailCampaign}/export admin.email-campaigns.export › EmailCampaignCon…
+  GET|HEAD        admin/email-campaigns/{emailCampaign}/preview admin.email-campaigns.preview › EmailCampaignC…
+  GET|HEAD        admin/email-campaigns/{email_campaign} admin.email-campaigns.show › EmailCampaignController@…
+  PUT|PATCH       admin/email-campaigns/{email_campaign} admin.email-campaigns.update › EmailCampaignControlle…
+  DELETE          admin/email-campaigns/{email_campaign} admin.email-campaigns.destroy › EmailCampaignControll…
+  GET|HEAD        admin/email-campaigns/{email_campaign}/edit admin.email-campaigns.edit › EmailCampaignContro…
+  GET|HEAD        admin/email/preferences/{token} admin.email.preferences › EmailTrackingController@preferences
+  POST            admin/email/preferences/{token}/update admin.email.preferences.update › EmailTrackingControl…
+  POST            admin/email/resubscribe/{token} admin.email.resubscribe › EmailTrackingController@resubscribe
+  GET|HEAD        admin/email/track/click/{token}/{url} admin.email.track.click › EmailTrackingController@trac…
+  GET|HEAD        admin/email/track/open/{token}.gif admin.email.track.open › EmailTrackingController@trackOpen
+  GET|HEAD        admin/email/unsubscribe/{token} admin.email.unsubscribe › EmailTrackingController@unsubscribe
+  GET|HEAD        admin/payroll/employees ..... admin.payroll.employees.index › PayrollController@employeeIndex
+  GET|HEAD        admin/payroll/employees/create admin.payroll.employees.create › PayrollController@employeeCr…
+  GET|HEAD        admin/payroll/employees/{id}/edit admin.payroll.employees.edit › PayrollController@employeeE…
+  GET|HEAD        admin/payroll/records .......... admin.payroll.records.index › PayrollController@payrollIndex
+  GET|HEAD        admin/payroll/records/generate admin.payroll.records.generate › PayrollController@payrollGen…
+  GET|HEAD        admin/payroll/records/{id} ....... admin.payroll.records.show › PayrollController@payrollShow
+  GET|HEAD        admin/payroll/reports ........ admin.payroll.reports.index › PayrollController@payrollReports
+  GET|HEAD        admin/payroll/reports/tax ............ admin.payroll.reports.tax › Admin\ReportController@tax
+  GET|HEAD        admin/payroll/time-clock .. admin.payroll.time-clock.index › PayrollController@timeClockIndex
+  GET|HEAD        admin/payroll/time-clock/entry admin.payroll.time-clock.entry › PayrollController@timeClockE…
+  GET|HEAD        admin/reports/sales ...................... admin.reports.sales › Admin\ReportController@sales
+  POST            admin/roles ............................. admin.staff.roles.store › StaffController@storeRole
+  GET|HEAD        admin/roles-permissions ............. admin.staff.roles › StaffController@rolesAndPermissions
+  PUT             admin/roles/{role} .................... admin.staff.roles.update › StaffController@updateRole
+  GET|HEAD        admin/staff ....................................... admin.staff.index › StaffController@index
+  POST            admin/staff ....................................... admin.staff.store › StaffController@store
+  GET|HEAD        admin/staff/create .............................. admin.staff.create › StaffController@create
+  GET|HEAD        admin/staff/{staff} ................................. admin.staff.show › StaffController@show
+  PUT|PATCH       admin/staff/{staff} ............................. admin.staff.update › StaffController@update
+  DELETE          admin/staff/{staff} ........................... admin.staff.destroy › StaffController@destroy
+  GET|HEAD        admin/staff/{staff}/edit ............................ admin.staff.edit › StaffController@edit
+  GET|HEAD        api/appointments ....................... appointments.index › Api\AppointmentController@index
+  POST            api/appointments ....................... appointments.store › Api\AppointmentController@store
+  GET|HEAD        api/appointments/calendar/{year}/{month} generated::g85hICkL9dCOra6J › Api\AppointmentContro…
+  GET|HEAD        api/appointments/{appointment} ........... appointments.show › Api\AppointmentController@show
+  PUT|PATCH       api/appointments/{appointment} ....... appointments.update › Api\AppointmentController@update
+  DELETE          api/appointments/{appointment} ..... appointments.destroy › Api\AppointmentController@destroy
+  POST            api/appointments/{appointment}/cancel generated::nz8O0n3Ewud38YCT › Api\AppointmentControlle…
+  POST            api/appointments/{appointment}/complete generated::hiCVPicSZz5vt3qI › Api\AppointmentControl…
+  POST            api/booking/availability generated::AYUVwcaMtJbL8Nvt › Api\BookingController@checkAvailabili…
+  POST            api/booking/reserve ............. generated::W5BWoTATJitd3Hje › Api\BookingController@reserve
+  GET|HEAD        api/client/appointments generated::d2O4oohzKS6lxOPV › Api\AppointmentController@clientAppoin…
+  GET|HEAD        api/clients ...................................... clients.index › Api\ClientController@index
+  POST            api/clients ...................................... clients.store › Api\ClientController@store
+  GET|HEAD        api/clients/{client} ............................... clients.show › Api\ClientController@show
+  PUT|PATCH       api/clients/{client} ........................... clients.update › Api\ClientController@update
+  DELETE          api/clients/{client} ......................... clients.destroy › Api\ClientController@destroy
+  GET|HEAD        api/clients/{client}/appointments generated::fmBTCKOcCtnTNsVL › Api\ClientController@appoint…
+  GET|HEAD        api/employees ................................ employees.index › Api\EmployeeController@index
+  POST            api/employees ................................ employees.store › Api\EmployeeController@store
+  GET|HEAD        api/employees/{employee} ....................... employees.show › Api\EmployeeController@show
+  PUT|PATCH       api/employees/{employee} ................... employees.update › Api\EmployeeController@update
+  DELETE          api/employees/{employee} ................. employees.destroy › Api\EmployeeController@destroy
+  GET|HEAD        api/gift-cards .............................. gift-cards.index › Api\GiftCardController@index
+  GET|HEAD        api/gift-cards/check-balance/{code} generated::GOuULQNND0WL5M0a › Api\GiftCardController@che…
+  POST            api/gift-cards/confirm-payment generated::qpkpBCOgvxuiu6iI › Api\GiftCardController@handleSu…
+  POST            api/gift-cards/create-payment-intent generated::cr7L3XKo0v2fVPpQ › Api\GiftCardController@cr…
+  POST            api/gift-cards/handle-payment gift-cards.handle-payment › Api\GiftCardController@handleSucce…
+  POST            api/gift-cards/payment-intent gift-cards.create-payment-intent › Api\GiftCardController@crea…
+  GET|HEAD        api/gift-cards/{code} ............. generated::saZyjsWPld7O3LJ2 › Api\GiftCardController@show
+  POST            api/gift-cards/{code}/redeem .... generated::yaSLIloswgJFdJvx › Api\GiftCardController@redeem
+  PUT|PATCH       api/gift-cards/{gift_card} ................ gift-cards.update › Api\GiftCardController@update
+  DELETE          api/gift-cards/{gift_card} .............. gift-cards.destroy › Api\GiftCardController@destroy
+  POST            api/gift-cards/{id}/deactivate generated::3ESNmbTctOjarWms › Api\GiftCardController@deactiva…
+  GET|HEAD        api/inventory-transactions inventory-transactions.index › Api\InventoryTransactionController…
+  GET|HEAD        api/inventory-transactions/product/{productId} generated::YjJdY2S6xUecqjnG › Api\InventoryTr…
+  GET|HEAD        api/inventory-transactions/summary generated::IXzJxqEggnvANqrk › Api\InventoryTransactionCon…
+  GET|HEAD        api/inventory-transactions/{inventory_transaction} inventory-transactions.show › Api\Invento…
+  POST            api/login ............................ generated::o9OPUimHjshVwMft › Api\AuthController@login
+  POST            api/logout .......................... generated::P98obXs7liAvgMNK › Api\AuthController@logout
+  GET|HEAD        api/orders ......................................... orders.index › Api\OrderController@index
+  POST            api/orders ......................................... orders.store › Api\OrderController@store
+  GET|HEAD        api/orders/{order} ................................... orders.show › Api\OrderController@show
+  PUT|PATCH       api/orders/{order} ............................... orders.update › Api\OrderController@update
+  DELETE          api/orders/{order} ............................. orders.destroy › Api\OrderController@destroy
+  GET|HEAD        api/orders/{order}/tax-breakdown generated::ZAkHJLOOwbq4F7w3 › Api\TaxController@orderBreakd…
+  GET|HEAD        api/payments ................................... payments.index › Api\PaymentController@index
+  POST            api/payments ................................... payments.store › Api\PaymentController@store
+  POST            api/payments/{id}/refund ......... generated::ZDw6ezjeOPVi8Hp8 › Api\PaymentController@refund
+  GET|HEAD        api/payments/{payment} ........................... payments.show › Api\PaymentController@show
+  PUT|PATCH       api/payments/{payment} ....................... payments.update › Api\PaymentController@update
+  DELETE          api/payments/{payment} ..................... payments.destroy › Api\PaymentController@destroy
+  GET|HEAD        api/payroll ..................................... payroll.index › Api\PayrollController@index
+  POST            api/payroll ..................................... payroll.store › Api\PayrollController@store
+  POST            api/payroll/generate .... generated::vWY897yFrw038JJQ › Api\PayrollController@generatePayroll
+  POST            api/payroll/{id}/cancel .......... generated::71Zxl2py1z9ztFBL › Api\PayrollController@cancel
+  POST            api/payroll/{id}/process ........ generated::OkYfOJio5SOWqtKi › Api\PayrollController@process
+  GET|HEAD        api/payroll/{payroll} ............................. payroll.show › Api\PayrollController@show
+  PUT|PATCH       api/payroll/{payroll} ......................... payroll.update › Api\PayrollController@update
+  DELETE          api/payroll/{payroll} ....................... payroll.destroy › Api\PayrollController@destroy
+  GET|HEAD        api/product-categories ....... product-categories.index › Api\ProductCategoryController@index
+  POST            api/product-categories ....... product-categories.store › Api\ProductCategoryController@store
+  GET|HEAD        api/product-categories/hierarchy generated::nmq1iOeJk0MxfOTi › Api\ProductCategoryController…
+  GET|HEAD        api/product-categories/{product_category} product-categories.show › Api\ProductCategoryContr…
+  PUT|PATCH       api/product-categories/{product_category} product-categories.update › Api\ProductCategoryCon…
+  DELETE          api/product-categories/{product_category} product-categories.destroy › Api\ProductCategoryCo…
+  GET|HEAD        api/products ................................... products.index › Api\ProductController@index
+  POST            api/products ................................... products.store › Api\ProductController@store
+  GET|HEAD        api/products/{product} ........................... products.show › Api\ProductController@show
+  PUT|PATCH       api/products/{product} ....................... products.update › Api\ProductController@update
+  DELETE          api/products/{product} ..................... products.destroy › Api\ProductController@destroy
+  POST            api/products/{product}/inventory generated::U2MRj13KWKRfxICL › Api\ProductController@updateI…
+  GET|HEAD        api/public/services ...... generated::DgVjNt6jNEn5rNad › Api\ServiceController@publicServices
+  GET|HEAD        api/public/services/categories generated::A3iyR0mOf6s46hgc › Api\ServiceController@publicCat…
+  GET|HEAD        api/public/services/category/{category} generated::ARyvmR3hvVtCqlaJ › Api\ServiceController@…
+  POST            api/register ...................... generated::yqGLDfYnwccf0JMx › Api\AuthController@register
+  GET|HEAD        api/reports/tax/detailed ..... generated::kHIMXHBBG1kZX6e6 › Api\ReportController@taxDetailed
+  GET|HEAD        api/reports/tax/summary ....... generated::seQ8jkV65e10yNXn › Api\ReportController@taxSummary
+  GET|HEAD        api/services ...................... generated::dbz3h6qFjbroQHeF › Api\ServiceController@index
+  POST            api/services ...................... generated::vlNblp3ecBKEhUmJ › Api\ServiceController@store
+  GET|HEAD        api/services/{service} ............. generated::ayes67JtKh8oXT3R › Api\ServiceController@show
+  PUT             api/services/{service} ........... generated::GDEuBUVdtsTEmmgr › Api\ServiceController@update
+  DELETE          api/services/{service} .......... generated::whp9QoW4jrELRvxG › Api\ServiceController@destroy
+  GET|HEAD        api/staff ........................................... staff.index › Api\StaffController@index
+  POST            api/staff ........................................... staff.store › Api\StaffController@store
+  GET|HEAD        api/staff/{staff} ..................................... staff.show › Api\StaffController@show
+  PUT|PATCH       api/staff/{staff} ................................. staff.update › Api\StaffController@update
+  DELETE          api/staff/{staff} ............................... staff.destroy › Api\StaffController@destroy
+  GET|HEAD        api/staff/{staff}/appointments generated::9EB2QrGKoihlw6gf › Api\StaffController@appointments
+  GET|HEAD        api/staff/{staff}/schedule ....... generated::lnEfzLmHap6zf499 › Api\StaffController@schedule
+  POST            api/stripe/webhook ............... stripe.webhook › Api\StripeWebhookController@handleWebhook
+  GET|HEAD        api/suppliers ................................ suppliers.index › Api\SupplierController@index
+  POST            api/suppliers ................................ suppliers.store › Api\SupplierController@store
+  GET|HEAD        api/suppliers/{supplier} ....................... suppliers.show › Api\SupplierController@show
+  PUT|PATCH       api/suppliers/{supplier} ................... suppliers.update › Api\SupplierController@update
+  DELETE          api/suppliers/{supplier} ................. suppliers.destroy › Api\SupplierController@destroy
+  GET|HEAD        api/tax-rates ......................... generated::lcSejhnraza04L0W › Api\TaxController@index
+  POST            api/tax/calculate ................. generated::4li73NIFyH5hhiQm › Api\TaxController@calculate
+  GET|HEAD        api/time-clock ............................. time-clock.index › Api\TimeClockController@index
+  POST            api/time-clock/clock-in ....... generated::ESLkcvibdkxkDOVB › Api\TimeClockController@clockIn
+  POST            api/time-clock/clock-out ..... generated::pgOFmNyjt3dLGZpV › Api\TimeClockController@clockOut
+  GET|HEAD        api/time-clock/employee/{employeeId}/status generated::dDSB5L8BkhB3MEWa › Api\TimeClockContr…
+  GET|HEAD        api/time-clock/employee/{employeeId}/weekly-report generated::d1c1nvvpV469rOeB › Api\TimeClo…
+  POST            api/time-clock/{id}/approve ... generated::CNpihkFDQD6KuOpl › Api\TimeClockController@approve
+  PUT|PATCH       api/time-clock/{time_clock} .............. time-clock.update › Api\TimeClockController@update
+  GET|HEAD        api/user .............................. generated::Qk3x395V5MMmLlFG › Api\AuthController@user
+  GET|HEAD        appointments ........................... web.appointments.index › AppointmentController@index
+  POST            appointments ........................... web.appointments.store › AppointmentController@store
+  GET|HEAD        appointments/create .................. web.appointments.create › AppointmentController@create
+  GET|HEAD        appointments/{appointment} ............... web.appointments.show › AppointmentController@show
+  PUT|PATCH       appointments/{appointment} ........... web.appointments.update › AppointmentController@update
+  DELETE          appointments/{appointment} ......... web.appointments.destroy › AppointmentController@destroy
+  GET|HEAD        appointments/{appointment}/edit .......... web.appointments.edit › AppointmentController@edit
+  GET|HEAD        confirm-password ................. password.confirm › Auth\ConfirmablePasswordController@show
+  POST            confirm-password ..... generated::xtoxaLyhvVhKfEOX › Auth\ConfirmablePasswordController@store
+  GET|HEAD        dashboard ......................................................................... dashboard
+  GET|HEAD        debug-auth ...................................................... generated::UR49LzxrOMrtsLeZ
+  GET|HEAD        drip-campaigns .......................... drip-campaigns.index › DripCampaignController@index
+  POST            drip-campaigns .......................... drip-campaigns.store › DripCampaignController@store
+  GET|HEAD        drip-campaigns/create ................. drip-campaigns.create › DripCampaignController@create
+  GET|HEAD        drip-campaigns/{drip_campaign} ............ drip-campaigns.show › DripCampaignController@show
+  PUT|PATCH       drip-campaigns/{drip_campaign} ........ drip-campaigns.update › DripCampaignController@update
+  DELETE          drip-campaigns/{drip_campaign} ...... drip-campaigns.destroy › DripCampaignController@destroy
+  GET|HEAD        drip-campaigns/{drip_campaign}/edit ....... drip-campaigns.edit › DripCampaignController@edit
+  GET|HEAD        email-marketing/dashboard email-marketing.dashboard › EmailMarketingDashboardController@index
+  POST            email/verification-notification verification.send › Auth\EmailVerificationNotificationContro…
+  GET|HEAD        email/verify .......... verification.notice › Auth\EmailVerificationPromptController@__invoke
+  GET|HEAD        email/verify/{id}/{hash} .......... verification.verify › Auth\VerifyEmailController@__invoke
+  GET|HEAD        gift-cards/history ....................... gift-cards.history › GiftCardWebController@history
+  GET|HEAD        gift-cards/history-user ............. gift-cards.history-user › GiftCardWebController@history
+  GET|HEAD        gift-cards/purchase ................ gift-cards.purchase › GiftCardWebController@purchaseForm
+  GET|HEAD        inventory ....................................... inventory.index › InventoryController@index
+  GET|HEAD        inventory/api/categories/{category}/products/count inventory.categories.products.count › Inv…
+  POST            inventory/bulk-actions ............. inventory.bulk-actions › InventoryController@bulkActions
+  GET|HEAD        inventory/categories ........ inventory.categories.index › Inventory\CategoryController@index
+  POST            inventory/categories ........ inventory.categories.store › Inventory\CategoryController@store
+  POST            inventory/categories/bulk inventory.categories.bulk › Inventory\CategoryController@bulkActio…
+  GET|HEAD        inventory/categories/create inventory.categories.create › Inventory\CategoryController@create
+  PUT|PATCH       inventory/categories/{category} inventory.categories.update › Inventory\CategoryController@u…
+  DELETE          inventory/categories/{category} inventory.categories.destroy › Inventory\CategoryController@…
+  GET|HEAD        inventory/categories/{category}/edit inventory.categories.edit › Inventory\CategoryControlle…
+  POST            inventory/products ..................... inventory.products.store › InventoryController@store
+  GET|HEAD        inventory/products/create ............ inventory.products.create › InventoryController@create
+  GET|HEAD        inventory/products/index ....... inventory.products.index › Inventory\ProductController@index
+  PUT|PATCH       inventory/products/{product} ......... inventory.products.update › InventoryController@update
+  DELETE          inventory/products/{product} ....... inventory.products.destroy › InventoryController@destroy
+  POST            inventory/products/{product}/adjust inventory.products.adjust › InventoryController@updateIn…
+  GET|HEAD        inventory/products/{product}/details .. inventory.products.details › InventoryController@show
+  GET|HEAD        inventory/products/{product}/edit ........ inventory.products.edit › InventoryController@edit
+  GET|HEAD        inventory/reports/low-stock inventory.reports.low-stock › InventoryController@lowStockReport
+  GET|HEAD        login .................................... login › Auth\AuthenticatedSessionController@create
+  POST            login ............... generated::wz16Wdux8oFSuArP › Auth\AuthenticatedSessionController@store
+  POST            logout ................................. logout › Auth\AuthenticatedSessionController@destroy
+  POST            password/email ...................... password.email › Auth\PasswordResetLinkController@store
+  GET|HEAD        password/reset ................... password.request › Auth\PasswordResetLinkController@create
+  POST            password/reset ........................... password.update › Auth\NewPasswordController@store
+  GET|HEAD        password/reset/{token} ................... password.reset › Auth\NewPasswordController@create
+  GET|HEAD        payroll/employees ................. payroll.employees.index › PayrollController@employeeIndex
+  GET|HEAD        payroll/employees/create ........ payroll.employees.create › PayrollController@employeeCreate
+  GET|HEAD        payroll/employees/{id}/edit ......... payroll.employees.edit › PayrollController@employeeEdit
+  GET|HEAD        payroll/records ...................... payroll.records.index › PayrollController@payrollIndex
+  GET|HEAD        payroll/records/generate ....... payroll.records.generate › PayrollController@payrollGenerate
+  GET|HEAD        payroll/records/{id} ................... payroll.records.show › PayrollController@payrollShow
+  GET|HEAD        payroll/reports .................... payroll.reports.index › PayrollController@payrollReports
+  GET|HEAD        payroll/time-clock .............. payroll.time-clock.index › PayrollController@timeClockIndex
+  GET|HEAD        payroll/time-clock/entry ........ payroll.time-clock.entry › PayrollController@timeClockEntry
+  GET|HEAD        pos ......................................................... pos.index › PosController@index
+  GET|HEAD        pos/gift-cards/purchase ........ pos.gift-cards.purchase › GiftCardWebController@purchaseForm
+  POST            pos/process-payment ...................... pos.process-payment › PosController@processPayment
+  GET|HEAD        pos/products ............................................... pos. › PosController@getProducts
+  GET|HEAD        pos/receipt/{order} ..................................... pos.receipt › PosController@receipt
+  GET|HEAD        pos/receipt/{order}/print .................... pos.receipt.print › PosController@printReceipt
+  GET|HEAD        profile ............................................... profile.edit › ProfileController@edit
+  PATCH           profile ........................................... profile.update › ProfileController@update
+  DELETE          profile ......................................... profile.destroy › ProfileController@destroy
+  GET|HEAD        promotions ..................................... promotions.index › PromotionController@index
+  POST            promotions ..................................... promotions.store › PromotionController@store
+  GET|HEAD        promotions/create ............................ promotions.create › PromotionController@create
+  GET|HEAD        promotions/{promotion} ........................... promotions.show › PromotionController@show
+  PUT|PATCH       promotions/{promotion} ....................... promotions.update › PromotionController@update
+  DELETE          promotions/{promotion} ..................... promotions.destroy › PromotionController@destroy
+  POST            promotions/{promotion}/apply ............... promotions.apply › PromotionController@applyCode
+  GET|HEAD        promotions/{promotion}/edit ...................... promotions.edit › PromotionController@edit
+  GET|HEAD        promotions/{promotion}/usage ............. promotions.usage › PromotionController@usageReport
+  GET|HEAD        register .................................... register › Auth\RegisteredUserController@create
+  POST            register .................. generated::yxgJ9d438MKYuTa9 › Auth\RegisteredUserController@store
+  GET|HEAD        sanctum/csrf-cookie ....... sanctum.csrf-cookie › Laravel\Sanctum › CsrfCookieController@show
+  GET|HEAD        services ................................................. services › ServiceController@index
+  GET|HEAD        staff/dashboard ................................. staff.dashboard › DashboardController@staff
+  GET|HEAD        storage/{path} ................................................................ storage.local
+  GET|HEAD        up .............................................................. generated::rbFtBub9PCZOCq0v
+
+                                                                                           Showing [243] routes
+

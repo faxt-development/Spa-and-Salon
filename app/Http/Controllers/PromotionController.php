@@ -17,8 +17,7 @@ class PromotionController extends Controller
     public function __construct(PromotionService $promotionService)
     {
         $this->promotionService = $promotionService;
-        $this->middleware('auth');
-        $this->authorizeResource(Promotion::class, 'promotion');
+        
     }
 
     /**

@@ -20,8 +20,8 @@ class EmailMarketingDashboardController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
-        $this->middleware('can:manage-marketing');
+        
+        
     }
 
     /**
@@ -64,10 +64,13 @@ class EmailMarketingDashboardController extends Controller
      */
     private function getOverallStats()
     {
+        /**'status', [
+                'draft', 'scheduled', 'sending', 'sent', 'cancelled' */
         // Regular campaign stats
         $campaignStats = [
             'total' => EmailCampaign::count(),
-            'active' => EmailCampaign::where('is_active', true)->count(),
+            'scheduled' => EmailCampaign::where('status', 'scheduled')->count(),
+            'sending' => EmailCampaign::where('status', 'sending')->count(),
             'sent' => EmailRecipient::whereNotNull('sent_at')->count(),
             'opened' => EmailRecipient::whereNotNull('opened_at')->count(),
             'clicked' => EmailRecipient::whereNotNull('clicked_at')->count(),
@@ -102,8 +105,8 @@ class EmailMarketingDashboardController extends Controller
             'click_rate' => $totalSent > 0 ? round(($totalClicked / $totalSent) * 100, 2) : 0,
             'click_to_open_rate' => $totalOpened > 0 ? round(($totalClicked / $totalOpened) * 100, 2) : 0,
             'unsubscribe_rate' => $totalSent > 0 ? round(($totalUnsubscribed / $totalSent) * 100, 2) : 0,
-            'subscribers' => Client::whereNull('unsubscribed_at')->count(),
-            'unsubscribers' => Client::whereNotNull('unsubscribed_at')->count(),
+            'subscribers' => Client::where('marketing_consent')->count(),
+            'unsubscribers' => Client::whereNot('marketing_consent')->count(),
         ];
         
         return $stats;

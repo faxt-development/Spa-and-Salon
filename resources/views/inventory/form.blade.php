@@ -254,7 +254,7 @@
 
                 <!-- Form Actions -->
                 <div class="mt-8 flex justify-end space-x-3">
-                    <a href="{{ route('inventory.products.index') }}" 
+                    <a href="{{ route('admin.inventory.products.index') }}" 
                        class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         Cancel
                     </a>

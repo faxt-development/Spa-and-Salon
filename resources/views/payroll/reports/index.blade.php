@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
 @section('content')
 <div class="container mx-auto px-4 py-8" x-data="payrollReports()" x-init="init()">
@@ -205,7 +205,7 @@
                                 }" x-text="record.payment_status.charAt(0).toUpperCase() + record.payment_status.slice(1)"></span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a :href="'{{ route('payroll.records.show', '') }}/' + record.id" class="text-blue-600 hover:text-blue-900">View</a>
+                                <a :href="/admin/payroll/records/' + record.id" class="text-blue-600 hover:text-blue-900">View</a>
                             </td>
                         </tr>
                     </template>
@@ -268,7 +268,7 @@
                         </div>
                         
                         <div class="mt-4 pt-4 border-t border-gray-100">
-                            <a :href="'{{ route('payroll.records.show', '') }}/' + record.id" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <a :href="/admin/payroll/records/' + record.id" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 View Details
                             </a>
                         </div>
@@ -370,7 +370,7 @@
             },
             
             fetchEmployees() {
-                fetch('{{ route("api.employees.index") }}')
+                fetch('{{ route("employees.index") }}')
                     .then(response => response.json())
                     .then(data => {
                         this.employees = data.data || [];
@@ -388,7 +388,7 @@
                     per_page: this.filters.per_page
                 }).toString();
                 
-                fetch(`{{ route('api.payroll.reports') }}?${queryParams}`)
+                fetch(`/api/payroll/reports?${queryParams}`)
                     .then(response => response.json())
                     .then(data => {
                         this.reportData = {

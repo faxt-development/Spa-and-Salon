@@ -16,9 +16,14 @@ return new class extends Migration
             $table->foreignId('email_campaign_id')->constrained()->onDelete('cascade');
             $table->foreignId('client_id')->nullable()->constrained()->onDelete('set null');
             $table->string('email');
+            $table->string('name');
             $table->enum('status', [
                 'pending', 'sending', 'sent', 'opened', 'clicked', 'bounced', 'complained', 'failed'
             ])->default('pending');
+            $table->string('token');
+            $table->string('unsubscribe_token');
+            $table->string('preferences_token');
+            $table->timestamp('unsubscribed_at')->nullable();
             $table->timestamp('sent_at')->nullable();
             $table->timestamp('opened_at')->nullable();
             $table->timestamp('clicked_at')->nullable();

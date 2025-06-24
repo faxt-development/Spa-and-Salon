@@ -20,8 +20,8 @@ class EmailCampaignController extends Controller
 
     public function __construct(EmailSegmentationService $segmentationService)
     {
-        $this->middleware('auth');
-        $this->middleware('can:manage-marketing');
+        
+        
         
         $this->segmentationService = $segmentationService;
     }
@@ -146,7 +146,7 @@ class EmailCampaignController extends Controller
             $message = 'Campaign saved as draft.';
         }
 
-        return redirect()->route('email-campaigns.index')
+        return redirect()->route('admin.email-campaigns.index')
                          ->with('success', $message);
     }
 
@@ -155,7 +155,6 @@ class EmailCampaignController extends Controller
      *
      * @param  \App\Models\EmailCampaign  $emailCampaign
      * @return \Illuminate\View\View
-     * @return \Inertia\Response
      */
     public function show(EmailCampaign $emailCampaign)
     {

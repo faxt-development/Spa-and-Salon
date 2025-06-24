@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
@@ -12,7 +12,7 @@
 
     <!-- Search and Filter Bar -->
     <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <form action="{{ route('inventory.products.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
+        <form action="{{ route('admin.inventory.products.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="flex-1">
                 <input type="text" name="search" value="{{ request('search') }}" 
                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
@@ -38,7 +38,7 @@
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
                 Filter
             </button>
-            <a href="{{ route('inventory.products.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center">
+            <a href="{{ route('admin.inventory.products.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center">
                 Reset
             </a>
         </form>

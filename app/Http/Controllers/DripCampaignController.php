@@ -19,8 +19,8 @@ class DripCampaignController extends Controller
 
     public function __construct(EmailSegmentationService $segmentationService)
     {
-        $this->middleware('auth');
-        $this->middleware('can:manage-marketing');
+        
+        
         
         $this->segmentationService = $segmentationService;
     }
