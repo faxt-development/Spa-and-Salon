@@ -27,9 +27,28 @@ class AppointmentService
                 $data['client_id'] = $client->id;
             }
 
-            // Parse date and time if they're separate
-            if (isset($data['date']) && isset($data['start_time'])) {
-                $data['start_time'] = Carbon::parse($data['date'] . ' ' . $data['start_time']);
+            // Parse start time
+            $startTime = Carbon::parse($data['date'] . ' ' . $data['start_time']);
+            $data['start_time'] = $startTime;
+
+            // Calculate end time if not provided
+            if (empty($data['end_time'])) {
+                // Get service durations
+                $serviceIds = $data['service_ids'] ?? [];
+                $totalDuration = (int) Service::whereIn('id', $serviceIds)->sum('duration');
+                
+                // Default to 30 minutes if no duration from services
+                if ($totalDuration <= 0) {
+                    $totalDuration = 30;
+                    \Log::warning('No valid service duration found, using default 30 minutes', [
+                        'service_ids' => $serviceIds,
+                        'start_time' => $startTime->toDateTimeString(),
+                    ]);
+                }
+                
+                $data['end_time'] = (clone $startTime)->addMinutes($totalDuration);
+            } else {
+                // If end_time is provided, parse it
                 $data['end_time'] = Carbon::parse($data['date'] . ' ' . $data['end_time']);
             }
 

@@ -42,7 +42,7 @@ class AppointmentController extends Controller
         $clients = Client::orderBy('last_name')->get();
         $staff = Staff::orderBy('last_name')->get();
         $services = Service::orderBy('name')->get();
-        
+
         // Check if the user is a client
         $isClient = false;
         if (Auth::check()) {
@@ -68,30 +68,66 @@ class AppointmentController extends Controller
         Log::info('AppointmentController@store: Storing new appointment', [
             'request' => $request->all()
         ]);
-        
+
         // Validate request data
         $validated = $request->validate([
-            'client_name' => 'required|string|max:255',
-            'client_email' => 'required|email|max:255',
-            'client_phone' => 'required|string|max:20',
+            'client_id' => 'nullable|exists:clients,id',
+            'client_name' => 'required_without:client_id|string|max:255',
+            'client_email' => 'required_without:client_id|email|max:255',
+            'client_phone' => 'required_without:client_id|string|max:20',
             'staff_id' => 'required|exists:staff,id',
             'date' => 'required|date',
             'start_time' => 'required|string',
-            'end_time' => 'required|string',
             'service_ids' => 'required|array',
             'service_ids.*' => 'exists:services,id',
             'notes' => 'nullable|string',
+        ], [
+            'client_name.required_without' => 'Client name is required when not selecting an existing client',
+            'client_email.required_without' => 'Client email is required when not selecting an existing client',
+            'client_phone.required_without' => 'Client phone is required when not selecting an existing client',
         ]);
+
+        // If we have client details but no client_id, try to find an existing client
+        if (empty($validated['client_id']) && !empty($validated['client_email'])) {
+            // Split full name into first and last name
+            $nameParts = explode(' ', trim($validated['client_name']), 2);
+            $firstName = $nameParts[0] ?? '';
+            $lastName = $nameParts[1] ?? '';
+
+            // Look for existing client by email and name
+            $client = Client::where('email', $validated['client_email'])
+                ->where(function($query) use ($firstName, $lastName) {
+                    $query->where('first_name', 'like', $firstName . '%')
+                          ->where('last_name', 'like', $lastName . '%');
+                })
+                ->first();
+
+            if ($client) {
+                // Use existing client
+                $validated['client_id'] = $client->id;
+                $validated['client_phone'] = $validated['client_phone'] ?? $client->phone;
+            } else {
+                // Create new client
+                $client = Client::create([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'email' => $validated['client_email'],
+                    'phone' => $validated['client_phone'],
+                    'marketing_consent' => false, // Default to false for GDPR compliance
+                ]);
+                $validated['client_id'] = $client->id;
+            }
+        }
 
         // Format the request data to match the service expectations
         $appointmentData = [
-            'client_name' => $validated['client_name'],
-            'client_email' => $validated['client_email'],
-            'client_phone' => $validated['client_phone'],
+            'client_id' => $validated['client_id'] ?? null,
+            'client_name' => $validated['client_name'] ?? null,
+            'client_email' => $validated['client_email'] ?? null,
+            'client_phone' => $validated['client_phone'] ?? null,
             'staff_id' => $validated['staff_id'],
             'date' => $validated['date'],
             'start_time' => $validated['start_time'],
-            'end_time' => $validated['end_time'],
             'service_ids' => $validated['service_ids'],
             'notes' => $validated['notes'] ?? null,
         ];

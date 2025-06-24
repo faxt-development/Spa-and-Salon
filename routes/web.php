@@ -53,9 +53,29 @@ Route::middleware(['auth:web'])->get('/debug-auth', function () {
 });
 
 // Dashboard routes
+// Admin routes
+Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/todays-schedule', [\App\Http\Controllers\Admin\DashboardController::class, 'getTodaysSchedule'])->name('dashboard.todays-schedule');
+    Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('dashboard.alerts');
+    
+    // Appointments routes
+    Route::prefix('appointments')->name('appointments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\AppointmentController::class, 'index'])->name('index');
+        Route::get('/{appointment}', [\App\Http\Controllers\Admin\AppointmentController::class, 'show'])->name('show');
+        Route::get('/{appointment}/edit', [\App\Http\Controllers\Admin\AppointmentController::class, 'edit'])->name('edit');
+        Route::put('/{appointment}', [\App\Http\Controllers\Admin\AppointmentController::class, 'update'])->name('update');
+        Route::delete('/{appointment}', [\App\Http\Controllers\Admin\AppointmentController::class, 'destroy'])->name('destroy');
+    });
+});
+
 Route::middleware(['auth:web'])->group(function () {
     // Common authenticated user routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Appointment routes
+    Route::post('/appointments/{appointment}/complete', [\App\Http\Controllers\AppointmentController::class, 'complete'])
+        ->name('web.appointments.complete');
 
     // Gift card history for authenticated users
     Route::get('/gift-cards/history-user', [GiftCardWebController::class, 'history'])
