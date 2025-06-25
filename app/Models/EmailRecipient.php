@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EmailRecipient extends Model
 {
+    use SoftDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -16,7 +20,12 @@ class EmailRecipient extends Model
         'email_campaign_id',
         'client_id',
         'email',
+        'name',
         'status',
+        'token',
+        'unsubscribe_token',
+        'preferences_token',
+        'unsubscribed_at',
         'sent_at',
         'opened_at',
         'clicked_at',

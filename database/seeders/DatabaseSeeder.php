@@ -23,6 +23,12 @@ class DatabaseSeeder extends Seeder
             StaffSeeder::class,
             AppointmentSeeder::class,
             SettingsTableSeeder::class,
+            // Payment methods must be seeded before transactions
+            PaymentMethodSeeder::class,
+            // Room seeder must run before transactions
+            RoomSeeder::class,
+            // New transaction architecture seeders
+            TransactionSeeder::class,
         ]);
 
         // Create admin user

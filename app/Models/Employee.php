@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Employee extends Model
 {
+    use SoftDeletes;
+
     use HasFactory;
 
     /**
@@ -27,6 +31,7 @@ class Employee extends Model
         'hire_date',
         'termination_date',
         'hourly_rate',
+        'salary',
         'payment_frequency',
         'tax_id',
         'address',

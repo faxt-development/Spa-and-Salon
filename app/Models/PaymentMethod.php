@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-use Spatie\Permission\Models\Permission as SpatiePermission;
-
-class Permission extends Model
+class PaymentMethod extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -17,9 +17,12 @@ class Permission extends Model
      */
     protected $fillable = [
         'name',
-        'guard_name',
         'display_name',
         'description',
+        'is_active',
+        'requires_card_details',
+        'icon',
+        'display_order',
     ];
 
     /**
@@ -28,7 +31,8 @@ class Permission extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'is_active' => 'boolean',
+        'requires_card_details' => 'boolean',
+        'display_order' => 'integer',
     ];
 }

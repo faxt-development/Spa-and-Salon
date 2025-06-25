@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\PayrollController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TaxController;
+use App\Http\Controllers\Api\TransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -128,6 +129,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // Payments
     Route::apiResource('payments', \App\Http\Controllers\Api\PaymentController::class);
     Route::post('/payments/{id}/refund', [\App\Http\Controllers\Api\PaymentController::class, 'refund']);
+    
+    // Transactions
+    Route::apiResource('transactions', \App\Http\Controllers\Api\TransactionController::class);
+    Route::post('/transactions/{id}/process-payment', [\App\Http\Controllers\Api\TransactionController::class, 'processPayment']);
+    Route::post('/transactions/{id}/process-refund', [\App\Http\Controllers\Api\TransactionController::class, 'processRefund']);
 
     // Inventory Transactions
     Route::apiResource('inventory-transactions', \App\Http\Controllers\Api\InventoryTransactionController::class, ['only' => ['index', 'show']]);

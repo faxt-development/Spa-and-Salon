@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('group')->default('general');
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
             
             $table->index('key');
             $table->index('group');

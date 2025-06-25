@@ -4,12 +4,31 @@ namespace App\Services;
 
 use App\Models\Appointment;
 use App\Models\Client;
+use App\Models\Payment;
 use App\Models\Service;
+use App\Services\TransactionService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class AppointmentService
 {
+    /**
+     * The transaction service instance.
+     *
+     * @var \App\Services\TransactionService
+     */
+    protected $transactionService;
+
+    /**
+     * Create a new service instance.
+     *
+     * @param \App\Services\TransactionService $transactionService
+     * @return void
+     */
+    public function __construct(TransactionService $transactionService)
+    {
+        $this->transactionService = $transactionService;
+    }
     /**
      * Create a new appointment
      *
@@ -77,11 +96,15 @@ class AppointmentService
                 ]);
             }
 
+            // Create a pending transaction for this appointment
+            $transaction = $this->transactionService->createFromAppointment($appointment);
+            
             DB::commit();
 
             return [
                 'success' => true,
-                'appointment' => $appointment->load(['client', 'staff', 'services'])
+                'appointment' => $appointment->load(['client', 'staff', 'services']),
+                'transaction' => $transaction
             ];
         } catch (\Exception $e) {
             DB::rollBack();

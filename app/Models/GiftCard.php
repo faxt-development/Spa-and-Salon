@@ -7,14 +7,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class GiftCard extends Model
 {
-    //use SoftDeletes;
-    
+    use SoftDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'code',
         'amount',
         'balance',

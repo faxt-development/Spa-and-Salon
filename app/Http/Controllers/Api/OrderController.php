@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\InventoryTransaction;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Service;
+use App\Services\TransactionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +17,23 @@ use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
+    /**
+     * The transaction service instance.
+     *
+     * @var \App\Services\TransactionService
+     */
+    protected $transactionService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param \App\Services\TransactionService $transactionService
+     * @return void
+     */
+    public function __construct(TransactionService $transactionService)
+    {
+        $this->transactionService = $transactionService;
+    }
     /**
      * Display a listing of the orders.
      *
@@ -179,13 +198,19 @@ class OrderController extends Controller
                 'discount_amount' => $discountAmount,
                 'total_amount' => $totalAmount,
             ]);
+            
+            // Create a pending transaction for this order
+            $transaction = $this->transactionService->createFromOrder($order);
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Order created successfully',
-                'data' => $order->load(['items', 'client', 'staff']),
+                'data' => [
+                    'order' => $order->load(['items', 'client', 'staff']),
+                    'transaction' => $transaction
+                ],
             ], 201);
         } catch (\Exception $e) {
             DB::rollBack();

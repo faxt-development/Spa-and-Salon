@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    //use SoftDeletes;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -126,7 +126,7 @@ class Product extends Model
         if ($this->cost_price == 0) {
             return 0;
         }
-        
+
         return (($this->selling_price - $this->cost_price) / $this->cost_price) * 100;
     }
 }
