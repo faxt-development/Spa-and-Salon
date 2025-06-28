@@ -157,6 +157,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/time-clock/employee/{employeeId}/status', [\App\Http\Controllers\Api\TimeClockController::class, 'status']);
     Route::get('/time-clock/employee/{employeeId}/weekly-report', [\App\Http\Controllers\Api\TimeClockController::class, 'weeklyReport']);
 
+    // Loyalty Program
+    Route::prefix('loyalty')->group(function () {
+        Route::get('/account', [\App\Http\Controllers\Api\LoyaltyController::class, 'getAccount']);
+        Route::post('/orders/{order}/redeem', [\App\Http\Controllers\Api\LoyaltyController::class, 'redeemPoints']);
+        Route::get('/orders/{order}/promotions', [\App\Http\Controllers\Api\LoyaltyController::class, 'getEligiblePromotions']);
+    });
+
     // Staff Performance Metrics
     Route::prefix('staff-performance')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\StaffPerformanceController::class, 'index']);

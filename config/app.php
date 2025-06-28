@@ -66,6 +66,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TaxServiceProvider::class,
+        App\Providers\LoyaltyServiceProvider::class,
     ],
     
     /*

@@ -27,6 +27,8 @@ class DatabaseSeeder extends Seeder
             PaymentMethodSeeder::class,
             // Room seeder must run before transactions
             RoomSeeder::class,
+            // Loyalty program
+            LoyaltyProgramSeeder::class,
             // New transaction architecture seeders
             TransactionSeeder::class,
         ]);
