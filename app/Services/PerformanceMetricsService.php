@@ -2,6 +2,194 @@
 
 namespace App\Services;
 
+use App\Models\Staff;
+use App\Models\StaffPerformanceMetric;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+
+class PerformanceMetricsService
+{
+    /**
+     * Get staff performance metrics for a date range
+     *
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param string $period
+     * @param array $filters
+     * @return Collection
+     */
+    public function getStaffPerformanceMetrics(
+        Carbon $startDate, 
+        Carbon $endDate, 
+        string $period = 'day',
+        array $filters = []
+    ): Collection {
+        $dateFormat = $this->getDateFormatForPeriod($period);
+        
+        $query = DB::table('staff_performance_metrics as spm')
+            ->join('staff', 'spm.staff_id', '=', 'staff.id')
+            ->select([
+                DB::raw("DATE_FORMAT(spm.metric_date, '{$dateFormat}') as period"),
+                'spm.staff_id',
+                DB::raw('CONCAT(staff.first_name, " ", staff.last_name) as staff_name'),
+                DB::raw('SUM(spm.available_hours) as available_hours'),
+                DB::raw('SUM(spm.booked_hours) as booked_hours'),
+                DB::raw('AVG(spm.utilization_rate) as utilization_rate'),
+                DB::raw('SUM(spm.total_revenue) as total_revenue'),
+                DB::raw('AVG(spm.revenue_per_hour) as revenue_per_hour'),
+                DB::raw('SUM(spm.appointments_completed) as appointments_completed'),
+                DB::raw('AVG(spm.average_ticket_value) as average_ticket_value'),
+                DB::raw('SUM(spm.total_commission) as total_commission'),
+                DB::raw('AVG(spm.average_commission_rate) as average_commission_rate')
+            ])
+            ->whereBetween('spm.metric_date', [$startDate, $endDate])
+            ->groupBy('period', 'spm.staff_id', 'staff_name')
+            ->orderBy('period')
+            ->orderBy('total_revenue', 'desc');
+
+        // Apply filters
+        if (!empty($filters['staff_id'])) {
+            $query->where('spm.staff_id', $filters['staff_id']);
+        }
+        
+        if (!empty($filters['location_id'])) {
+            $query->where('staff.location_id', $filters['location_id']);
+        }
+
+        return $query->get()
+            ->groupBy('period')
+            ->map(function ($items) {
+                return $items->take(10);
+            });
+    }
+
+    /**
+     * Generate performance metrics for all staff for a specific date
+     * 
+     * @param Carbon $date
+     * @return void
+     */
+    public function generateDailyMetrics(\DateTimeInterface $date): void
+    {
+        $staffMembers = Staff::active()->get();
+        
+        foreach ($staffMembers as $staff) {
+            $staff->generatePerformanceMetrics($date);
+        }
+    }
+
+    /**
+     * Generate performance metrics for a date range
+     * 
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return void
+     */
+    public function generateMetricsForDateRange(Carbon $startDate, Carbon $endDate): void
+    {
+        $period = CarbonPeriod::create($startDate, $endDate);
+        
+        foreach ($period as $date) {
+            $this->generateDailyMetrics($date);
+        }
+    }
+
+    /**
+     * Get staff utilization report
+     * 
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param array $filters
+     * @return Collection
+     */
+    public function getUtilizationReport(Carbon $startDate, Carbon $endDate, array $filters = []): Collection
+    {
+        $query = StaffPerformanceMetric::query()
+            ->select([
+                'staff_id',
+                DB::raw('CONCAT(staff.first_name, " ", staff.last_name) as staff_name'),
+                DB::raw('SUM(available_hours) as available_hours'),
+                DB::raw('SUM(booked_hours) as booked_hours'),
+                DB::raw('(SUM(booked_hours) / NULLIF(SUM(available_hours), 0)) * 100 as utilization_rate'),
+                DB::raw('SUM(total_revenue) as total_revenue'),
+                DB::raw('(SUM(total_revenue) / NULLIF(SUM(booked_hours), 0)) as revenue_per_hour')
+            ])
+            ->join('staff', 'staff_performance_metrics.staff_id', '=', 'staff.id')
+            ->whereBetween('metric_date', [$startDate, $endDate])
+            ->groupBy('staff_id', 'staff_name')
+            ->orderBy('utilization_rate', 'desc');
+
+        // Apply filters
+        if (!empty($filters['staff_id'])) {
+            $query->where('staff_id', $filters['staff_id']);
+        }
+        
+        if (!empty($filters['location_id'])) {
+            $query->where('staff.location_id', $filters['location_id']);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * Get revenue per staff report
+     * 
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param array $filters
+     * @return Collection
+     */
+    public function getRevenuePerStaffReport(Carbon $startDate, Carbon $endDate, array $filters = []): Collection
+    {
+        $query = StaffPerformanceMetric::query()
+            ->select([
+                'staff_id',
+                DB::raw('CONCAT(staff.first_name, " ", staff.last_name) as staff_name'),
+                DB::raw('SUM(total_revenue) as total_revenue'),
+                DB::raw('SUM(booked_hours) as total_hours'),
+                DB::raw('(SUM(total_revenue) / NULLIF(SUM(booked_hours), 0)) as revenue_per_hour'),
+                DB::raw('AVG(utilization_rate) as avg_utilization'),
+                DB::raw('SUM(appointments_completed) as total_appointments'),
+                DB::raw('(SUM(total_revenue) / NULLIF(SUM(appointments_completed), 0)) as avg_ticket_value')
+            ])
+            ->join('staff', 'staff_performance_metrics.staff_id', '=', 'staff.id')
+            ->whereBetween('metric_date', [$startDate, $endDate])
+            ->groupBy('staff_id', 'staff_name')
+            ->orderBy('total_revenue', 'desc');
+
+        // Apply filters
+        if (!empty($filters['staff_id'])) {
+            $query->where('staff_id', $filters['staff_id']);
+        }
+        
+        if (!empty($filters['location_id'])) {
+            $query->where('staff.location_id', $filters['location_id']);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * Get the appropriate date format for the given period
+     */
+    protected function getDateFormatForPeriod(string $period): string
+    {
+        return match (strtolower($period)) {
+            'hour' => '%Y-%m-%d %H:00:00',
+            'day' => '%Y-%m-%d',
+            'week' => '%x-W%v', // ISO week
+            'month' => '%Y-%m',
+            'quarter' => '%Y-Q%q',
+            'year' => '%Y',
+            default => '%Y-%m-%d',
+        };
+    }
+}
+
+namespace App\Services;
+
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Collection;

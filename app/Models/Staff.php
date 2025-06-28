@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Illuminate\Support\Facades\DB;
 
 class Staff extends Model
 {
@@ -49,6 +52,7 @@ class Staff extends Model
         'country',
         'salary',
         'commission_rate',
+        'commission_structure_id',
         'specialties',
         'certifications',
         'languages',
@@ -68,6 +72,7 @@ class Staff extends Model
         'termination_date' => 'date',
         'salary' => 'decimal:2',
         'commission_rate' => 'decimal:2',
+        'commission_structure_id' => 'integer',
         'specialties' => 'array',
         'certifications' => 'array',
         'languages' => 'array',
@@ -103,6 +108,216 @@ class Staff extends Model
     }
 
     /**
+     * Get the commission structure assigned to this staff member.
+     */
+    public function commissionStructure(): BelongsTo
+    {
+        return $this->belongsTo(CommissionStructure::class, 'commission_structure_id');
+    }
+
+    /**
+     * Get the performance metrics for this staff member.
+     */
+    public function performanceMetrics(): HasMany
+    {
+        return $this->hasMany(StaffPerformanceMetric::class);
+    }
+    
+    /**
+     * Get the commission payments for the staff member.
+     */
+    public function commissionPayments(): HasMany
+    {
+        return $this->hasMany(CommissionPayment::class);
+    }
+
+    /**
+     * Get the commission rules that apply to this staff member.
+     */
+    public function commissionRules(): MorphMany
+    {
+        return $this->morphMany(CommissionRule::class, 'applicable');
+    }
+
+    /**
+     * Get the services this staff member is qualified to perform.
+     */
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class, 'staff_service')
+            ->withPivot('price_override', 'duration_override', 'is_primary')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the transactions for this staff member.
+     */
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Calculate the commission for a given amount based on the staff's commission structure.
+     *
+     * @param float $amount
+     * @param array $context Additional context for commission calculation
+     * @return array [
+     *     'amount' => float,
+     *     'rate' => float,
+     *     'rule' => CommissionRule|null
+     * ]
+     */
+    public function calculateCommission(float $amount, array $context = []): array
+    {
+        // Default to staff's personal commission rate if no structure is assigned
+        if (!$this->commissionStructure) {
+            return [
+                'amount' => $amount * ($this->commission_rate / 100),
+                'rate' => $this->commission_rate,
+                'rule' => null
+            ];
+        }
+
+        // Get applicable rule from the commission structure
+        $rule = $this->commissionStructure->getApplicableRule(array_merge([
+            'applicable_type' => 'staff',
+            'applicable_id' => $this->id,
+        ], $context));
+
+        // If no specific rule applies, use the structure's default rate
+        $rate = $rule ? $rule->rate : $this->commissionStructure->default_rate;
+
+        return [
+            'amount' => $amount * ($rate / 100),
+            'rate' => $rate,
+            'rule' => $rule
+        ];
+    }
+
+    /**
+     * Calculate the staff member's utilization rate for a given date range.
+     *
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @return array [
+     *     'available_hours' => float,
+     *     'booked_hours' => float,
+     *     'utilization_rate' => float
+     * ]
+     */
+    public function calculateUtilization(Carbon $startDate, Carbon $endDate): array
+    {
+        // Calculate available working hours
+        $availableHours = $this->calculateAvailableHours($startDate, $endDate);
+        
+        // Calculate booked hours from appointments
+        $bookedHours = $this->appointments()
+            ->whereBetween('start_time', [$startDate, $endDate])
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->sum(DB::raw('TIME_TO_SEC(TIMEDIFF(end_time, start_time)) / 3600'));
+        
+        $utilizationRate = $availableHours > 0 
+            ? min(100, ($bookedHours / $availableHours) * 100)
+            : 0;
+            
+        return [
+            'available_hours' => round($availableHours, 2),
+            'booked_hours' => round($bookedHours, 2),
+            'utilization_rate' => round($utilizationRate, 2)
+        ];
+    }
+
+    /**
+     * Calculate available working hours for a date range.
+     */
+    protected function calculateAvailableHours(Carbon $startDate, Carbon $endDate): float
+    {
+        $totalHours = 0;
+        $period = CarbonPeriod::create($startDate, $endDate);
+        
+        foreach ($period as $date) {
+            $dayOfWeek = strtolower($date->format('l'));
+            
+            // Skip if not a working day
+            if (!in_array($dayOfWeek, $this->work_days ?? $this->defaultWorkDays)) {
+                continue;
+            }
+            
+            // Calculate working hours for the day
+            if ($this->work_start_time && $this->work_end_time) {
+                $start = Carbon::parse($this->work_start_time);
+                $end = Carbon::parse($this->work_end_time);
+                $totalHours += $end->diffInHours($start);
+            }
+        }
+        
+        return $totalHours;
+    }
+
+    /**
+     * Generate performance metrics for a specific date.
+     */
+    public function generatePerformanceMetrics(\DateTimeInterface $date): StaffPerformanceMetric
+    {
+        $startOfDay = Carbon::parse($date)->startOfDay();
+        $endOfDay = Carbon::parse($date)->endOfDay();
+        
+        // Get utilization data
+        $utilization = $this->calculateUtilization($startOfDay, $endOfDay);
+        
+        // Get revenue data
+        $revenueData = $this->transactions()
+            ->whereBetween('transaction_date', [$startOfDay, $endOfDay])
+            ->select([
+                DB::raw('SUM(total_amount) as total_revenue'),
+                DB::raw('COUNT(DISTINCT id) as transaction_count'),
+                DB::raw('SUM(commission_amount) as total_commission')
+            ])
+            ->first();
+        
+        // Get appointment data
+        $appointmentData = $this->appointments()
+            ->whereBetween('start_time', [$startOfDay, $endOfDay])
+            ->select([
+                DB::raw('COUNT(DISTINCT id) as appointments_completed'),
+                DB::raw('COUNT(DISTINCT client_id) as unique_clients')
+            ])
+            ->first();
+        
+        // Calculate metrics
+        $revenuePerHour = $utilization['booked_hours'] > 0 
+            ? $revenueData->total_revenue / $utilization['booked_hours'] 
+            : 0;
+            
+        $averageTicketValue = $appointmentData->appointments_completed > 0 
+            ? $revenueData->total_revenue / $appointmentData->appointments_completed 
+            : 0;
+            
+        $averageCommissionRate = $revenueData->total_revenue > 0 
+            ? ($revenueData->total_commission / $revenueData->total_revenue) * 100 
+            : 0;
+        
+        // Create or update the performance metric
+        return $this->performanceMetrics()->updateOrCreate(
+            ['metric_date' => $date],
+            [
+                'available_hours' => $utilization['available_hours'],
+                'booked_hours' => $utilization['booked_hours'],
+                'utilization_rate' => $utilization['utilization_rate'],
+                'total_revenue' => $revenueData->total_revenue ?? 0,
+                'revenue_per_hour' => $revenuePerHour,
+                'appointments_completed' => $appointmentData->appointments_completed ?? 0,
+                'average_ticket_value' => $averageTicketValue,
+                'total_commission' => $revenueData->total_commission ?? 0,
+                'average_commission_rate' => $averageCommissionRate,
+                'new_customers' => 0, // Would need customer tracking to implement
+                'repeat_customers' => 0, // Would need customer tracking to implement
+            ]
+        );
+    }
+
+    /**
      * Get the employee record associated with the staff member.
      * This is a one-to-one relationship where the employees table has a staff_id foreign key.
      */
@@ -119,15 +334,7 @@ class Staff extends Model
         return $this->hasMany(Appointment::class, 'staff_id');
     }
 
-    /**
-     * Get the services this staff member can perform.
-     */
-    public function services(): BelongsToMany
-    {
-        return $this->belongsToMany(Service::class, 'service_staff')
-            ->withPivot('price_override', 'duration_override', 'is_primary')
-            ->withTimestamps();
-    }
+
 
     /**
      * Get the rooms assigned to this staff member.

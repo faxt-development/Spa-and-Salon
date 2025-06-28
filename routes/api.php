@@ -157,6 +157,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/time-clock/employee/{employeeId}/status', [\App\Http\Controllers\Api\TimeClockController::class, 'status']);
     Route::get('/time-clock/employee/{employeeId}/weekly-report', [\App\Http\Controllers\Api\TimeClockController::class, 'weeklyReport']);
 
+    // Staff Performance Metrics
+    Route::prefix('staff-performance')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\StaffPerformanceController::class, 'index']);
+        Route::get('/utilization', [\App\Http\Controllers\Api\StaffPerformanceController::class, 'utilizationReport']);
+        Route::get('/revenue', [\App\Http\Controllers\Api\StaffPerformanceController::class, 'revenueReport']);
+        Route::get('/commissions', [\App\Http\Controllers\Api\StaffPerformanceController::class, 'commissionReport']);
+        Route::get('/staff/{staff}/summary', [\App\Http\Controllers\Api\StaffPerformanceController::class, 'staffSummary']);
+    });
+
+    // Commission Structures
+    Route::apiResource('commission-structures', \App\Http\Controllers\Api\CommissionStructureController::class)
+        ->except(['edit', 'create']);
+        
+    // Commission Payments
+    Route::apiResource('commission-payments', \App\Http\Controllers\Api\CommissionPaymentController::class)
+        ->except(['edit', 'create']);
+    Route::get('commission-payments/summary', [\App\Http\Controllers\Api\CommissionPaymentController::class, 'summary']);
+    Route::get('commission-payments/{commission_payment}/metrics', [\App\Http\Controllers\Api\CommissionPaymentController::class, 'metrics']);
+    Route::get('staff/{staff}/commission-payments', [\App\Http\Controllers\Api\CommissionPaymentController::class, 'staffHistory']);
+
     // Tax Reports
     Route::prefix('reports')->group(function () {
         Route::get('/tax/summary', [ReportController::class, 'taxSummary']);
