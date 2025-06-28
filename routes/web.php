@@ -118,6 +118,7 @@ Route::middleware(['auth:web'])->group(function () {
    
    
         Route::get('/reports/sales', [\App\Http\Controllers\Admin\ReportController::class, 'sales'])->name('reports.sales');
+        Route::get('/reports/payment-methods', [\App\Http\Controllers\Admin\ReportController::class, 'paymentMethods'])->name('reports.payment-methods');
    
 
           // Email Campaign Routes

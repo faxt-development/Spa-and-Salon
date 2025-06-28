@@ -24,6 +24,18 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\AppointmentCompleted::class => [
             \App\Listeners\SendAppointmentFollowUp::class,
         ],
+        \App\Events\ModelStateChanged::class => [
+            \App\Listeners\LogModelStateChange::class,
+        ],
+    ];
+
+    /**
+     * The subscriber classes to register.
+     *
+     * @var array
+     */
+    protected $subscribe = [
+        // Add any subscriber classes here
     ];
 
     /**

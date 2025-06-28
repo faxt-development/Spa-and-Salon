@@ -123,6 +123,9 @@
                                     <x-dropdown-link href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Client Reports') }}
                                     </x-dropdown-link>
+                                    <x-dropdown-link href="{{ route('admin.reports.payment-methods') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                        {{ __('Payment Methods') }}
+                                    </x-dropdown-link>
                                 </div>
                             </div>
                         </div>

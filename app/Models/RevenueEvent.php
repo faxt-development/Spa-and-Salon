@@ -37,6 +37,7 @@ class RevenueEvent extends Model
         'source_type', // For polymorphic relation (appointment, order, etc.)
         'source_id',   // For polymorphic relation
         'staff_id',    // For commission tracking
+        'payment_method_id', // For payment method tracking
         'metadata',    // JSON field for additional data
     ];
 
@@ -65,6 +66,14 @@ class RevenueEvent extends Model
     public function staff(): BelongsTo
     {
         return $this->belongsTo(Staff::class);
+    }
+    
+    /**
+     * Get the payment method associated with this revenue event.
+     */
+    public function paymentMethod(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class);
     }
 
     /**
