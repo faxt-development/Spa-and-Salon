@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Room extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -126,15 +127,15 @@ class Room extends Model
     public function getFullNameAttribute(): string
     {
         $name = $this->name;
-        
+
         if ($this->room_number) {
             $name .= ' (#' . $this->room_number . ')';
         }
-        
+
         if ($this->floor) {
             $name .= ' - Floor ' . $this->floor;
         }
-        
+
         return $name;
     }
 }

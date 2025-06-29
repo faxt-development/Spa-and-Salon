@@ -48,6 +48,9 @@ class Transaction extends Model
         'subtotal',
         'tax_amount',
         'tip_amount',
+        'tip_distribution_method',
+        'tips_distributed',
+        'tips_distributed_at',
         'discount_amount',
         'total_amount',
         'status',
@@ -71,6 +74,7 @@ class Transaction extends Model
         'tip_amount' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'total_amount' => 'decimal:2',
+        'tips_distributed' => 'boolean',
         'transaction_date' => 'datetime',
     ];
 
@@ -165,6 +169,44 @@ class Transaction extends Model
         return max(0, $this->total_amount - $refundedAmount);
     }
 
+    /**
+     * Get the tax breakdown for this transaction.
+     * 
+     * @return array
+     */
+    /**
+     * Get the tip distributions for this transaction.
+     */
+    public function tipDistributions()
+    {
+        return $this->hasMany(TipDistribution::class);
+    }
+    
+    /**
+     * Get the total amount of tips distributed.
+     * 
+     * @return float
+     */
+    public function getDistributedTipsAmount(): float
+    {
+        return (float) $this->tipDistributions()->sum('amount');
+    }
+    
+    /**
+     * Check if all tips have been distributed.
+     * 
+     * @return bool
+     */
+    public function hasAllTipsDistributed(): bool
+    {
+        if (!$this->tips_distributed) {
+            return false;
+        }
+        
+        $distributedAmount = $this->getDistributedTipsAmount();
+        return bccomp((string) $distributedAmount, (string) $this->tip_amount, 2) === 0;
+    }
+    
     /**
      * Get the tax breakdown for this transaction.
      * 

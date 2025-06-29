@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\PayrollController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TaxController;
 use App\Http\Controllers\Api\TransactionController;
+use App\Http\Controllers\Api\TipDistributionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -156,6 +157,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/time-clock/{id}/approve', [\App\Http\Controllers\Api\TimeClockController::class, 'approve']);
     Route::get('/time-clock/employee/{employeeId}/status', [\App\Http\Controllers\Api\TimeClockController::class, 'status']);
     Route::get('/time-clock/employee/{employeeId}/weekly-report', [\App\Http\Controllers\Api\TimeClockController::class, 'weeklyReport']);
+
+    // Tip Distribution
+    Route::prefix('tips')->group(function () {
+        Route::post('/transactions/{transaction}/distribute', [TipDistributionController::class, 'distribute']);
+        Route::get('/summary', [TipDistributionController::class, 'summary']);
+    });
 
     // Loyalty Program
     Route::prefix('loyalty')->group(function () {
