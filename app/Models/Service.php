@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Service extends Model
 {
     use SoftDeletes;
-    
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -38,7 +40,7 @@ class Service extends Model
         'pre_requisites',
         'aftercare_instructions',
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
@@ -142,7 +144,7 @@ class Service extends Model
     {
         $hours = floor($this->duration / 60);
         $minutes = $this->duration % 60;
-        
+
         $parts = [];
         if ($hours > 0) {
             $parts[] = $hours . ' ' . Str::plural('hr', $hours);
@@ -150,7 +152,7 @@ class Service extends Model
         if ($minutes > 0) {
             $parts[] = $minutes . ' ' . Str::plural('min', $minutes);
         }
-        
+
         return implode(' ', $parts) ?: '0 min';
     }
 

@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Appointment extends Model
 {
     use \Illuminate\Database\Eloquent\SoftDeletes;
-    
+    use HasFactory;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -24,7 +26,7 @@ class Appointment extends Model
         'is_paid',
         'cancellation_reason',
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
@@ -36,7 +38,7 @@ class Appointment extends Model
         'total_price' => 'decimal:2',
         'is_paid' => 'boolean',
     ];
-    
+
     /**
      * Get the client that owns the appointment.
      */
@@ -44,7 +46,7 @@ class Appointment extends Model
     {
         return $this->belongsTo(Client::class);
     }
-    
+
     /**
      * Get the staff member that owns the appointment.
      */
@@ -52,7 +54,7 @@ class Appointment extends Model
     {
         return $this->belongsTo(Staff::class);
     }
-    
+
     /**
      * Get the services for the appointment.
      */
@@ -62,7 +64,7 @@ class Appointment extends Model
             ->withPivot('price', 'duration')
             ->withTimestamps();
     }
-    
+
     /**
      * Get the products for the appointment.
      */
@@ -72,7 +74,7 @@ class Appointment extends Model
             ->withPivot('quantity', 'price')
             ->withTimestamps();
     }
-    
+
     /**
      * Get the payments for the appointment.
      */
@@ -80,7 +82,7 @@ class Appointment extends Model
     {
         return $this->hasMany(Payment::class);
     }
-    
+
     /**
      * Get the duration of the appointment in minutes.
      *

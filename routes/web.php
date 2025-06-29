@@ -215,9 +215,15 @@ Route::middleware(['auth:web'])->group(function () {
     });
 
     Route::middleware(['auth:web', 'role:admin'])->group(function () {
+        // Client Reports
+        Route::prefix('reports/clients')->name('reports.clients.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Admin\ClientReportController::class, 'index'])->name('index');
+            Route::get('/export', [\App\Http\Controllers\Admin\ClientReportController::class, 'export'])->name('export');
+            Route::get('/{client}/export', [\App\Http\Controllers\Admin\ClientReportController::class, 'exportSingle'])->name('export.single');
+        });
 
-    // Email Marketing Dashboard
-    Route::get('/email-marketing/dashboard', [EmailMarketingDashboardController::class, 'index'])->name('email-marketing.dashboard');
+        // Email Marketing Dashboard
+        Route::get('/email-marketing/dashboard', [EmailMarketingDashboardController::class, 'index'])->name('email-marketing.dashboard');
 
     // Drip Campaign Routes
     Route::resource('drip-campaigns', DripCampaignController::class);

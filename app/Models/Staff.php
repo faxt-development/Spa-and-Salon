@@ -12,10 +12,12 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Staff extends Model
 {
     use SoftDeletes;
+    use HasFactory;
 
     /**
      * The table associated with the model.

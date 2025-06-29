@@ -27,6 +27,7 @@
         "@fullcalendar/interaction": "^6.1.17",
         "@fullcalendar/list": "^6.1.17",
         "@fullcalendar/timegrid": "^6.1.17",
+        "chart.js": "^4.5.0",
         "flatpickr": "^4.6.13"
     }
 }
