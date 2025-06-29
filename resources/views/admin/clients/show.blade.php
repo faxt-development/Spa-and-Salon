@@ -30,6 +30,11 @@
                         <!-- Client Avatar/Initials -->
                         <div class="flex-shrink-0 flex items-center justify-center h-32 w-32 rounded-full bg-gray-200 text-gray-600 text-3xl font-bold mb-4 md:mb-0">
                             {{ substr($client->first_name, 0, 1) }}{{ substr($client->last_name, 0, 1) }}
+                            @if($client->total_spent > 0)
+                                <div class="absolute -bottom-1 -right-1 bg-green-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                                    {{ $client->total_appointments }}
+                                </div>
+                            @endif
                         </div>
                         
                         <!-- Client Details -->
@@ -70,6 +75,26 @@
                                 <p class="mt-1">{{ $client->notes ?? 'No notes available' }}</p>
                             </div>
                             
+                            <!-- Client Stats Grid -->
+                            <div class="mt-4 grid grid-cols-2 gap-4">
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-xs text-gray-500">Lifetime Value</p>
+                                    <p class="text-lg font-semibold">${{ number_format($client->lifetime_value, 2) }}</p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-xs text-gray-500">Total Visits</p>
+                                    <p class="text-lg font-semibold">{{ $client->total_appointments }}</p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-xs text-gray-500">Avg. Spend/Visit</p>
+                                    <p class="text-lg font-semibold">${{ number_format($client->average_visit_value, 2) }}</p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-lg">
+                                    <p class="text-xs text-gray-500">Days Since Last Visit</p>
+                                    <p class="text-lg font-semibold">{{ $client->days_since_last_visit ?? 'N/A' }}</p>
+                                </div>
+                            </div>
+                            
                             <div class="mt-4 flex items-center text-sm text-gray-500">
                                 <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
@@ -83,6 +108,15 @@
                                 </svg>
                                 <span>{{ __('Last visit') }}: {{ $client->last_visit ? $client->last_visit->format('F j, Y') : 'Never' }}</span>
                             </div>
+                            
+                            @if($client->source)
+                            <div class="mt-1 flex items-center text-sm text-gray-500">
+                                <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                </svg>
+                                <span>{{ __('Source') }}: {{ ucfirst(str_replace('_', ' ', $client->source)) }}</span>
+                            </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -121,33 +155,92 @@
                         <!-- Upcoming Appointments -->
                         <div x-show="activeTab === 'upcoming'">
                             <p class="text-gray-500">{{ __('No upcoming appointments.') }}</p>
-                            <!-- This would be replaced with actual appointment data from the controller -->
                         </div>
                         
                         <!-- Past Appointments -->
                         <div x-show="activeTab === 'past'" x-cloak>
-                            <p class="text-gray-500">{{ __('No past appointments.') }}</p>
-                            <!-- This would be replaced with actual appointment data from the controller -->
+                            @if($client->appointments->count() > 0)
+                                <div class="space-y-4">
+                                    @foreach($client->appointments as $appointment)
+                                        <div class="border rounded-lg p-4 hover:bg-gray-50">
+                                            <div class="flex justify-between">
+                                                <div>
+                                                    <p class="font-medium">{{ $appointment->start_time->format('F j, Y \a\t g:i A') }}</p>
+                                                    <p class="text-sm text-gray-600">
+                                                        {{ $appointment->services->pluck('name')->implode(', ') }}
+                                                    </p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="font-medium">${{ number_format($appointment->total_price, 2) }}</p>
+                                                    <p class="text-sm text-gray-600">{{ $appointment->status }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-gray-500">{{ __('No past appointments.') }}</p>
+                            @endif
                         </div>
                         
                         <!-- Canceled Appointments -->
                         <div x-show="activeTab === 'canceled'" x-cloak>
                             <p class="text-gray-500">{{ __('No canceled appointments.') }}</p>
-                            <!-- This would be replaced with actual appointment data from the controller -->
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Client Purchases Section -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <!-- Client Spend Analytics -->
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium text-gray-900">{{ __('Purchase History') }}</h3>
-                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Spend Analytics') }}</h3>
                     
-                    <p class="text-gray-500">{{ __('No purchase history available.') }}</p>
-                    <!-- This would be replaced with actual purchase data from the controller -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Spend by Category -->
+                        <div>
+                            <h4 class="font-medium text-gray-700 mb-3">{{ __('Spend by Category') }}</h4>
+                            @if($spendByCategory->isNotEmpty())
+                                <div class="space-y-2">
+                                    @foreach($spendByCategory as $category)
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span>{{ $category->category }}</span>
+                                                <span class="font-medium">${{ number_format($category->total_spent, 2) }}</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                                <div class="bg-blue-600 h-2 rounded-full" style="width: {{ ($category->total_spent / $spendByCategory->sum('total_spent')) * 100 }}%"></div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-gray-500">{{ __('No spend data available.') }}</p>
+                            @endif
+                        </div>
+                        
+                        <!-- Payment Methods -->
+                        <div>
+                            <h4 class="font-medium text-gray-700 mb-3">{{ __('Payment Methods') }}</h4>
+                            @if($paymentMethods->isNotEmpty())
+                                <div class="space-y-3">
+                                    @foreach($paymentMethods as $method)
+                                        <div>
+                                            <div class="flex justify-between text-sm mb-1">
+                                                <span>{{ ucfirst($method->payment_method) }}</span>
+                                                <span class="font-medium">${{ number_format($method->total_amount, 2) }}</span>
+                                            </div>
+                                            <div class="text-xs text-gray-500">
+                                                {{ $method->transaction_count }} {{ Str::plural('transaction', $method->transaction_count) }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <p class="text-gray-500">{{ __('No payment data available.') }}</p>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

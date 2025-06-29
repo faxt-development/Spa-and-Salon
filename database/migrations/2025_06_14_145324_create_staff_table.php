@@ -23,8 +23,10 @@ return new class extends Migration
             $table->boolean('active')->default(true);
             $table->time('work_start_time')->nullable();
             $table->time('work_end_time')->nullable();
-            $table->json('work_days')->nullable()->comment('JSON array of working days');
+            $table->json('work_days')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->decimal('commission_rate', 5, 2)->nullable();
+            $table->foreignId('commission_structure_id')->nullable()->constrained('commission_structures')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });

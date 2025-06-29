@@ -15,10 +15,10 @@ class GenerateStaffPerformanceMetrics extends Command
      *
      * @var string
      */
-    protected $signature = 'metrics:generate-staff-performance 
-                            {--date= : The date to generate metrics for (Y-m-d)} 
-                            {--days=1 : Number of days to generate metrics for} 
-                            {--staff= : Comma-separated list of staff IDs}'
+    protected $signature = 'metrics:generate-staff-performance
+                            {--date= : The date to generate metrics for (Y-m-d)}
+                            {--days=1 : Number of days to generate metrics for}
+                            {--staff= : Comma-separated list of staff IDs}
                             {--force : Force regeneration of existing metrics}';
 
     /**
@@ -33,59 +33,59 @@ class GenerateStaffPerformanceMetrics extends Command
      */
     public function handle(PerformanceMetricsService $metricsService)
     {
-        $date = $this->option('date') 
+        $date = $this->option('date')
             ? Carbon::parse($this->option('date'))
             : Carbon::yesterday();
-            
+
         $days = (int) $this->option('days');
         $staffIds = $this->option('staff')
             ? explode(',', $this->option('staff'))
             : [];
-            
+
         $force = $this->option('force');
-        
+
         $this->info(sprintf(
             'Generating performance metrics for %d day(s) starting from %s',
             $days,
             $date->format('Y-m-d')
         ));
-        
+
         $bar = $this->output->createProgressBar($days);
-        
+
         for ($i = 0; $i < $days; $i++) {
             $currentDate = $date->copy()->addDays($i);
             $this->generateForDate($currentDate, $staffIds, $force);
             $bar->advance();
         }
-        
+
         $bar->finish();
         $this->newLine();
         $this->info('Performance metrics generation completed.');
-        
+
         return Command::SUCCESS;
     }
-    
+
     /**
      * Generate metrics for a specific date
      */
     protected function generateForDate(Carbon $date, array $staffIds, bool $force = false): void
     {
         $query = Staff::query()->active();
-        
+
         if (!empty($staffIds)) {
             $query->whereIn('id', $staffIds);
         }
-        
+
         $staffMembers = $query->get();
-        
+
         $this->line(sprintf(
             'Generating metrics for %d staff members for %s',
             $staffMembers->count(),
             $date->format('Y-m-d')
         ));
-        
+
         $bar = $this->output->createProgressBar($staffMembers->count());
-        
+
         foreach ($staffMembers as $staff) {
             try {
                 // Skip if metrics already exist and we're not forcing regeneration
@@ -93,7 +93,7 @@ class GenerateStaffPerformanceMetrics extends Command
                     $bar->advance();
                     continue;
                 }
-                
+
                 $staff->generatePerformanceMetrics($date);
                 $bar->advance();
             } catch (\Exception $e) {
@@ -110,7 +110,7 @@ class GenerateStaffPerformanceMetrics extends Command
                 ]);
             }
         }
-        
+
         $bar->finish();
         $this->newLine();
     }

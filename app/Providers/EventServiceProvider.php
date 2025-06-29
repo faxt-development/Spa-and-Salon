@@ -45,7 +45,8 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        // Register the observer for client spend tracking
+        \App\Models\Payment::observe(\App\Observers\ClientSpendObserver::class);
     }
 
 

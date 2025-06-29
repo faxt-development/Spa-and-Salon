@@ -94,9 +94,50 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        $client = Client::findOrFail($id);
+        $client = Client::withCount([
+            'appointments as total_appointments' => function($query) {
+                $query->where('status', 'completed');
+            },
+            'payments as total_payments' => function($query) {
+                $query->where('status', 'completed');
+            }
+        ])
+        ->with(['appointments' => function($query) {
+            $query->where('status', 'completed')
+                  ->orderBy('start_time', 'desc')
+                  ->take(5);
+        }])
+        ->findOrFail($id);
         
-        return view('admin.clients.show', compact('client'));
+        // Get spend by category
+        $spendByCategory = \App\Models\Appointment::select(
+            'services.name as category',
+            DB::raw('SUM(appointment_service.price) as total_spent')
+        )
+        ->join('appointment_service', 'appointments.id', '=', 'appointment_service.appointment_id')
+        ->join('services', 'appointment_service.service_id', '=', 'services.id')
+        ->where('appointments.client_id', $id)
+        ->where('appointments.status', 'completed')
+        ->groupBy('services.name')
+        ->orderBy('total_spent', 'desc')
+        ->get();
+        
+        // Get payment methods
+        $paymentMethods = \App\Models\Payment::select(
+            'payment_method',
+            DB::raw('COUNT(*) as transaction_count'),
+            DB::raw('SUM(amount) as total_amount')
+        )
+        ->where('client_id', $id)
+        ->where('status', 'completed')
+        ->groupBy('payment_method')
+        ->get();
+        
+        return view('admin.clients.show', compact(
+            'client', 
+            'spendByCategory',
+            'paymentMethods'
+        ));
     }
 
     /**

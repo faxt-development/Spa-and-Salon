@@ -57,6 +57,8 @@ class Staff extends Model
         'certifications',
         'languages',
         'notes',
+        'commission_rate',
+        'commission_structure_id',
     ];
 
     /**
@@ -76,6 +78,7 @@ class Staff extends Model
         'specialties' => 'array',
         'certifications' => 'array',
         'languages' => 'array',
+        'commission_rate' => 'decimal:2',
     ];
 
     /**
@@ -122,7 +125,7 @@ class Staff extends Model
     {
         return $this->hasMany(StaffPerformanceMetric::class);
     }
-    
+
     /**
      * Get the commission payments for the staff member.
      */
@@ -210,17 +213,17 @@ class Staff extends Model
     {
         // Calculate available working hours
         $availableHours = $this->calculateAvailableHours($startDate, $endDate);
-        
+
         // Calculate booked hours from appointments
         $bookedHours = $this->appointments()
             ->whereBetween('start_time', [$startDate, $endDate])
             ->whereIn('status', ['confirmed', 'completed'])
             ->sum(DB::raw('TIME_TO_SEC(TIMEDIFF(end_time, start_time)) / 3600'));
-        
-        $utilizationRate = $availableHours > 0 
+
+        $utilizationRate = $availableHours > 0
             ? min(100, ($bookedHours / $availableHours) * 100)
             : 0;
-            
+
         return [
             'available_hours' => round($availableHours, 2),
             'booked_hours' => round($bookedHours, 2),
@@ -235,15 +238,15 @@ class Staff extends Model
     {
         $totalHours = 0;
         $period = CarbonPeriod::create($startDate, $endDate);
-        
+
         foreach ($period as $date) {
             $dayOfWeek = strtolower($date->format('l'));
-            
+
             // Skip if not a working day
             if (!in_array($dayOfWeek, $this->work_days ?? $this->defaultWorkDays)) {
                 continue;
             }
-            
+
             // Calculate working hours for the day
             if ($this->work_start_time && $this->work_end_time) {
                 $start = Carbon::parse($this->work_start_time);
@@ -251,7 +254,7 @@ class Staff extends Model
                 $totalHours += $end->diffInHours($start);
             }
         }
-        
+
         return $totalHours;
     }
 
@@ -262,10 +265,10 @@ class Staff extends Model
     {
         $startOfDay = Carbon::parse($date)->startOfDay();
         $endOfDay = Carbon::parse($date)->endOfDay();
-        
+
         // Get utilization data
         $utilization = $this->calculateUtilization($startOfDay, $endOfDay);
-        
+
         // Get revenue data
         $revenueData = $this->transactions()
             ->whereBetween('transaction_date', [$startOfDay, $endOfDay])
@@ -275,7 +278,7 @@ class Staff extends Model
                 DB::raw('SUM(commission_amount) as total_commission')
             ])
             ->first();
-        
+
         // Get appointment data
         $appointmentData = $this->appointments()
             ->whereBetween('start_time', [$startOfDay, $endOfDay])
@@ -284,20 +287,20 @@ class Staff extends Model
                 DB::raw('COUNT(DISTINCT client_id) as unique_clients')
             ])
             ->first();
-        
+
         // Calculate metrics
-        $revenuePerHour = $utilization['booked_hours'] > 0 
-            ? $revenueData->total_revenue / $utilization['booked_hours'] 
+        $revenuePerHour = $utilization['booked_hours'] > 0
+            ? $revenueData->total_revenue / $utilization['booked_hours']
             : 0;
-            
-        $averageTicketValue = $appointmentData->appointments_completed > 0 
-            ? $revenueData->total_revenue / $appointmentData->appointments_completed 
+
+        $averageTicketValue = $appointmentData->appointments_completed > 0
+            ? $revenueData->total_revenue / $appointmentData->appointments_completed
             : 0;
-            
-        $averageCommissionRate = $revenueData->total_revenue > 0 
-            ? ($revenueData->total_commission / $revenueData->total_revenue) * 100 
+
+        $averageCommissionRate = $revenueData->total_revenue > 0
+            ? ($revenueData->total_commission / $revenueData->total_revenue) * 100
             : 0;
-        
+
         // Create or update the performance metric
         return $this->performanceMetrics()->updateOrCreate(
             ['metric_date' => $date],
