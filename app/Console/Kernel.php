@@ -42,6 +42,18 @@ class Kernel extends ConsoleKernel
                  ->weeklyOn(1, '11:00') // Monday at 11:00 AM
                  ->withoutOverlapping()
                  ->appendOutputTo(storage_path('logs/reengagement-campaigns.log'));
+                 
+        // Generate daily revenue snapshots at 1:00 AM
+        $schedule->command('revenue:generate-snapshots')
+                 ->dailyAt('01:00')
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/revenue-snapshots.log'));
+                 
+        // Clean up old revenue snapshots on the first day of each month at 2:00 AM
+        $schedule->command('revenue:cleanup-snapshots --days=730') // Keep 2 years of data
+                 ->monthlyOn(1, '02:00')
+                 ->withoutOverlapping()
+                 ->appendOutputTo(storage_path('logs/revenue-cleanup.log'));
     }
 
     /**

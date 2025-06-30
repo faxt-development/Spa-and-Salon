@@ -11,6 +11,7 @@ use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -81,5 +82,29 @@ class User extends Authenticatable
     public function giftcards(): HasMany
     {
         return $this->hasMany(GiftCard::class);
+    }
+
+    /**
+     * Get the user's clients.
+     */
+    public function clients(): HasMany
+    {
+        return $this->hasMany(Client::class, 'user_id');
+    }
+
+    /**
+     * Get the user's dashboard widgets.
+     */
+    public function dashboardWidgets(): HasMany
+    {
+        return $this->hasMany(\App\Models\DashboardWidget::class);
+    }
+
+    /**
+     * Get the user's dashboard preferences.
+     */
+    public function dashboardPreference(): HasOne
+    {
+        return $this->hasOne(\App\Models\UserDashboardPreference::class);
     }
 }

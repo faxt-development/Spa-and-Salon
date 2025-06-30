@@ -7,6 +7,12 @@
 
     <div class="py-6" x-data="dashboard">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Configurable Dashboard Area -->
+            <x-dashboard.configurable-area />
+            
+            <div class="border-t border-gray-200 my-6"></div>
+            
+            <!-- Original Dashboard Content -->
             <!-- Stats Overview -->
             <div class="grid grid-cols-1 gap-5 mt-6 sm:grid-cols-2 lg:grid-cols-4">
                 <!-- Today's Appointments -->

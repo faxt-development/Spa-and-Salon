@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
             LoyaltyProgramSeeder::class,
             // New transaction architecture seeders
             TransactionSeeder::class,
+            // Generate sample revenue data
+            RevenueDataSeeder::class,
         ]);
 
         // Create admin user

@@ -17,6 +17,9 @@ use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TaxController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TipDistributionController;
+use App\Http\Controllers\Api\Dashboard\WidgetController;
+use App\Http\Controllers\Api\Dashboard\PreferenceController;
+use App\Http\Controllers\Api\Dashboard\AnalyticsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +58,9 @@ Route::get('/public/services/categories', [ServiceController::class, 'publicCate
 Route::get('/public/services/category/{category}', [ServiceController::class, 'servicesByCategory']);
 Route::post('/booking/availability', [BookingController::class, 'checkAvailability']);
 
+// Locations endpoint for dashboard filters
+Route::get('/locations', [\App\Http\Controllers\Api\LocationController::class, 'index']);
+
 // Client appointments
 Route::middleware('auth:sanctum')->get('/client/appointments', [AppointmentController::class, 'clientAppointments']);
 
@@ -79,6 +85,29 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/staff/stats', [DashboardController::class, 'getStaffStats']);
     Route::get('/dashboard/revenue/stats', [DashboardController::class, 'getRevenueStats']);
     Route::get('/dashboard/walk-ins/queue-stats', [WalkInController::class, 'getQueueStats']);
+    
+    // Dashboard Widgets
+    Route::apiResource('dashboard/widgets', WidgetController::class);
+    
+    // Dashboard Preferences
+    Route::prefix('dashboard/preferences')->group(function () {
+        Route::get('/', [PreferenceController::class, 'index']);
+        Route::put('/', [PreferenceController::class, 'update']);
+        Route::post('/reset', [PreferenceController::class, 'reset']);
+    });
+    
+    // Dashboard Analytics
+    Route::prefix('dashboard/analytics')->group(function () {
+        // Revenue Analytics
+        Route::get('/revenue/trends', [AnalyticsController::class, 'revenueTrends']);
+        Route::get('/revenue/by-location', [AnalyticsController::class, 'revenueByLocation']);
+        
+        // Performance Analytics
+        Route::get('/top/services', [AnalyticsController::class, 'topServices']);
+        Route::get('/top/staff', [AnalyticsController::class, 'topStaff']);
+        Route::get('/services/{serviceId}/metrics', [AnalyticsController::class, 'serviceMetrics']);
+        Route::get('/staff/{staffId}/metrics', [AnalyticsController::class, 'staffMetrics']);
+    });
 
     // Gift Card Management
     Route::apiResource('gift-cards', \App\Http\Controllers\Api\GiftCardController::class)->except(['show', 'store']);

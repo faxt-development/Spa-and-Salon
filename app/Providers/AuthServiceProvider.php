@@ -16,6 +16,8 @@ class AuthServiceProvider extends ServiceProvider
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
         \App\Models\Appointment::class => \App\Policies\AppointmentPolicy::class,
         \App\Models\CommissionStructure::class => \App\Policies\CommissionStructurePolicy::class,
+        \App\Models\DashboardWidget::class => \App\Policies\DashboardWidgetPolicy::class,
+        \App\Models\UserDashboardPreference::class => \App\Policies\UserDashboardPreferencePolicy::class,
     ];
 
     /**
