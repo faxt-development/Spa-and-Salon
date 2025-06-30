@@ -35,7 +35,18 @@
 
 @section('content')
 <div class="container-fluid px-4">
-    <h1 class="mt-4">Tax Reports</h1>
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="mt-4">Tax Reports</h1>
+        <div class="mt-4">
+            <x-export-buttons 
+                type="tax" 
+                label="Export Report" 
+                class="btn btn-primary" 
+                :showIcon="true"
+                size="md"
+            />
+        </div>
+    </div>
     
     <!-- Loading Overlay -->
     <div x-data="{ isLoading: false }" 

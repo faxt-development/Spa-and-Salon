@@ -82,6 +82,76 @@ class FinancialReportingService
     }
 
     /**
+     * Get revenue by service category
+     * 
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param array $filters
+     * @return Collection
+     */
+    public function getRevenueByServiceCategory(Carbon $startDate, Carbon $endDate, array $filters = []): Collection
+    {
+        $query = \App\Models\OrderItem::query()
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->leftJoin('service_categories', 'order_items.service_category_id', '=', 'service_categories.id')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->whereNotNull('order_items.service_category_id')
+            ->select([
+                'service_categories.id as category_id',
+                'service_categories.name as category_name',
+                DB::raw('SUM(order_items.total) as revenue'),
+                DB::raw('COUNT(DISTINCT orders.id) as order_count'),
+                DB::raw('SUM(order_items.quantity) as service_count'),
+                DB::raw('AVG(order_items.total) as average_service_price'),
+                DB::raw('COUNT(DISTINCT orders.client_id) as client_count'),
+            ])
+            ->groupBy('service_categories.id', 'service_categories.name')
+            ->orderBy('revenue', 'desc');
+            
+        // Apply filters
+        $this->applyServiceCategoryFilters($query, $filters);
+        
+        return $query->get();
+    }
+    
+    /**
+     * Get service performance by category
+     * 
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param array $filters
+     * @return Collection
+     */
+    public function getServicePerformanceByCategory(Carbon $startDate, Carbon $endDate, array $filters = []): Collection
+    {
+        $query = \App\Models\OrderItem::query()
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->join('services', 'order_items.itemable_id', '=', 'services.id')
+            ->leftJoin('service_categories', 'order_items.service_category_id', '=', 'service_categories.id')
+            ->where('order_items.itemable_type', 'App\\Models\\Service')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->whereNotNull('order_items.service_category_id')
+            ->select([
+                'services.id as service_id',
+                'services.name as service_name',
+                'service_categories.id as category_id',
+                'service_categories.name as category_name',
+                DB::raw('SUM(order_items.quantity) as service_count'),
+                DB::raw('SUM(order_items.total) as total_revenue'),
+                DB::raw('AVG(order_items.unit_price) as average_price'),
+                DB::raw('COUNT(DISTINCT orders.id) as order_count'),
+            ])
+            ->groupBy('services.id', 'services.name', 'service_categories.id', 'service_categories.name')
+            ->orderBy('service_categories.name')
+            ->orderBy('total_revenue', 'desc');
+            
+        // Apply filters
+        $this->applyServiceCategoryFilters($query, $filters);
+        
+        return $query->get();
+    }
+    
+    /**
      * Get revenue by category (service, product, etc.)
      * 
      * @param Carbon $startDate
@@ -503,38 +573,105 @@ class FinancialReportingService
     }
 
     /**
-     * Apply common filters to a query
+     * Get service category report
+     * 
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param array $filters
+     * @return Collection
      */
-    protected function applyFilters($query, array $filters): void
+    public function getServiceCategoryReport(Carbon $startDate, Carbon $endDate, array $filters = []): Collection
     {
-        if (!empty($filters['location_id'])) {
-            $query->where('location_id', $filters['location_id']);
-        }
+        $query = OrderItem::query()
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->join('services', 'services.id', '=', 'order_items.itemable_id')
+            ->join('service_categories', 'service_categories.id', '=', 'services.category_id')
+            ->whereBetween('orders.created_at', [$startDate, $endDate])
+            ->where('order_items.itemable_type', 'App\Models\Service')
+            ->select([
+                'service_categories.id as category_id',
+                'service_categories.name as category_name',
+                DB::raw('SUM(order_items.quantity * order_items.price) as total_revenue'),
+                DB::raw('COUNT(DISTINCT orders.id) as transaction_count'),
+                DB::raw('AVG(order_items.quantity * order_items.price) as average_transaction_value'),
+            ])
+            ->groupBy('service_categories.id', 'service_categories.name')
+            ->orderBy('total_revenue', 'desc');
 
-        if (!empty($filters['staff_id'])) {
-            $query->where('staff_id', $filters['staff_id']);
-        }
+        // Apply filters
+        $this->applyServiceCategoryFilters($query, $filters);
 
-        if (!empty($filters['service_id'])) {
-            $query->where('line_item_type', 'service')
-                  ->where('line_item_id', $filters['service_id']);
-        }
-        
-        if (!empty($filters['payment_method_id'])) {
-            $query->where('payment_method_id', $filters['payment_method_id']);
-        }
+        return $query->get();
+    }
 
-        if (!empty($filters['product_id'])) {
-            $query->where('line_item_type', 'product')
-                  ->where('line_item_id', $filters['product_id']);
+    /**
+     * Apply filters to the service category query
+     * 
+     * @param \Illuminate\Database\Query\Builder $query
+     * @param array $filters
+     * @return void
+     */
+    protected function applyServiceCategoryFilters($query, array $filters = []): void
+    {
+        foreach ($filters as $key => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            
+            switch ($key) {
+                case 'category_id':
+                    $query->where('service_categories.id', $value);
+                    break;
+                case 'service_id':
+                    $query->where('order_items.itemable_id', $value)
+                          ->where('order_items.itemable_type', 'App\Models\Service');
+                    break;
+                case 'staff_id':
+                    $query->where('orders.staff_id', $value);
+                    break;
+                case 'location_id':
+                    $query->where('orders.location_id', $value);
+                    break;
+                // Add more filter cases as needed
+            }
         }
+    }
 
-        if (!empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
-        }
-        
-        if (!empty($filters['payment_method_id'])) {
-            $query->where('payment_method_id', $filters['payment_method_id']);
+    /**
+     * Apply filters to the query
+     * 
+     * @param \Illuminate\Database\Query\Builder $query
+     * @param array $filters
+     * @return void
+     */
+    protected function applyFilters($query, array $filters = []): void
+    {
+        foreach ($filters as $key => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+            
+            switch ($key) {
+                case 'location_id':
+                    $query->where('location_id', $value);
+                    break;
+                case 'staff_id':
+                    $query->where('staff_id', $value);
+                    break;
+                case 'service_id':
+                    $query->where('service_id', $value);
+                    break;
+                case 'product_id':
+                    $query->where('product_id', $value);
+                    break;
+                case 'payment_method_id':
+                    $query->where('payment_method_id', $value);
+                    break;
+                case 'client_id':
+                    $query->where('client_id', $value);
+                    break;
+                // Add more filter cases as needed
+            }
         }
     }
 

@@ -24,6 +24,7 @@ class OrderItem extends Model
         'order_id',
         'itemable_id',
         'itemable_type',
+        'service_category_id',
         'name',
         'quantity',
         'unit_price',
@@ -47,6 +48,7 @@ class OrderItem extends Model
         'tax_amount' => 'decimal:2',
         'subtotal' => 'decimal:2',
         'total' => 'decimal:2',
+        'service_category_id' => 'integer',
     ];
 
     /**
@@ -63,6 +65,14 @@ class OrderItem extends Model
     public function itemable(): MorphTo
     {
         return $this->morphTo();
+    }
+    
+    /**
+     * Get the service category for this order item.
+     */
+    public function serviceCategory(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(ServiceCategory::class);
     }
     
     /**

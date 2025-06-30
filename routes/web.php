@@ -14,6 +14,7 @@ use App\Http\Controllers\EmailTrackingController;
 use App\Http\Controllers\EmailMarketingDashboardController;
 use App\Http\Controllers\DripCampaignController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ExportController;
 
 
 // Public routes
@@ -55,9 +56,19 @@ Route::middleware(['auth:web'])->get('/debug-auth', function () {
 // Dashboard routes
 // Admin routes
 Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->group(function () {
-    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/todays-schedule', [\App\Http\Controllers\Admin\DashboardController::class, 'getTodaysSchedule'])->name('dashboard.todays-schedule');
-    Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('dashboard.alerts');
+    // Report routes
+    Route::prefix('reports')->name('reports.')->group(function () {
+        // Service Category Reports
+        Route::get('service-categories', [\App\Http\Controllers\Admin\ReportController::class, 'serviceCategories'])
+            ->name('service.categories');
+        Route::get('service-categories/data', [\App\Http\Controllers\Admin\ReportController::class, 'getServiceCategoryData'])
+            ->name('service.categories.data');
+        Route::get('service-performance/data', [\App\Http\Controllers\Admin\ReportController::class, 'getServicePerformanceData'])
+            ->name('service.performance.data');
+    });
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/dashboard/todays-schedule', [\App\Http\Controllers\Admin\DashboardController::class, 'getTodaysSchedule'])->name('admin.dashboard.todays-schedule');
+    Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('admin.dashboard.alerts');
     
     // Appointments routes - using consolidated AppointmentController
     Route::prefix('appointments')->name('appointments.')->group(function () {
@@ -228,6 +239,28 @@ Route::middleware(['auth:web'])->group(function () {
     // Drip Campaign Routes
     Route::resource('drip-campaigns', DripCampaignController::class);
 
+    // Test Export Page
+    Route::get('/test-export', function () {
+        return view('test-export');
+    })->middleware('auth');
+
+    // Export Routes
+    Route::prefix('export')->name('export.')->middleware(['auth', 'admin'])->group(function () {
+        // Excel Exports
+        Route::get('excel/{type}', [ExportController::class, 'exportExcel'])
+            ->name('excel')
+            ->where('type', 'appointments|services|orders');
+        
+        // PDF Exports
+        Route::get('pdf/{type}', [ExportController::class, 'exportPdf'])
+            ->name('pdf')
+            ->where('type', 'appointments|services|orders');
+        
+        // Preview PDF (for testing)
+        Route::get('preview/{type}', function ($type) {
+            return app(ExportController::class)->exportPdf(request(), $type);
+        })->name('preview')->where('type', 'appointments|services|orders');
+    });
 
         Route::resource('promotions', PromotionController::class);
 

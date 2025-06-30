@@ -241,10 +241,20 @@ class PosController extends Controller
                 $orderItem->order_id = $order->id;
                 $orderItem->itemable_type = $item['type'] === 'product' ? Product::class : Service::class;
                 $orderItem->itemable_id = $item['id'];
+                
+                // Set service category if this is a service
+                if ($item['type'] === 'service') {
+                    $service = Service::with('categories')->find($item['id']);
+                    if ($service && $service->categories->isNotEmpty()) {
+                        // Use the first category as the primary category
+                        $orderItem->service_category_id = $service->categories->first()->id;
+                    }
+                }
+                
                 $orderItem->name = $item['name'];
                 $orderItem->quantity = $item['quantity'];
                 $orderItem->unit_price = $item['price'];
-                $orderItem->discount = isset($item['discount']) ? $item['discount'] : 0;
+                $orderItem->discount = $item['discount'] ?? 0;
                 $orderItem->tax_rate = $item['tax_rate'] ?? 0;
                 $orderItem->tax_amount = $item['tax_amount'] ?? 0;
                 $orderItem->subtotal = $item['subtotal'];

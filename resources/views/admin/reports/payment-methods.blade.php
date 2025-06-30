@@ -27,7 +27,14 @@
     <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">Payment Method Reports</h1>
-            <div>
+            <div class="d-flex gap-2">
+                <x-export-buttons 
+                    type="payment-methods" 
+                    label="Export Report" 
+                    class="btn btn-success" 
+                    :showIcon="true"
+                    size="sm"
+                />
                 <button class="btn btn-primary" onclick="window.print()">
                     <i class="fas fa-print"></i> Print Report
                 </button>
