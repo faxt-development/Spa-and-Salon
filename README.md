@@ -1,61 +1,333 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Spa & Salon Management SaaS - User Actions Reference
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This document contains all unique actions that users can perform in the spa and salon management software, organized by user role and functional area.
 
-## About Laravel
+## Authentication & User Management
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### All Users
+- **Register** for a new account
+- **Login** to the system
+- **Logout** from the system
+- **Update profile** information
+- **Change password**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Admin Users
+- **Manage users** (create, edit, view, delete user accounts)
+- **Assign roles** to users (Admin, Staff, Client)
+- **Manage permissions** for different user roles
+- **Create new roles** and define their permissions
+- **Edit existing roles** and permissions
+- **View user activity** and access logs
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Appointment Management
 
-## Learning Laravel
+### Staff & Admin
+- **View appointment schedule** (daily/weekly/monthly views)
+- **Create new appointments** for clients
+- **Edit existing appointments** (time, service, staff assignment)
+- **Cancel appointments**
+- **Reschedule appointments**
+- **Mark appointments as completed**
+- **Mark appointments as no-show**
+- **Check appointment status** (checked in, in progress, completed)
+- **View appointment history** for clients
+- **Check staff availability** before booking
+- **Calculate appointment pricing** automatically
+- **Reserve appointment slots**
+- **Block time slots** for staff breaks or maintenance
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Clients
+- **Book appointments** online
+- **View upcoming appointments**
+- **Reschedule appointments** (within policy limits)
+- **Cancel appointments** (within policy limits)
+- **View appointment history**
+- **Select preferred staff member** for services
+- **Choose service time slots** from available options
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Walk-in Queue Management
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Staff
+- **Add walk-in clients** to queue
+- **View current walk-in queue**
+- **Update walk-in status** (waiting, in service, skipped, done)
+- **Remove clients** from walk-in queue
+- **Estimate wait times** for walk-in clients
+- **Start service** for walk-in clients
+- **Skip walk-in clients** in queue
+- **Filter walk-in queue** by service type or staff preference
 
-## Laravel Sponsors
+## Client Management
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Staff & Admin
+- **Create client profiles**
+- **Edit client information**
+- **View client details** and service history
+- **Search for clients** by name, phone, or email
+- **View client spend history**
+- **Track client lifetime value**
+- **View client visit frequency**
+- **Manage client preferences** and notes
+- **Store client allergies** and health information
+- **Upload client photos** (before/after)
+- **Send messages** to clients
+- **View client loyalty points** and status
 
-### Premium Partners
+### Clients
+- **Update personal information**
+- **View service history** with photos and notes
+- **View loyalty points balance**
+- **View available rewards**
+- **Update service preferences**
+- **Provide feedback** on services received
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Service Management
 
-## Contributing
+### Admin & Staff
+- **Create new services**
+- **Edit service details** (name, description, duration, price)
+- **Delete services**
+- **Categorize services** by type
+- **Set service pricing**
+- **Define service duration**
+- **Assign staff** to specific services
+- **Manage service availability**
+- **Create service packages** and bundles
+- **Set up add-on services**
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Staff Management
 
-## Code of Conduct
+### Admin
+- **Create staff profiles**
+- **Edit staff information**
+- **View staff schedules**
+- **Assign staff to services**
+- **Set staff availability**
+- **Track staff performance metrics**
+- **Calculate staff commissions**
+- **Monitor staff utilization rates**
+- **Manage staff roles** and permissions
+- **Send messages** to staff members
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Staff
+- **View personal schedule**
+- **Update availability**
+- **View assigned appointments**
+- **Complete service records**
+- **Update client notes**
+- **View commission reports**
+- **Request time off**
 
-## Security Vulnerabilities
+## Financial Management & POS
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Staff & Admin
+- **Process payments** (cash, card, gift card)
+- **Apply discounts** and promotions
+- **Calculate taxes** on services and products
+- **Process tips** (assign to staff or pool)
+- **Generate receipts**
+- **Process refunds**
+- **View daily sales reports**
+- **Track revenue by service type**
+- **Track revenue by staff member**
+- **Monitor payment methods** usage
+- **Manage gift card sales** and redemptions
 
-## License
+### Admin Only
+- **View comprehensive revenue reports**
+- **Export financial data** to accounting software
+- **Set tax rates** by location/service
+- **Configure commission structures**
+- **Generate payroll reports**
+- **Track business performance metrics**
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Inventory Management
+
+### Staff & Admin
+- **Add new products** to inventory
+- **Update product quantities**
+- **Set low-stock alerts**
+- **View inventory levels**
+- **Track product sales**
+- **Manage product categories**
+- **Set product pricing**
+- **Process product purchases** during appointments
+- **Generate inventory reports**
+
+## Room & Equipment Management
+
+### Staff & Admin
+- **View room availability**
+- **Assign rooms** to appointments
+- **Track equipment usage**
+- **Schedule equipment maintenance**
+- **Set cleaning protocols** between clients
+- **Monitor equipment status**
+- **Generate utilization reports**
+- **Manage room assignments** for services
+
+## Marketing & Promotions
+
+### Admin
+- **Create promotional codes**
+- **Set discount percentages** or fixed amounts
+- **Define promotion expiration dates**
+- **Set usage limits** per customer
+- **Create seasonal offers**
+- **Manage loyalty programs**
+- **Set up email campaigns**
+- **Create customer segments** for targeted marketing
+- **Track promotion usage rates**
+- **Send appointment reminders** via SMS/email
+- **Send follow-up emails** for reviews
+
+## Gift Cards & Subscriptions
+
+### Staff & Admin
+- **Sell gift cards**
+- **Process gift card redemptions**
+- **Check gift card balances**
+- **Create subscription plans**
+- **Manage subscription renewals**
+- **Track subscription status**
+
+### Clients
+- **Purchase gift cards** online
+- **Check gift card balance**
+- **Redeem gift cards** for services
+- **Subscribe to service plans**
+- **View subscription status**
+- **Manage subscription renewals**
+
+## Reporting & Analytics
+
+### Admin
+- **Generate daily/weekly/monthly reports**
+- **View staff performance reports**
+- **Track client retention rates**
+- **Monitor booking conversion rates**
+- **Analyze revenue trends**
+- **Export data** to CSV/Excel
+- **View utilization reports** for rooms and equipment
+- **Track no-show rates**
+- **Monitor average ticket size**
+- **Analyze client spending patterns**
+
+## Notifications & Communications
+
+### System Automated
+- **Send appointment confirmations**
+- **Send appointment reminders** (24-48 hours before)
+- **Send SMS notifications** for walk-in status
+- **Send follow-up requests** for reviews
+- **Send promotional emails**
+- **Send birthday/anniversary offers**
+- **Send low-stock alerts** to staff
+
+### Manual Communications
+- **Send custom messages** to clients
+- **Send announcements** to staff
+- **Send booking confirmations**
+- **Send cancellation notices**
+
+## Client Forms & Intake
+
+### Clients
+- **Complete digital intake forms**
+- **Provide health information** and allergies
+- **Give consent** for treatments
+- **Update service preferences**
+- **Complete feedback forms**
+
+### Staff
+- **Review client intake forms**
+- **Update client health notes**
+- **Flag important health considerations**
+- **Store consent forms** digitally
+
+## Calendar & Scheduling
+
+### All Users
+- **View calendar** in different formats (daily, weekly, monthly)
+- **Navigate between dates**
+- **Filter calendar** by staff, service, or status
+- **Print schedules**
+- **Sync with external calendars**
+
+## Dashboard Views
+
+### Admin Dashboard
+- **View real-time business metrics**
+- **Monitor today's appointments**
+- **Check staff availability**
+- **View walk-in queue status**
+- **Track daily revenue**
+- **Monitor pending confirmations**
+- **View inventory alerts**
+
+### Staff Dashboard
+- **View personal schedule**
+- **Check assigned appointments**
+- **Monitor commission earnings**
+- **View client notes** and preferences
+- **Access quick booking tools**
+
+### Client Dashboard
+- **View upcoming appointments**
+- **Access quick rebooking options**
+- **Check loyalty points**
+- **View service history**
+- **Update personal information**
+- **Purchase gift certificates**
+
+## AI Assistant Features
+
+### For Staff
+- **Get scheduling suggestions**
+- **Receive upselling recommendations**
+- **Access client preference reminders**
+- **Get product recommendations**
+- **View performance insights**
+- **Receive training material**
+
+### For Clients
+- **Get treatment recommendations**
+- **Receive appointment reminders**
+- **Get product suggestions**
+- **Access loyalty reward updates**
+- **Receive personalized offers**
+
+## System Administration
+
+### Admin Only
+- **Configure system settings**
+- **Manage subscription tiers**
+- **Set up multi-location** support
+- **Configure payment gateways**
+- **Manage API integrations**
+- **Set up email/SMS services**
+- **Configure AI assistant personality**
+- **Manage data backups**
+- **Set system permissions**
+- **Configure automated workflows**
+
+## Hosting Options
+
+### 🚀 Hosted Solution
+Get up and running immediately with our fully managed hosting service provided by **faxt**. This includes:
+- Automatic updates and maintenance
+- Professional support
+- Scalable infrastructure
+- SSL certificates and security
+- Regular backups
+
+**[Get Hosted Solution →](https://faxtina.prasso.io)**
+
+### 🏠 Self-Hosting (Free)
+This software is open source and available for self-hosting at no cost. Perfect for:
+- Developers who want full control
+- Businesses with existing infrastructure
+- Organizations with specific compliance requirements
+- Learning and educational purposes
+
+**Requirements:** PHP 8.1+, Laravel 10+, MySQL/PostgreSQL
