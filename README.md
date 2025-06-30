@@ -310,3 +310,24 @@ This document contains all unique actions that users can perform in the spa and 
 - **Manage data backups**
 - **Set system permissions**
 - **Configure automated workflows**
+
+## Hosting Options
+
+### 🚀 Hosted Solution
+Get up and running immediately with our fully managed hosting service provided by **faxt**. This includes:
+- Automatic updates and maintenance
+- Professional support
+- Scalable infrastructure
+- SSL certificates and security
+- Regular backups
+
+**[Get Hosted Solution →](https://faxtina.prasso.io)**
+
+### 🏠 Self-Hosting (Free)
+This software is open source and available for self-hosting at no cost. Perfect for:
+- Developers who want full control
+- Businesses with existing infrastructure
+- Organizations with specific compliance requirements
+- Learning and educational purposes
+
+**Requirements:** PHP 8.1+, Laravel 10+, MySQL/PostgreSQL
