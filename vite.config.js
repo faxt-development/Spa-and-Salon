@@ -8,7 +8,10 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.js'],
             refresh: true,
         }),
-        react(),
+        react({
+            // This fixes the "can't detect preamble" error
+            jsxRuntime: 'classic'
+        }),
     ],
     server: {
         proxy: {

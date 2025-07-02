@@ -78,6 +78,10 @@ Route::post('/gift-cards/confirm-payment', [\App\Http\Controllers\Api\GiftCardCo
 Route::post('/stripe/webhook', [\App\Http\Controllers\Api\StripeWebhookController::class, 'handleWebhook'])
     ->name('stripe.webhook');
 
+// Subscription checkout endpoint (for marketing site)
+Route::post('/subscriptions/checkout', [\App\Http\Controllers\Api\SubscriptionController::class, 'createCheckoutSession'])
+    ->name('subscriptions.checkout');
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // Dashboard statistics

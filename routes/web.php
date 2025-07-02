@@ -22,6 +22,14 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Pricing page route
+Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index'])->name('pricing');
+
+// Success page after checkout
+Route::get('/success', function() {
+    return view('success');
+})->name('success');
+
 
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
 
