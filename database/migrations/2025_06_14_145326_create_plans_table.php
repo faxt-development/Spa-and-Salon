@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('stripe_plan_id')->nullable();
-            $table->string('billing_cycle'); // monthly, yearly, etc.
+            $table->string('billing_cycle')->default('monthly'); // monthly, yearly, etc.
             $table->decimal('price', 10, 2);
             $table->string('currency')->default('USD');
             $table->integer('trial_days')->default(0);

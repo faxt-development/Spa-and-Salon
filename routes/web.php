@@ -15,6 +15,7 @@ use App\Http\Controllers\EmailMarketingDashboardController;
 use App\Http\Controllers\DripCampaignController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\OnboardingController;
 
 
 // Public routes
@@ -29,6 +30,75 @@ Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index']
 Route::get('/success', function() {
     return view('success');
 })->name('success');
+
+// Onboarding routes
+Route::prefix('onboarding')->name('onboarding.')->group(function () {
+    Route::get('/start', [OnboardingController::class, 'start'])->name('start');
+    Route::get('/user', [OnboardingController::class, 'showUserForm'])->name('user-form');
+    Route::post('/user', [OnboardingController::class, 'processUserForm'])->name('process-user');
+    Route::get('/company', [OnboardingController::class, 'showCompanyForm'])->name('company-form');
+    Route::post('/company', [OnboardingController::class, 'processCompanyForm'])->name('process-company');
+    Route::get('/feature-tour', [OnboardingController::class, 'showFeatureTour'])->name('feature-tour');
+    Route::post('/complete', [OnboardingController::class, 'complete'])->name('complete');
+});
+
+// Test route for simulating onboarding (DEVELOPMENT ONLY - REMOVE IN PRODUCTION)
+Route::get('/test-onboarding', function() {
+    // Simulate a session ID from Stripe
+    $sessionId = 'test_session_' . time();
+    
+    // Store in session
+    session(['stripe_session_id' => $sessionId]);
+    
+    // Create a test user if not logged in
+    if (!auth()->check()) {
+        // Check if test user exists
+        $testUser = \App\Models\User::where('email', 'test@example.com')->first();
+        
+        if (!$testUser) {
+            // Create test user
+            $testUser = \App\Models\User::create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'password' => bcrypt('password'),
+                'email_notifications' => true,
+                'onboarding_completed' => false,
+            ]);
+            
+            // Assign admin role
+            $testUser->assignRole('admin');
+            
+            // Create test subscription
+            $plan = \App\Models\Plan::first();
+            if (!$plan) {
+                $plan = \App\Models\Plan::create([
+                    'name' => 'Test Plan',
+                    'slug' => 'test-plan',
+                    'stripe_plan_id' => 'test_plan_id',
+                    'price' => 99.99,
+                    'currency' => 'usd',
+                    'is_active' => true,
+                ]);
+            }
+            
+            \App\Models\Subscription::create([
+                'user_id' => $testUser->id,
+                'plan_id' => $plan->id,
+                'name' => $plan->name,
+                'stripe_id' => 'test_subscription_' . time(),
+                'stripe_status' => 'active',
+                'stripe_price' => 'test_price_id',
+                'quantity' => 1,
+                'trial_ends_at' => now()->addDays(14),
+            ]);
+        }
+        
+        // Log in as test user
+        auth()->login($testUser);
+    }
+    
+    return redirect()->route('onboarding.start', ['session_id' => $sessionId]);
+})->name('test-onboarding');
 
 
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
@@ -88,7 +158,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
     });
 });
 
-Route::middleware(['auth:web'])->group(function () {
+Route::middleware(['auth:web', 'check.onboarding'])->group(function () {
     // Common authenticated user routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     

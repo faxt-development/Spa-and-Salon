@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Carbon\Carbon;
+use App\Services\PaymentService;
 
 class GiftCardController extends Controller
 {
@@ -64,7 +65,7 @@ class GiftCardController extends Controller
 
     /**
      * Create a payment intent for a gift card purchase
-     * 
+     *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -81,7 +82,7 @@ class GiftCardController extends Controller
                     if (preg_match('/\.\d{3,}/', (string)$value)) {
                         $fail('The ' . $attribute . ' must not have more than 2 decimal places.');
                     }
-                    
+
                     // Ensure amount is a valid monetary value
                     if ($value <= 0) {
                         $fail('The ' . $attribute . ' must be greater than 0.');
@@ -105,7 +106,7 @@ class GiftCardController extends Controller
                 },
             ],
         ]);
-        
+
         // Format amount to exactly 2 decimal places
         $validated['amount'] = number_format((float)$validated['amount'], 2, '.', '');
 
@@ -175,7 +176,7 @@ class GiftCardController extends Controller
 
     /**
      * Handle successful payment and create gift card
-     * 
+     *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -191,7 +192,7 @@ class GiftCardController extends Controller
         try {
             // Retrieve the payment intent from Stripe
             $paymentIntent = $paymentService->getPaymentIntent($paymentIntentId);
-            
+
             if (!$paymentIntent) {
                 throw new \Exception('Payment intent not found');
             }
@@ -199,7 +200,7 @@ class GiftCardController extends Controller
             // Get the stored gift card data from the session
             $sessionKey = 'gift_card_data_' . $paymentIntentId;
             $giftCardData = session($sessionKey);
-            
+
             if (!$giftCardData) {
                 throw new \Exception('Invalid session data or session expired');
             }
@@ -226,7 +227,7 @@ class GiftCardController extends Controller
                 'payment_intent_id' => $paymentIntentId ?? 'unknown',
                 'user_id' => auth()->id()
             ]);
-            
+
             // Attempt to refund the payment if we have a valid payment intent
             if (isset($paymentIntent) && $paymentIntent) {
                 try {
@@ -235,7 +236,7 @@ class GiftCardController extends Controller
                     \Log::error('Error refunding payment: ' . $refundException->getMessage());
                 }
             }
-            
+
             return response()->json([
                 'message' => 'Failed to process gift card. Your payment has been refunded.',
                 'error' => config('app.debug') ? $e->getMessage() : 'An error occurred while processing your gift card.',
@@ -252,7 +253,7 @@ class GiftCardController extends Controller
     public function show($code)
     {
         $giftCard = GiftCard::where('code', $code)->firstOrFail();
-        
+
         return response()->json([
             'data' => $giftCard,
             'status' => $this->getGiftCardStatus($giftCard)
@@ -268,7 +269,7 @@ class GiftCardController extends Controller
     public function checkBalance($code)
     {
         $giftCard = GiftCard::where('code', $code)->firstOrFail();
-        
+
         return response()->json([
             'code' => $giftCard->code,
             'balance' => $giftCard->balance,
@@ -293,35 +294,35 @@ class GiftCardController extends Controller
         ]);
 
         $giftCard = GiftCard::where('code', $code)->firstOrFail();
-        
+
         if ($giftCard->is_redeemed) {
             return response()->json([
                 'message' => 'This gift card has already been redeemed.',
             ], 400);
         }
-        
+
         if ($giftCard->isExpired()) {
             return response()->json([
                 'message' => 'This gift card has expired.',
             ], 400);
         }
-        
+
         if (!$giftCard->is_active) {
             return response()->json([
                 'message' => 'This gift card is not active.',
             ], 400);
         }
-        
+
         if ($validated['amount'] > $giftCard->balance) {
             return response()->json([
                 'message' => 'Insufficient balance on gift card.',
                 'balance' => $giftCard->balance,
             ], 400);
         }
-        
+
         // Update gift card balance
         $giftCard->balance -= $validated['amount'];
-        
+
         // Mark as redeemed if balance is zero or if full amount is being used
         if ($giftCard->balance <= 0 || $validated['amount'] >= $giftCard->amount) {
             $giftCard->is_redeemed = true;
@@ -329,9 +330,9 @@ class GiftCardController extends Controller
             $giftCard->redeemed_by = $validated['user_id'];
             $giftCard->balance = 0; // Ensure balance doesn't go negative
         }
-        
+
         $giftCard->save();
-        
+
         return response()->json([
             'message' => 'Gift card redeemed successfully',
             'remaining_balance' => $giftCard->balance,
@@ -349,7 +350,7 @@ class GiftCardController extends Controller
     public function update(Request $request, $id)
     {
         $giftCard = GiftCard::findOrFail($id);
-        
+
         $validated = $request->validate([
             'amount' => 'sometimes|numeric|min:1',
             'balance' => 'sometimes|numeric|min:0',
@@ -361,9 +362,9 @@ class GiftCardController extends Controller
             'is_active' => 'sometimes|boolean',
             'is_redeemed' => 'sometimes|boolean',
         ]);
-        
+
         $giftCard->update($validated);
-        
+
         return response()->json([
             'message' => 'Gift card updated successfully',
             'data' => $giftCard
@@ -381,7 +382,7 @@ class GiftCardController extends Controller
         $giftCard = GiftCard::findOrFail($id);
         $giftCard->is_active = false;
         $giftCard->save();
-        
+
         return response()->json([
             'message' => 'Gift card deactivated successfully',
             'data' => $giftCard
@@ -398,10 +399,10 @@ class GiftCardController extends Controller
         do {
             $code = strtoupper(Str::random(12));
         } while (GiftCard::where('code', $code)->exists());
-        
+
         return $code;
     }
-    
+
     /**
      * Get the status of a gift card.
      *
@@ -413,15 +414,15 @@ class GiftCardController extends Controller
         if ($giftCard->is_redeemed) {
             return 'redeemed';
         }
-        
+
         if ($giftCard->isExpired()) {
             return 'expired';
         }
-        
+
         if (!$giftCard->is_active) {
             return 'inactive';
         }
-        
+
         return 'active';
     }
 }

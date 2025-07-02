@@ -21,13 +21,13 @@ class PerformanceMetricsService
      * @return Collection
      */
     public function getStaffPerformanceMetrics(
-        Carbon $startDate, 
-        Carbon $endDate, 
+        Carbon $startDate,
+        Carbon $endDate,
         string $period = 'day',
         array $filters = []
     ): Collection {
         $dateFormat = $this->getDateFormatForPeriod($period);
-        
+
         $query = DB::table('staff_performance_metrics as spm')
             ->join('staff', 'spm.staff_id', '=', 'staff.id')
             ->select([
@@ -53,7 +53,7 @@ class PerformanceMetricsService
         if (!empty($filters['staff_id'])) {
             $query->where('spm.staff_id', $filters['staff_id']);
         }
-        
+
         if (!empty($filters['location_id'])) {
             $query->where('staff.location_id', $filters['location_id']);
         }
@@ -67,14 +67,14 @@ class PerformanceMetricsService
 
     /**
      * Generate performance metrics for all staff for a specific date
-     * 
+     *
      * @param Carbon $date
      * @return void
      */
     public function generateDailyMetrics(\DateTimeInterface $date): void
     {
         $staffMembers = Staff::active()->get();
-        
+
         foreach ($staffMembers as $staff) {
             $staff->generatePerformanceMetrics($date);
         }
@@ -82,7 +82,7 @@ class PerformanceMetricsService
 
     /**
      * Generate performance metrics for a date range
-     * 
+     *
      * @param Carbon $startDate
      * @param Carbon $endDate
      * @return void
@@ -90,7 +90,7 @@ class PerformanceMetricsService
     public function generateMetricsForDateRange(Carbon $startDate, Carbon $endDate): void
     {
         $period = CarbonPeriod::create($startDate, $endDate);
-        
+
         foreach ($period as $date) {
             $this->generateDailyMetrics($date);
         }
@@ -98,7 +98,7 @@ class PerformanceMetricsService
 
     /**
      * Get staff utilization report
-     * 
+     *
      * @param Carbon $startDate
      * @param Carbon $endDate
      * @param array $filters
@@ -125,7 +125,7 @@ class PerformanceMetricsService
         if (!empty($filters['staff_id'])) {
             $query->where('staff_id', $filters['staff_id']);
         }
-        
+
         if (!empty($filters['location_id'])) {
             $query->where('staff.location_id', $filters['location_id']);
         }
@@ -135,7 +135,7 @@ class PerformanceMetricsService
 
     /**
      * Get revenue per staff report
-     * 
+     *
      * @param Carbon $startDate
      * @param Carbon $endDate
      * @param array $filters
@@ -163,7 +163,7 @@ class PerformanceMetricsService
         if (!empty($filters['staff_id'])) {
             $query->where('staff_id', $filters['staff_id']);
         }
-        
+
         if (!empty($filters['location_id'])) {
             $query->where('staff.location_id', $filters['location_id']);
         }
@@ -198,11 +198,11 @@ use App\Models\Transaction;
 use App\Models\TransactionLineItem;
 use App\Models\RevenueEvent;
 
-class PerformanceMetricsService
+class PerformanceMetricsService2nd
 {
     /**
      * Get performance metrics aggregated by the specified time period
-     * 
+     *
      * @param Carbon $startDate
      * @param Carbon $endDate
      * @param string $period daily|weekly|monthly|quarterly|yearly
@@ -210,14 +210,14 @@ class PerformanceMetricsService
      * @return Collection
      */
     public function getPerformanceMetrics(
-        Carbon $startDate, 
-        Carbon $endDate, 
+        Carbon $startDate,
+        Carbon $endDate,
         string $period = 'daily',
         array $filters = []
     ): Collection {
         // Determine the date format for grouping
         $dateFormat = $this->getDateFormatForPeriod($period);
-        
+
         // Base query for transaction metrics
         $query = Transaction::query()
             ->select([
@@ -245,14 +245,14 @@ class PerformanceMetricsService
 
         // Get staff performance metrics
         $staffMetrics = $this->getStaffPerformanceMetrics($startDate, $endDate, $period, $filters);
-        
+
         // Get service metrics
         $serviceMetrics = $this->getServicePerformanceMetrics($startDate, $endDate, $period, $filters);
-        
+
         // Merge all metrics
         return $results->map(function ($item) use ($staffMetrics, $serviceMetrics) {
             $period = $item->period;
-            
+
             return [
                 'period' => $period,
                 'transaction_count' => (int) $item->transaction_count,
@@ -271,13 +271,13 @@ class PerformanceMetricsService
      * Get staff performance metrics
      */
     protected function getStaffPerformanceMetrics(
-        Carbon $startDate, 
-        Carbon $endDate, 
+        Carbon $startDate,
+        Carbon $endDate,
         string $period,
         array $filters
     ): Collection {
         $dateFormat = $this->getDateFormatForPeriod($period);
-        
+
         $query = TransactionLineItem::query()
             ->select([
                 DB::raw("DATE_FORMAT(transactions.transaction_date, '{$dateFormat}') as period"),
@@ -306,7 +306,7 @@ class PerformanceMetricsService
         if (!empty($filters['staff_id'])) {
             $query->where('transaction_line_items.staff_id', $filters['staff_id']);
         }
-        
+
         if (!empty($filters['location_id'])) {
             $query->where('transactions.location_id', $filters['location_id']);
         }
@@ -322,13 +322,13 @@ class PerformanceMetricsService
      * Get service performance metrics
      */
     protected function getServicePerformanceMetrics(
-        Carbon $startDate, 
-        Carbon $endDate, 
+        Carbon $startDate,
+        Carbon $endDate,
         string $period,
         array $filters
     ): Collection {
         $dateFormat = $this->getDateFormatForPeriod($period);
-        
+
         $query = TransactionLineItem::query()
             ->select([
                 DB::raw("DATE_FORMAT(transactions.transaction_date, '{$dateFormat}') as period"),
@@ -356,11 +356,11 @@ class PerformanceMetricsService
             $query->where('transaction_line_items.itemable_id', $filters['service_id'])
                 ->where('transaction_line_items.itemable_type', 'App\\Models\\Service');
         }
-        
+
         if (!empty($filters['staff_id'])) {
             $query->where('transaction_line_items.staff_id', $filters['staff_id']);
         }
-        
+
         if (!empty($filters['location_id'])) {
             $query->where('transactions.location_id', $filters['location_id']);
         }
@@ -380,11 +380,11 @@ class PerformanceMetricsService
         if (!empty($filters['staff_id'])) {
             $query->where('staff_id', $filters['staff_id']);
         }
-        
+
         if (!empty($filters['location_id'])) {
             $query->where('location_id', $filters['location_id']);
         }
-        
+
         if (!empty($filters['service_id'])) {
             $query->whereHas('lineItems', function ($q) use ($filters) {
                 $q->where('itemable_type', 'App\\Models\\Service')

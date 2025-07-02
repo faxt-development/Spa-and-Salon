@@ -42,6 +42,17 @@ return [
         'currency' => env('STRIPE_CURRENCY', 'usd'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Notification Settings
+    |--------------------------------------------------------------------------
+    |
+    | This is used to send notifications to administrators when important
+    | events occur, such as new free trial registrations.
+    |
+    */
+    'admin_notification_emails' => explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'admin@faxtina.com')),
+
     'gift_cards' => [
         'min_amount' => env('GIFT_CARD_MIN_AMOUNT', 5), // Minimum gift card amount in currency units
         'max_amount' => env('GIFT_CARD_MAX_AMOUNT', 1000), // Maximum gift card amount in currency units

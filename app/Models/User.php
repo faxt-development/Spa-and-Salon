@@ -43,6 +43,7 @@ class User extends Authenticatable
         'receive_newsletter',
         'receive_special_offers',
         'receive_product_updates',
+        'onboarding_completed',
     ];
 
     /**
@@ -73,6 +74,7 @@ class User extends Authenticatable
             'receive_newsletter' => 'boolean',
             'receive_special_offers' => 'boolean',
             'receive_product_updates' => 'boolean',
+            'onboarding_completed' => 'boolean',
         ];
     }
 
@@ -98,6 +100,14 @@ class User extends Authenticatable
     public function dashboardWidgets(): HasMany
     {
         return $this->hasMany(\App\Models\DashboardWidget::class);
+    }
+    
+    /**
+     * Get the company associated with the user.
+     */
+    public function company(): HasOne
+    {
+        return $this->hasOne(Company::class);
     }
 
     /**
