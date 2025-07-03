@@ -33,6 +33,8 @@ class DatabaseSeeder extends Seeder
             TransactionSeeder::class,
             // Generate sample revenue data
             RevenueDataSeeder::class,
+            // Subscription plans
+            PlanSeeder::class,
         ]);
 
         // Create admin user

@@ -36,7 +36,7 @@ class TestOnboardingFlow extends Command
     public function handle()
     {
         $this->info('Testing onboarding flow...');
-        
+
         // Get or create a test plan
         $plan = Plan::first();
         if (!$plan) {
@@ -50,17 +50,17 @@ class TestOnboardingFlow extends Command
                 'is_active' => true,
             ]);
         }
-        
+
         // Create a test user
         $email = $this->argument('email') ?? 'test_' . Str::random(5) . '@example.com';
         $name = $this->argument('name') ?? 'Test User ' . Str::random(5);
-        
+
         $this->info("Using email: {$email}");
         $this->info("Using name: {$name}");
-        
+
         // Create a temporary password for the user
         $temporaryPassword = Str::random(12);
-        
+
         // Create or find the user
         $user = User::firstOrCreate(
             ['email' => $email],
@@ -71,12 +71,12 @@ class TestOnboardingFlow extends Command
                 'onboarding_completed' => false,
             ]
         );
-        
+
         // Assign admin role to the user if not already assigned
         if (!$user->hasRole('admin')) {
             $user->assignRole('admin');
         }
-        
+
         // Create a test subscription with required fields
         $subscriptionId = 'test_subscription_' . time();
         $subscription = Subscription::updateOrCreate(
@@ -92,29 +92,60 @@ class TestOnboardingFlow extends Command
                 'trial_ends_at' => now()->addDays(14),
             ]
         );
-        
+
         // Generate session ID for onboarding
         $sessionId = 'test_session_' . time();
-        
+
         // Generate onboarding URL
         $onboardingUrl = route('onboarding.start', ['session_id' => $sessionId]);
-        
+
         // Send welcome email with onboarding link
         try {
-            Mail::to($user->email)->send(new WelcomeNewUser($user, $temporaryPassword, $onboardingUrl));
-            
+            // Log mail configuration for debugging
+            Log::info('Mail configuration', [
+                'driver' => config('mail.default'),
+                'from' => config('mail.from'),
+                'log_channel' => config('mail.mailers.log.channel')
+            ]);
+
+            $this->info('Attempting to send welcome email...');
+            Log::info('Attempting to send welcome email', ['to' => $user->email]);
+
+            // Capture the email content for logging
+            $welcomeEmail = new WelcomeNewUser($user, $temporaryPassword, $onboardingUrl);
+
+            // Log the email view data
+            Log::info('Welcome email view data', [
+                'user' => $user->name,
+                'email' => $user->email,
+                'onboardingUrl' => $onboardingUrl,
+                'view' => 'emails.welcome-new-user'
+            ]);
+
+            // Send the email
+           // Mail::to($user->email)->send($welcomeEmail);
+           Mail::mailer('log')->to($user->email)->send($welcomeEmail);
+
+            $this->info('Welcome email sent successfully!');
+            Log::info('Welcome email sent successfully', ['to' => $user->email]);
+
             $this->info('Onboarding flow initiated successfully!');
             $this->info("Onboarding URL: {$onboardingUrl}");
             $this->info("Email: {$email}");
             $this->info("Password: {$temporaryPassword}");
-            
+
             // Send notification to admin
             $adminEmails = config('services.admin_notification_emails', ['admin@faxtina.com']);
+            $this->info('Sending admin notifications to: ' . implode(', ', $adminEmails));
+            Log::info('Sending admin notifications', ['to' => $adminEmails]);
+
             foreach ($adminEmails as $adminEmail) {
                 Mail::to($adminEmail)->send(new AdminNewTrialNotification($user, $subscription));
+                Log::info('Admin notification sent', ['to' => $adminEmail]);
             }
+
             $this->info('Admin notification emails sent to: ' . implode(', ', $adminEmails));
-            
+
         } catch (\Exception $e) {
             $this->error('Error: ' . $e->getMessage());
             Log::error('Test onboarding flow error: ' . $e->getMessage());

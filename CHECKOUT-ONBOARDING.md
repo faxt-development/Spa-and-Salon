@@ -61,7 +61,36 @@ This allows multiple admin email addresses to be specified in the `.env` file as
 
 ## Testing
 
-To test the implementation:
+### Using the TestOnboardingFlow Command
+
+The easiest way to test the implementation is to use the `TestOnboardingFlow` Artisan command:
+
+```bash
+# Test with a random email and name
+php artisan app:test-onboarding-flow
+
+# Test with a specific email
+php artisan app:test-onboarding-flow test@example.com
+
+# Test with a specific email and name
+php artisan app:test-onboarding-flow test@example.com "Test User"
+```
+
+This command:
+- Creates or finds a test plan
+- Creates a new user (or uses an existing one if the email is already registered)
+- Assigns the admin role to the user
+- Creates or updates a subscription record with a 14-day trial period
+- Generates a unique session ID for onboarding
+- Sends a welcome email to the user with login credentials and an onboarding link
+- Sends notification emails to administrators
+- Outputs all relevant information to the console (email, password, onboarding URL)
+
+The command is particularly useful for testing the entire onboarding flow without having to go through the Stripe checkout process.
+
+### Testing with Stripe Webhooks
+
+To test the implementation with actual Stripe webhooks:
 
 1. Make sure your Stripe webhook is properly configured to send `checkout.session.completed` events to your application
 2. Set up the `ADMIN_NOTIFICATION_EMAILS` environment variable in your `.env` file
@@ -75,9 +104,9 @@ To test the implementation:
    - When the user clicks the onboarding link, they are guided through the onboarding process
    - After completing onboarding, the user is redirected to the dashboard
 
-### Testing the Onboarding Flow
+### Testing the Onboarding Flow UI
 
-To test just the onboarding flow without going through the Stripe checkout:
+To test just the onboarding flow UI without going through the Stripe checkout or using the command:
 
 1. Use the test route `/test-onboarding` which simulates a session ID from Stripe
 2. This will redirect you to the onboarding start page
@@ -107,6 +136,11 @@ If the onboarding process is not working as expected:
 2. Verify that the Stripe webhook is properly configured and sending events
 3. Ensure that the `ADMIN_NOTIFICATION_EMAILS` environment variable is set correctly
 4. Check that the email configuration is working properly
+5. For email issues:
+   - Ensure the mail configuration in `.env` is correct
+   - If using the 'log' mail driver, check that the log channel is properly configured in `config/mail.php`
+   - Note that emails sent with `Mail::queue()` or through mailables implementing `ShouldQueue` won't appear immediately in logs
+   - Use `Mail::mailer('log')` to force immediate sending through the log driver
 
 ## Future Improvements
 

@@ -73,6 +73,27 @@ To test the subscription system:
 4. Verify that the subscription is created in the Stripe dashboard
 5. Test webhook events using Stripe's webhook testing tools
 
+### Local Webhook Testing with Stripe CLI
+
+For local development and testing of webhooks:
+
+1. Install the [Stripe CLI](https://stripe.com/docs/stripe-cli)
+2. Start the webhook forwarding with:
+   ```
+   stripe listen --forward-to http://localhost:8000/api/stripe/webhook
+   ```
+3. **Important**: When using the Stripe CLI for local testing, it generates a unique webhook signing secret that's different from your production webhook secret. You must update your local `.env` file with this CLI-generated webhook secret:
+   ```
+   STRIPE_WEBHOOK_SECRET=whsec_generated_by_stripe_cli
+   ```
+4. The CLI-generated webhook secret is displayed when you start the `stripe listen` command
+5. After updating the webhook secret in your `.env` file, restart your local server for the changes to take effect:
+   ```
+   php artisan config:clear
+   ```
+
+Note that this webhook secret is only for local development. Your production environment should use the webhook secret from your Stripe Dashboard.
+
 ## Migrating from Marketing Site
 
 The pricing page has been moved from the marketing site to the spa-and-salon site. If you need to redirect users from the old pricing page URL, add a redirect in the marketing site.
