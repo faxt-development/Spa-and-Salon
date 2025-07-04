@@ -11,8 +11,11 @@ class PricingController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
+        // Get the selected priceId from the querystring if it exists
+        $selectedPriceId = $request->query('priceId');
+        
         $pricingTiers = [
             [
                 'name' => 'Self-Managed',
@@ -78,7 +81,25 @@ class PricingController extends Controller
             ]
         ];
 
-        return view('pricing', ['pricingTiers' => $pricingTiers]);
+        // Update the highlight property based on the selectedPriceId
+        if ($selectedPriceId) {
+            foreach ($pricingTiers as $key => $tier) {
+                // If this tier matches the selected priceId (either the env variable name or the actual price ID)
+                if ($selectedPriceId === 'price_' . strtolower(str_replace(' ', '_', $tier['name'])) || 
+                    $selectedPriceId === $tier['priceId']) {
+                    // Set this tier as highlighted
+                    $pricingTiers[$key]['highlight'] = true;
+                } else {
+                    // Ensure other tiers are not highlighted
+                    $pricingTiers[$key]['highlight'] = false;
+                }
+            }
+        }
+        
+        return view('pricing', [
+            'pricingTiers' => $pricingTiers,
+            'selectedPriceId' => $selectedPriceId
+        ]);
     }
 
     /**

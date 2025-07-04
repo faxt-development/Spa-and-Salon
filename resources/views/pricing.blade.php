@@ -96,6 +96,25 @@
 @push('scripts')
 <script src="https://js.stripe.com/v3/"></script>
 <script>
+    // Check if there's a priceId in the URL and trigger checkout automatically
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const priceIdParam = urlParams.get('priceId');
+        
+        if (priceIdParam) {
+            // Find the matching pricing tier
+            @foreach($pricingTiers as $tier)
+            if ('{{ $tier["priceId"] }}' === priceIdParam || '{{ "price_" . strtolower(str_replace(" ", "_", $tier["name"])) }}' === priceIdParam) {
+                // Small delay to allow the page to render first
+                setTimeout(() => {
+                    handleCheckout('{{ $tier["priceId"] }}', {{ $tier["firstMonthFree"] ? 'true' : 'false' }});
+                }, 500);
+                return;
+            }
+            @endforeach
+        }
+    });
+    
     function handleCheckout(priceId, firstMonthFree) {
         // For development/testing - use actual price IDs from environment variables
         const testPriceMap = {
