@@ -12,13 +12,16 @@
             <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl mb-4">
                 Thank you for your subscription!
             </h1>
-            <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto mb-4">
                 Your subscription has been successfully processed. You'll receive a confirmation email shortly.
             </p>
-            <div class="mt-8">
-                <a href="{{ route('dashboard') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700">
-                    Go to Dashboard
-                </a>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+                <strong>What's next?</strong> Please check your email for important onboarding instructions. We'll guide you through setting up your spa admin account, configuring your business information, and getting started with Faxtina's powerful features.
+            </p>
+            <div class="mt-8 border-t border-gray-200 pt-8">
+                <p class="text-md text-gray-600 max-w-2xl mx-auto">
+                    If you have any questions or need assistance, please contact our support team at <a href="mailto:support@faxtina.com" class="text-purple-600 hover:text-purple-800 font-medium">support@faxtina.com</a> or call us at <a href="tel:+18005551234" class="text-purple-600 hover:text-purple-800 font-medium">(800) 555-1234</a>.
+                </p>
             </div>
         </div>
     </main>

@@ -33,7 +33,7 @@ Route::get('/success', function() {
 
 // Onboarding routes
 Route::prefix('onboarding')->name('onboarding.')->group(function () {
-    Route::get('/start', [OnboardingController::class, 'start'])->name('start');
+    Route::get('/start', [OnboardingController::class, 'showStart'])->name('start');
     Route::get('/user', [OnboardingController::class, 'showUserForm'])->name('user-form');
     Route::post('/user', [OnboardingController::class, 'processUserForm'])->name('process-user');
     Route::get('/company', [OnboardingController::class, 'showCompanyForm'])->name('company-form');
@@ -46,15 +46,15 @@ Route::prefix('onboarding')->name('onboarding.')->group(function () {
 Route::get('/test-onboarding', function() {
     // Simulate a session ID from Stripe
     $sessionId = 'test_session_' . time();
-    
+
     // Store in session
     session(['stripe_session_id' => $sessionId]);
-    
+
     // Create a test user if not logged in
     if (!auth()->check()) {
         // Check if test user exists
         $testUser = \App\Models\User::where('email', 'test@example.com')->first();
-        
+
         if (!$testUser) {
             // Create test user
             $testUser = \App\Models\User::create([
@@ -64,10 +64,10 @@ Route::get('/test-onboarding', function() {
                 'email_notifications' => true,
                 'onboarding_completed' => false,
             ]);
-            
+
             // Assign admin role
             $testUser->assignRole('admin');
-            
+
             // Create test subscription
             $plan = \App\Models\Plan::first();
             if (!$plan) {
@@ -80,7 +80,7 @@ Route::get('/test-onboarding', function() {
                     'is_active' => true,
                 ]);
             }
-            
+
             \App\Models\Subscription::create([
                 'user_id' => $testUser->id,
                 'plan_id' => $plan->id,
@@ -92,11 +92,11 @@ Route::get('/test-onboarding', function() {
                 'trial_ends_at' => now()->addDays(14),
             ]);
         }
-        
+
         // Log in as test user
         auth()->login($testUser);
     }
-    
+
     return redirect()->route('onboarding.start', ['session_id' => $sessionId]);
 })->name('test-onboarding');
 
@@ -143,11 +143,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
             ->name('service.categories.data');
         Route::get('service-performance/data', [\App\Http\Controllers\Admin\ReportController::class, 'getServicePerformanceData'])
             ->name('service.performance.data');
+        Route::get('tax', [\App\Http\Controllers\Admin\ReportController::class, 'tax'])
+            ->name('tax');
     });
-    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::get('/dashboard/todays-schedule', [\App\Http\Controllers\Admin\DashboardController::class, 'getTodaysSchedule'])->name('admin.dashboard.todays-schedule');
-    Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('admin.dashboard.alerts');
-    
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/todays-schedule', [\App\Http\Controllers\Admin\DashboardController::class, 'getTodaysSchedule'])->name('dashboard.todays-schedule');
+    Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('dashboard.alerts');
+
     // Appointments routes - using consolidated AppointmentController
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('/', [\App\Http\Controllers\AppointmentController::class, 'index'])->name('index');
@@ -158,14 +160,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
     });
 });
 
-Route::middleware(['auth:web', 'check.onboarding'])->group(function () {
+Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class])->group(function () {
     // Common authenticated user routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Appointment routes
     Route::post('/appointments/{appointment}/complete', [\App\Http\Controllers\AppointmentController::class, 'complete'])
         ->name('web.appointments.complete');
-        
+
     // Public appointment booking routes can be added here without admin middleware
 
     // Gift card history for authenticated users
@@ -176,7 +178,7 @@ Route::middleware(['auth:web', 'check.onboarding'])->group(function () {
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
         Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
-        
+
         // Staff Management Routes
         Route::resource('staff', 'App\Http\Controllers\StaffController');
         Route::get('/roles-permissions', [App\Http\Controllers\StaffController::class, 'rolesAndPermissions'])->name('staff.roles');
@@ -188,7 +190,7 @@ Route::middleware(['auth:web', 'check.onboarding'])->group(function () {
             ->name('categories.reorder');
         Route::get('/categories/tree', [CategoryController::class, 'tree'])
             ->name('categories.tree');
-        
+
         // Payroll Routes
         Route::prefix('payroll')->name('payroll.')->group(function () {
             Route::get('/records', [\App\Http\Controllers\PayrollController::class, 'payrollIndex'])->name('records.index');
@@ -204,11 +206,11 @@ Route::middleware(['auth:web', 'check.onboarding'])->group(function () {
             // Reports
             Route::get('/reports/tax', [\App\Http\Controllers\Admin\ReportController::class, 'tax'])->name('reports.tax');
         });
-   
-   
+
+
         Route::get('/reports/sales', [\App\Http\Controllers\Admin\ReportController::class, 'sales'])->name('reports.sales');
         Route::get('/reports/payment-methods', [\App\Http\Controllers\Admin\ReportController::class, 'paymentMethods'])->name('reports.payment-methods');
-   
+
 
           // Email Campaign Routes
     Route::resource('email-campaigns', EmailCampaignController::class);
@@ -295,7 +297,7 @@ Route::middleware(['auth:web', 'check.onboarding'])->group(function () {
         Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
             ;
     });
-  
+
 
     // Client routes
     Route::middleware(['auth:web', 'role:admin|staff'])->group(function () {
@@ -328,12 +330,12 @@ Route::middleware(['auth:web', 'check.onboarding'])->group(function () {
         Route::get('excel/{type}', [ExportController::class, 'exportExcel'])
             ->name('excel')
             ->where('type', 'appointments|services|orders');
-        
+
         // PDF Exports
         Route::get('pdf/{type}', [ExportController::class, 'exportPdf'])
             ->name('pdf')
             ->where('type', 'appointments|services|orders');
-        
+
         // Preview PDF (for testing)
         Route::get('preview/{type}', function ($type) {
             return app(ExportController::class)->exportPdf(request(), $type);

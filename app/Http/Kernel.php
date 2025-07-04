@@ -67,4 +67,13 @@ class Kernel extends HttpKernel
         'admin' => \App\Http\Middleware\CheckAdmin::class,
         'check.onboarding' => \App\Http\Middleware\CheckOnboardingStatus::class,
     ];
+    
+    /**
+     * The application's route middleware.
+     *
+     * @var array
+     */
+    protected $routeMiddleware = [
+        'check.onboarding' => \App\Http\Middleware\CheckOnboardingStatus::class,
+    ];
 }

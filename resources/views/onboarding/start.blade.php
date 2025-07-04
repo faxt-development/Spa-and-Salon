@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.onboarding')
 
 @section('content')
 <div class="container">
@@ -41,7 +41,7 @@
                             <li class="list-group-item">Set up your business information</li>
                             <li class="list-group-item">Learn about key features</li>
                         </ul>
-                        
+
                         <a href="{{ route('onboarding.user-form') }}" class="btn btn-primary btn-lg">Let's Get Started</a>
                     </div>
                 </div>
@@ -56,7 +56,7 @@
         justify-content: space-between;
         margin: 30px 0;
     }
-    
+
     .step {
         display: flex;
         flex-direction: column;
@@ -64,7 +64,7 @@
         position: relative;
         width: 25%;
     }
-    
+
     .step:not(:last-child):after {
         content: '';
         position: absolute;
@@ -75,12 +75,12 @@
         background-color: #e0e0e0;
         z-index: 0;
     }
-    
+
     .step.active .step-number {
         background-color: #4299e1;
         color: white;
     }
-    
+
     .step-number {
         width: 30px;
         height: 30px;
@@ -93,12 +93,12 @@
         font-weight: bold;
         z-index: 1;
     }
-    
+
     .step-text {
         font-size: 0.8rem;
         color: #718096;
     }
-    
+
     .step.active .step-text {
         color: #4299e1;
         font-weight: bold;

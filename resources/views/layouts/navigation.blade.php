@@ -124,7 +124,7 @@
                                         {{ __('Payment Methods') }}
                                     </x-dropdown-link>
                                     <x-dropdown-link href="{{ route('admin.payroll.reports.tax') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
-                                        {{ __('Tax Reports') }}
+                                        {{ __('Payroll Tax Reports') }}
                                     </x-dropdown-link>
                                     <x-dropdown-link href="{{ route('admin.payroll.reports.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Payroll Reports') }}
@@ -170,7 +170,7 @@
                                     <x-dropdown-link href="{{ route('promotions.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Promotions') }}
                                     </x-dropdown-link>
-                                    
+
                                     <x-dropdown-link href="{{ route('inventory.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Inventory') }}
                                     </x-dropdown-link>

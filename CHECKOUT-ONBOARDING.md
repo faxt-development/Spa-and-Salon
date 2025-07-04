@@ -141,6 +141,7 @@ If the onboarding process is not working as expected:
    - If using the 'log' mail driver, check that the log channel is properly configured in `config/mail.php`
    - Note that emails sent with `Mail::queue()` or through mailables implementing `ShouldQueue` won't appear immediately in logs
    - Use `Mail::mailer('log')` to force immediate sending through the log driver
+   -- release the email queue with php artisan queue:work
 
 ## Future Improvements
 

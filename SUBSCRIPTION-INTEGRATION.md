@@ -91,7 +91,10 @@ For local development and testing of webhooks:
    ```
    php artisan config:clear
    ```
-
+6. Release the email queue with php artisan queue:work
+    ```
+    php artisan queue:work
+    ```
 Note that this webhook secret is only for local development. Your production environment should use the webhook secret from your Stripe Dashboard.
 
 ## Migrating from Marketing Site
