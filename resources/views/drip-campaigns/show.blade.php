@@ -19,17 +19,17 @@
                                 </svg>
                             </a>
                             <h2 class="text-2xl font-semibold text-gray-800">{{ $campaign->name }}</h2>
-                            <span class="ml-4 px-2.5 py-0.5 rounded-full text-xs font-medium {{ 
-                                $campaign->status === 'sent' ? 'bg-green-100 text-green-800' : 
-                                ($campaign->status === 'scheduled' ? 'bg-blue-100 text-blue-800' : 
-                                ($campaign->status === 'sending' ? 'bg-yellow-100 text-yellow-800' : 
-                                ($campaign->status === 'draft' ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800'))) 
+                            <span class="ml-4 px-2.5 py-0.5 rounded-full text-xs font-medium {{
+                                $campaign->status === 'sent' ? 'bg-green-100 text-green-800' :
+                                ($campaign->status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
+                                ($campaign->status === 'sending' ? 'bg-yellow-100 text-yellow-800' :
+                                ($campaign->status === 'draft' ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800')))
                             }}">
                                 {{ ucfirst($campaign->status) }}
                             </span>
                         </div>
                         <p class="mt-1 text-sm text-gray-500">
-                            Created {{ $campaign->created_at->diffForHumans() }} 
+                            Created {{ $campaign->created_at->diffForHumans() }}
                             @if($campaign->sent_at)
                                 • Sent {{ $campaign->sent_at->diffForHumans() }}
                             @elseif($campaign->scheduled_for)
@@ -39,13 +39,13 @@
                     </div>
                     <div class="mt-4 flex md:mt-0 md:ml-4">
                         @if($campaign->isDraft())
-                            <a href="{{ route('drip-campaigns.edit', $campaign) }}" 
+                            <a href="{{ route('drip-campaigns.edit', $campaign) }}"
                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Edit
                             </a>
                             <form action="{{ route('drip-campaigns.send', $campaign) }}" method="POST" class="ml-3">
                                 @csrf
-                                <button type="submit" 
+                                <button type="submit"
                                         class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                                     Send Now
                                 </button>
@@ -54,18 +54,18 @@
                             <form action="{{ route('drip-campaigns.cancel', $campaign) }}" method="POST" class="ml-3">
                                 @csrf
                                 @method('PATCH')
-                                <button type="submit" 
+                                <button type="submit"
                                         class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
                                     Cancel Scheduled Send
                                 </button>
                             </form>
                         @endif
-                        
+
                         @if($campaign->isDraft() || $campaign->isScheduled())
                             <form action="{{ route('drip-campaigns.destroy', $campaign) }}" method="POST" class="ml-3">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" 
+                                <button type="submit"
                                         onclick="return confirm('Are you sure you want to delete this campaign? This action cannot be undone.')"
                                         class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                                     Delete
@@ -82,7 +82,7 @@
                         <h3 class="text-lg leading-6 font-medium text-gray-900">Campaign Performance</h3>
                         <p class="mt-1 text-sm text-gray-500">Overview of how your Drip Campaign is performing</p>
                     </div>
-                    
+
                     <!-- Stats Grid -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-6">
                         <!-- Sent -->
@@ -99,7 +99,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Open Rate -->
                         <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                             <div class="flex items-center">
@@ -118,11 +118,11 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Click Rate -->
                         <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                             <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-purple-50 text-purple-600">
+                                <div class="p-3 rounded-full bg-brandprimary-50 text-brandprimary-600">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                                     </svg>
@@ -141,7 +141,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Bounce/Unsubscribe -->
                         <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                             <div class="flex items-center">
@@ -209,7 +209,7 @@
                             <div id="device-distribution" class="h-64"></div>
                         </div>
                         @endif
-                        
+
                         @if(count($platforms) > 0)
                         <div>
                             <h4 class="text-sm font-medium text-gray-900 mb-4">Platforms</h4>
@@ -242,17 +242,17 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-purple-100">
-                                                <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-brandprimary-100">
+                                                <svg class="h-6 w-6 text-brandprimary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                                                 </svg>
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900 truncate max-w-xs" x-data="{ showFull: false }" @click="showFull = !showFull">
-                                                    <span x-show="!showFull" class="cursor-pointer hover:text-purple-600">
+                                                    <span x-show="!showFull" class="cursor-pointer hover:text-brandprimary-600">
                                                         {{ Str::limit(parse_url($link['url'], PHP_URL_PATH) ?: $link['url'], 50) }}
                                                     </span>
-                                                    <span x-show="showFull" class="cursor-pointer text-purple-600 break-all">
+                                                    <span x-show="showFull" class="cursor-pointer text-brandprimary-600 break-all">
                                                         {{ $link['url'] }}
                                                     </span>
                                                 </div>
@@ -274,7 +274,7 @@
                                         @endphp
                                         <div class="flex items-center">
                                             <div class="w-24 bg-gray-200 rounded-full h-2.5 mr-2">
-                                                <div class="bg-purple-600 h-2.5 rounded-full" style="width: {{ min($ctr, 100) }}%"></div>
+                                                <div class="bg-brandprimary-600 h-2.5 rounded-full" style="width: {{ min($ctr, 100) }}%"></div>
                                             </div>
                                             <span class="text-sm font-medium text-gray-700">{{ number_format($ctr, 1) }}%</span>
                                         </div>
@@ -568,7 +568,7 @@ function campaignData() {
 
             const chart = new ApexCharts(document.querySelector("#engagement-timeline"), options);
             chart.render();
-            
+
             // Cleanup on component destroy
             this.$watch('$store.sidebar.isOpen', () => {
                 setTimeout(() => {

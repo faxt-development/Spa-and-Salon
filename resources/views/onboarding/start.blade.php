@@ -5,12 +5,12 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-brandprimary text-white">
                     <h2 class="mb-0">Welcome to Faxtina!</h2>
                 </div>
                 <div class="card-body">
                     <div class="text-center mb-4">
-                        <img src="{{ asset('images/logo.png') }}" alt="Faxtina Logo" class="img-fluid mb-4" style="max-width: 200px;">
+                        <img src="{{ asset('images/faxtina-logo.png') }}" alt="Faxtina Logo" class="img-fluid mb-4" style="max-width: 200px;">
                         <h3>Thank you for choosing Faxtina for your spa and salon management needs!</h3>
                         <p class="lead">Let's get your account set up so you can start using all the features right away.</p>
                     </div>

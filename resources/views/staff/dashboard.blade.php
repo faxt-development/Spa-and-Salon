@@ -14,7 +14,7 @@
                             <p class="text-gray-600">No appointments scheduled for today.</p>
                         </div>
                     </div>
-                    
+
                     <!-- Quick Actions -->
                     <div class="bg-white border rounded-lg p-6">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
@@ -25,13 +25,13 @@
                             <a href="#" class="block px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition">
                                 Add New Client
                             </a>
-                            <a href="#" class="block px-4 py-2 bg-purple-100 text-purple-800 rounded-md hover:bg-purple-200 transition">
+                            <a href="#" class="block px-4 py-2 bg-brandprimary-100 text-brandprimary-800 rounded-md hover:bg-brandprimary-200 transition">
                                 View Client List
                             </a>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Recent Messages -->
                 <div class="mt-8">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Messages</h3>

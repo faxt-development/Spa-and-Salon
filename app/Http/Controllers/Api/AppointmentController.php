@@ -548,7 +548,7 @@ class AppointmentController extends Controller
         $colors = [
             'scheduled' => '#3788d8',  // Blue
             'confirmed' => '#4CAF50',  // Green
-            'completed' => '#9C27B0',  // Purple
+            'completed' => '#9C27B0',  // primary
             'cancelled' => '#F44336',  // Red
             'no_show' => '#FF9800'     // Orange
         ];

@@ -38,18 +38,18 @@
     <div class="d-flex justify-content-between align-items-center">
         <h1 class="mt-4">Sales Reports</h1>
         <div class="mt-4">
-            <x-export-buttons 
-                type="sales" 
-                label="Export Report" 
-                class="btn btn-primary" 
+            <x-export-buttons
+                type="sales"
+                label="Export Report"
+                class="btn btn-primary"
                 :showIcon="true"
                 size="md"
             />
         </div>
     </div>
-    
+
     <!-- Loading Overlay -->
-    <div x-data="{ isLoading: false }" 
+    <div x-data="{ isLoading: false }"
          x-init="() => {
              $watch('isLoading', value => {
                  if (value) {
@@ -59,7 +59,7 @@
                  }
              });
          }"
-         class="loading-overlay" 
+         class="loading-overlay"
          :class="{ 'active': isLoading }">
         <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading...</span>
@@ -79,7 +79,7 @@
                 endDate: '{{ $defaultEndDate }}',
                 taxRateId: '',
                 groupBy: 'month',
-                
+
                 init() {
                     // Initialize date pickers
                     flatpickr('#startDate', {
@@ -90,7 +90,7 @@
                             this.loadReport();
                         }
                     });
-                    
+
                     flatpickr('#endDate', {
                         dateFormat: 'Y-m-d',
                         defaultDate: this.endDate,
@@ -99,21 +99,21 @@
                             this.loadReport();
                         }
                     });
-                    
+
                     // Load initial report
                     this.loadReport();
                 },
-                
+
                 async loadReport() {
                     if (!this.startDate || !this.endDate) return;
-                    
+
                     this.isLoading = true;
-                    
+
                     try {
-                        const url = this.reportType === 'summary' 
+                        const url = this.reportType === 'summary'
                             ? `/api/reports/tax/summary?start_date=${this.startDate}&end_date=${this.endDate}&group_by=${this.groupBy}${this.taxRateId ? '&tax_rate_id=' + this.taxRateId : ''}`
                             : `/api/reports/tax/detailed?start_date=${this.startDate}&end_date=${this.endDate}${this.taxRateId ? '&tax_rate_id=' + this.taxRateId : ''}`;
-                        
+
                         const response = await fetch(url, {
                             headers: {
                                 'Accept': 'application/json',
@@ -121,13 +121,13 @@
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             }
                         });
-                        
+
                         if (!response.ok) {
                             throw new Error('Failed to load report data');
                         }
-                        
+
                         const data = await response.json();
-                        
+
                         if (this.reportType === 'summary') {
                             this.$dispatch('summary-data-loaded', data.data);
                         } else {
@@ -140,7 +140,7 @@
                         this.isLoading = false;
                     }
                 },
-                
+
                 exportReport(format) {
                     let url = `/admin/reports/tax/export?format=${format}&start_date=${this.startDate}&end_date=${this.endDate}&type=${this.reportType}`;
                     if (this.taxRateId) {
@@ -161,17 +161,17 @@
                     if (window.'salesChart) {
                         window.'salesChart.destroy();
                     }
-                    
+
                     if (!data || !data.results || data.results.length === 0) {
                         ctx.closest('.card').classList.add('d-none');
                         return;
                     }
-                    
+
                     ctx.closest('.card').classList.remove('d-none');
-                    
+
                     const labels = data.results.map(item => item.period);
                     const taxData = data.results.map(item => item.total_tax_amount);
-                    
+
                     window.'salesChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
@@ -209,7 +209,7 @@
                         }
                     });
                 };
-                
+
                 // DataTable initialization function
                 window.initDataTable = function(data) {
                     const table = $('#taxDetailedTable').DataTable({
@@ -236,7 +236,7 @@
                             $('.dataTables_length select').addClass('form-select');
                         }
                     });
-                    
+
                     window.dataTable = table;
                 };
             ">
@@ -248,18 +248,18 @@
                             <option value="detailed">Detailed</option>
                         </select>
                     </div>
-                    
+
                     <div class="col-md-3">
                         <label for="startDate" class="form-label">Start Date</label>
                         <input type="text" class="form-control" id="startDate" x-model="startDate" placeholder="Start Date">
                     </div>
-                    
+
                     <div class="col-md-3">
                         <label for="endDate" class="form-label">End Date</label>
                         <input type="text" class="form-control" id="endDate" x-model="endDate" placeholder="End Date">
                     </div>
-                    
-                    
+
+
                     <div class="col-md-3" x-show="reportType === 'summary'">
                         <label for="groupBy" class="form-label">Group By</label>
                         <select class="form-select" id="groupBy" x-model="groupBy" @change="loadReport()">
@@ -270,7 +270,7 @@
                             <option value="year">Yearly</option>
                         </select>
                     </div>
-                    
+
                     <div class="col-12 text-end">
                         <button type="button" class="btn btn-primary me-2" @click="loadReport()">
                             <i class="fas fa-sync-alt me-1"></i> Refresh
@@ -290,19 +290,19 @@
     </div>
 
     <!-- Summary Cards -->
-    <div class="row mb-4" x-show="reportType === 'summary'" x-data="{ 
+    <div class="row mb-4" x-show="reportType === 'summary'" x-data="{
         totalTaxableAmount: 0,
         totalTaxAmount: 0,
         averageTaxRate: 0,
         totalTransactions: 0,
-        
+
         init() {
             this.$watch('$store.reportData', (data) => {
                 if (data) {
                     this.totalTaxableAmount = data.total_taxable_amount || 0;
                     this.totalTaxAmount = data.total_tax_amount || 0;
-                    this.averageTaxRate = data.total_taxable_amount > 0 
-                        ? (data.total_tax_amount / data.total_taxable_amount * 100).toFixed(2) 
+                    this.averageTaxRate = data.total_taxable_amount > 0
+                        ? (data.total_tax_amount / data.total_taxable_amount * 100).toFixed(2)
                         : 0;
                     this.totalTransactions = data.total_transactions || 0;
                 }
@@ -310,7 +310,7 @@
         }
     }">
         <div class="col-xl-3 col-md-6">
-            <div class="card bg-primary text-white summary-card h-100">
+            <div class="card bg-brandprimary text-white summary-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -324,7 +324,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-xl-3 col-md-6">
             <div class="card bg-info text-white summary-card h-100">
                 <div class="card-body">
@@ -397,7 +397,7 @@
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
-            
+
             // Initialize date range picker
             flatpickr("#dateRange", {
                 mode: "range",
@@ -408,7 +408,7 @@
                         const [start, end] = selectedDates;
                         Alpine.store('filters').startDate = start.toISOString().split('T')[0];
                         Alpine.store('filters').endDate = end.toISOString().split('T')[0];
-                        
+
                         // Trigger report reload
                         const event = new CustomEvent('filters-updated');
                         document.dispatchEvent(event);
@@ -416,7 +416,7 @@
                 }
             });
         });
-        
+
         // Store for global state management
         document.addEventListener('alpine:init', () => {
             Alpine.store('filters', {
@@ -424,7 +424,7 @@
                 endDate: '{{ $defaultEndDate }}',
                 reportType: 'summary',
                 groupBy: 'month',
-                
+
                 get queryString() {
                     const params = new URLSearchParams();
                     params.append('start_date', this.startDate);

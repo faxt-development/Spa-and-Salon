@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-brandprimary text-white">
                     <h2 class="mb-0">Create Your Admin Account</h2>
                 </div>
                 <div class="card-body">

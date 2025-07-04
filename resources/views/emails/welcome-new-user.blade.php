@@ -50,7 +50,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ asset('images/logo.png') }}" alt="Faxtina Logo" class="logo">
+        <img src="{{ asset('images/faxtina-logo.png') }}" alt="Faxtina Logo" class="logo">
         <h1>Welcome to Faxtina!</h1>
     </div>
 

@@ -5,10 +5,10 @@
                 {{ __('Client Spend Reports') }}
             </h2>
             <div class="flex space-x-2">
-                <x-export-buttons 
-                    type="clients" 
-                    label="Export Clients" 
-                    class="bg-green-600 hover:bg-green-700" 
+                <x-export-buttons
+                    type="clients"
+                    label="Export Clients"
+                    class="bg-green-600 hover:bg-green-700"
                     :showIcon="true"
                     size="sm"
                 />
@@ -40,7 +40,7 @@
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <dt class="text-sm font-medium text-gray-500 truncate">Avg. Visits/Client</dt>
-                    <dd class="mt-1 text-3xl font-semibold text-purple-600">{{ number_format($metrics['avg_visits'], 1) }}</dd>
+                    <dd class="mt-1 text-3xl font-semibold text-brandPrimary600">{{ number_format($metrics['avg_visits'], 1) }}</dd>
                 </div>
             </div>
 
@@ -63,7 +63,7 @@
                             <input type="text" id="searchInput" placeholder="Search clients..." class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                         </div>
                     </div>
-                    
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -129,7 +129,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="mt-4">
                         {{ $clients->links() }}
                     </div>
@@ -145,7 +145,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const ctx = document.getElementById('spendTrendChart').getContext('2d');
             const spendTrendData = @json($spendTrends);
-            
+
             new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -207,7 +207,7 @@
                 searchInput.addEventListener('keyup', function(e) {
                     const searchValue = e.target.value.toLowerCase();
                     const rows = document.querySelectorAll('tbody tr');
-                    
+
                     rows.forEach(row => {
                         const text = row.textContent.toLowerCase();
                         row.style.display = text.includes(searchValue) ? '' : 'none';

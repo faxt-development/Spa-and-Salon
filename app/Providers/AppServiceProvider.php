@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Company;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Http\Request;
@@ -24,6 +27,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        // Share company name with all views
+        View::composer('*', function ($view) {
+            $companyName = 'Salon';
+            
+            if (Auth::check() && Auth::user()->company) {
+                $companyName = Auth::user()->company->name ?: 'Salon';
+            }
+            
+            $view->with('companyName', $companyName);
+        });
 
         // Trust all proxies or specify your proxy IPs
         Request::setTrustedProxies(

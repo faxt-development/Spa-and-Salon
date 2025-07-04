@@ -2,12 +2,12 @@
     <div class="px-4 py-5 sm:p-6">
         <div class="flex items-center">
             <!-- Icon -->
-            <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+            <div class="flex-shrink-0 bg-brandprimary-500 rounded-md p-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            
+
             <!-- Content -->
             <div class="ml-5 w-0 flex-1">
                 <dl>
@@ -20,12 +20,12 @@
                                 <div class="h-5 w-24 bg-gray-200 rounded ml-2"></div>
                             </div>
                         </template>
-                        
+
                         <!-- Data State -->
                         <template x-if="!isLoading">
                             <div class="flex items-baseline">
                                 <div class="text-2xl font-semibold text-gray-900" x-text="waitingCount"></div>
-                                <div class="ml-2 flex items-baseline text-sm font-semibold" 
+                                <div class="ml-2 flex items-baseline text-sm font-semibold"
                                      :class="{
                                         'text-yellow-600': waitingCount > 0,
                                         'text-green-600': waitingCount === 0
@@ -38,10 +38,10 @@
                     </dd>
                 </dl>
             </div>
-            
+
             <!-- Refresh Button -->
-            <button @click="fetchWalkInStats()" 
-                    class="ml-5 flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+            <button @click="fetchWalkInStats()"
+                    class="ml-5 flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brandprimary-500"
                     :class="{'animate-spin': isLoading}"
                     :disabled="isLoading">
                 <span class="sr-only">Refresh</span>
@@ -61,18 +61,18 @@
             waitTimeFormatted: '~0 min',
             isLoading: true,
             error: null,
-            
+
             init() {
                 // Refresh data every 60 seconds
                 this.interval = setInterval(() => {
                     this.fetchWalkInStats();
                 }, 60000);
             },
-            
+
             fetchWalkInStats() {
                 this.isLoading = true;
                 this.error = null;
-                
+
                 fetch('/api/dashboard/walk-ins/queue-stats', {
                     headers: {
                         'Accept': 'application/json',
@@ -97,7 +97,7 @@
                     this.isLoading = false;
                 });
             },
-            
+
             // Clean up interval when component is removed
             destroy() {
                 if (this.interval) {

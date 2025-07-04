@@ -47,7 +47,7 @@
                                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                                 </svg>
                             </div>
-                            <input type="text" id="search" name="search" placeholder="Search users..." 
+                            <input type="text" id="search" name="search" placeholder="Search users..."
                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                    value="{{ request('search') }}">
                         </div>
@@ -113,8 +113,8 @@
                                     <td class="px-6 py-4">
                                         <div class="flex flex-wrap gap-1">
                                             @forelse ($user->roles as $role)
-                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                    {{ $role->name === 'admin' ? 'bg-purple-100 text-purple-800' : 
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                    {{ $role->name === 'admin' ? 'bg-brandprimary-100 text-brandprimary-800' :
                                                        ($role->name === 'staff' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
                                                     {{ $role->name }}
                                                 </span>
@@ -173,27 +173,27 @@
         const searchInput = document.getElementById('search');
         const roleFilter = document.getElementById('role_filter');
         const filterButton = document.getElementById('filterButton');
-        
+
         function applyFilters() {
             const params = new URLSearchParams(window.location.search);
-            
+
             if (searchInput.value) {
                 params.set('search', searchInput.value);
             } else {
                 params.delete('search');
             }
-            
+
             if (roleFilter.value) {
                 params.set('role', roleFilter.value);
             } else {
                 params.delete('role');
             }
-            
+
             window.location.href = window.location.pathname + '?' + params.toString();
         }
-        
+
         filterButton.addEventListener('click', applyFilters);
-        
+
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 applyFilters();

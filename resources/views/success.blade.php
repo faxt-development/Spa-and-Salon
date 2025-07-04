@@ -20,7 +20,7 @@
             </p>
             <div class="mt-8 border-t border-gray-200 pt-8">
                 <p class="text-md text-gray-600 max-w-2xl mx-auto">
-                    If you have any questions or need assistance, please contact our support team at <a href="mailto:support@faxtina.com" class="text-purple-600 hover:text-purple-800 font-medium">support@faxtina.com</a> or call us at <a href="tel:+18005551234" class="text-purple-600 hover:text-purple-800 font-medium">(800) 555-1234</a>.
+                    If you have any questions or need assistance, please contact our support team at <a href="mailto:support@faxtina.com" class="text-brandPrimary-600 hover:text-brandPrimary-800 font-medium">support@faxtina.com</a> or call us at <a href="tel:+18005551234" class="text-brandPrimary-600 hover:text-brandPrimary-800 font-medium">(800) 555-1234</a>.
                 </p>
             </div>
         </div>

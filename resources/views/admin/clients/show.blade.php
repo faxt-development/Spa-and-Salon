@@ -36,7 +36,7 @@
                                 </div>
                             @endif
                         </div>
-                        
+
                         <!-- Client Details -->
                         <div class="md:ml-6 flex-1">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -51,7 +51,7 @@
                                         <p class="font-medium">{{ $client->phone ?? 'Not provided' }}</p>
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <h3 class="text-lg font-medium text-gray-900">{{ __('Personal Details') }}</h3>
                                     <div class="mt-2">
@@ -64,17 +64,17 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="mt-4">
                                 <h3 class="text-lg font-medium text-gray-900">{{ __('Address') }}</h3>
                                 <p class="mt-1">{{ $client->address ?? 'No address provided' }}</p>
                             </div>
-                            
+
                             <div class="mt-4">
                                 <h3 class="text-lg font-medium text-gray-900">{{ __('Notes') }}</h3>
                                 <p class="mt-1">{{ $client->notes ?? 'No notes available' }}</p>
                             </div>
-                            
+
                             <!-- Client Stats Grid -->
                             <div class="mt-4 grid grid-cols-2 gap-4">
                                 <div class="bg-gray-50 p-3 rounded-lg">
@@ -94,21 +94,21 @@
                                     <p class="text-lg font-semibold">{{ $client->days_since_last_visit ?? 'N/A' }}</p>
                                 </div>
                             </div>
-                            
+
                             <div class="mt-4 flex items-center text-sm text-gray-500">
                                 <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
                                 <span>{{ __('Client since') }}: {{ $client->created_at->format('F j, Y') }}</span>
                             </div>
-                            
+
                             <div class="mt-1 flex items-center text-sm text-gray-500">
                                 <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 <span>{{ __('Last visit') }}: {{ $client->last_visit ? $client->last_visit->format('F j, Y') : 'Never' }}</span>
                             </div>
-                            
+
                             @if($client->source)
                             <div class="mt-1 flex items-center text-sm text-gray-500">
                                 <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Client Appointments Section -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 bg-white border-b border-gray-200" x-data="{ activeTab: 'upcoming' }">
@@ -134,7 +134,7 @@
                             {{ __('Book New Appointment') }}
                         </a>
                     </div>
-                    
+
                     <!-- Tabs -->
                     <div class="border-b border-gray-200">
                         <nav class="-mb-px flex space-x-8">
@@ -149,14 +149,14 @@
                             </button>
                         </nav>
                     </div>
-                    
+
                     <!-- Appointment Lists -->
                     <div class="mt-4">
                         <!-- Upcoming Appointments -->
                         <div x-show="activeTab === 'upcoming'">
                             <p class="text-gray-500">{{ __('No upcoming appointments.') }}</p>
                         </div>
-                        
+
                         <!-- Past Appointments -->
                         <div x-show="activeTab === 'past'" x-cloak>
                             @if($client->appointments->count() > 0)
@@ -182,7 +182,7 @@
                                 <p class="text-gray-500">{{ __('No past appointments.') }}</p>
                             @endif
                         </div>
-                        
+
                         <!-- Canceled Appointments -->
                         <div x-show="activeTab === 'canceled'" x-cloak>
                             <p class="text-gray-500">{{ __('No canceled appointments.') }}</p>
@@ -190,7 +190,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Client Spend Analytics -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 bg-white border-b border-gray-200">
@@ -211,7 +211,7 @@
                             </a>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                         <!-- Summary Cards -->
                         <div class="bg-blue-50 p-4 rounded-lg">
@@ -227,7 +227,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="bg-green-50 p-4 rounded-lg">
                             <div class="flex items-center">
                                 <div class="p-3 rounded-full bg-green-100 text-green-600">
@@ -241,10 +241,10 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-purple-50 p-4 rounded-lg">
+
+                        <div class="bg-brandPrimary50 p-4 rounded-lg">
                             <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                <div class="p-3 rounded-full bg-brandPrimary100 text-brandPrimary600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                     </svg>
@@ -256,7 +256,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <!-- Spend Trend Chart -->
                         <div class="bg-white p-4 border border-gray-200 rounded-lg">
@@ -265,7 +265,7 @@
                                 <canvas id="spendTrendChart"></canvas>
                             </div>
                         </div>
-                        
+
                         <!-- Spend by Category -->
                         <div class="bg-white p-4 border border-gray-200 rounded-lg">
                             <h4 class="font-medium text-gray-700 mb-3">{{ __('Spend by Category') }}</h4>
@@ -288,7 +288,7 @@
                                 <p class="text-gray-500">{{ __('No spend data available.') }}</p>
                             @endif
                         </div>
-                        
+
                         <!-- Payment Methods -->
                         <div class="bg-white p-4 border border-gray-200 rounded-lg">
                             <h4 class="font-medium text-gray-700 mb-3">{{ __('Payment Methods') }}</h4>
@@ -314,7 +314,7 @@
                                 <p class="text-gray-500">{{ __('No payment data available.') }}</p>
                             @endif
                         </div>
-                        
+
                         <!-- Recent Transactions -->
                         <div class="bg-white p-4 border border-gray-200 rounded-lg">
                             <h4 class="font-medium text-gray-700 mb-3">{{ __('Recent Transactions') }}</h4>
@@ -326,7 +326,7 @@
                                                     ->take(5)
                                                     ->get();
                             @endphp
-                            
+
                             @if($recentPayments->isNotEmpty())
                                 <div class="space-y-3">
                                     @foreach($recentPayments as $payment)
@@ -364,7 +364,7 @@
             </div>
         </div>
     </div>
-    
+
     @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -373,7 +373,7 @@
             const spendTrendCtx = document.getElementById('spendTrendChart');
             if (spendTrendCtx) {
                 const spendTrendData = @json($client->getSpendTrend(12));
-                
+
                 new Chart(spendTrendCtx, {
                     type: 'line',
                     data: {
@@ -429,13 +429,13 @@
                     }
                 });
             }
-            
+
             // Spend by Category Chart
             const spendByCategoryCtx = document.getElementById('spendByCategoryChart');
             if (spendByCategoryCtx) {
                 const spendByCategoryData = @json($spendByCategory);
                 const colors = spendByCategoryData.map(item => '#' + md5(item.category).substring(0, 6));
-                
+
                 new Chart(spendByCategoryCtx, {
                     type: 'doughnut',
                     data: {
@@ -470,13 +470,13 @@
                     }
                 });
             }
-            
+
             // Payment Methods Chart
             const paymentMethodsCtx = document.getElementById('paymentMethodsChart');
             if (paymentMethodsCtx) {
                 const paymentMethodsData = @json($paymentMethods);
                 const colors = paymentMethodsData.map(item => '#' + md5(item.payment_method).substring(0, 6));
-                
+
                 new Chart(paymentMethodsCtx, {
                     type: 'pie',
                     data: {
@@ -514,7 +514,7 @@
                     }
                 });
             }
-            
+
             // Simple MD5 function for generating colors
             function md5(string) {
                 return Array.from(Array(32), (_, i) => (i < 8 || i > 10 ? '0' : '') + (i === 3 || i === 5 || i === 7 || i === 9 ? '4' : '') + (i === 11 ? (Math.random() * 4 | 8).toString(16) : (Math.random() * 16 | 0).toString(16))).join('');

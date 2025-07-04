@@ -14,7 +14,7 @@
                     <!-- Search and Filter -->
                     <div class="row mb-3">
                         <div class="col-md-4">
-                            <input type="text" class="form-control" placeholder="Search by name or email" 
+                            <input type="text" class="form-control" placeholder="Search by name or email"
                                 x-model="filters.search" @input="debounceSearch">
                         </div>
                         <div class="col-md-3">
@@ -83,9 +83,9 @@
                                         </td>
                                         <td x-text="employee.position"></td>
                                         <td>
-                                            <span class="badge" 
+                                            <span class="badge"
                                                 :class="{
-                                                    'bg-primary': employee.employment_type === 'full-time',
+                                                    'bg-brandprimary': employee.employment_type === 'full-time',
                                                     'bg-success': employee.employment_type === 'part-time',
                                                     'bg-warning': employee.employment_type === 'contract'
                                                 }"
@@ -107,7 +107,7 @@
                                         </td>
                                         <td x-text="formatDate(employee.hire_date)"></td>
                                         <td>
-                                            <span class="badge" 
+                                            <span class="badge"
                                                 :class="employee.is_active ? 'bg-success' : 'bg-danger'"
                                                 x-text="employee.is_active ? 'Active' : 'Inactive'">
                                             </span>
@@ -120,7 +120,7 @@
                                                 <button class="btn btn-sm btn-primary" @click="editEmployee(employee)">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button class="btn btn-sm" 
+                                                <button class="btn btn-sm"
                                                     :class="employee.is_active ? 'btn-danger' : 'btn-success'"
                                                     @click="toggleEmployeeStatus(employee)">
                                                     <i class="fas" :class="employee.is_active ? 'fa-user-slash' : 'fa-user-check'"></i>
@@ -178,8 +178,8 @@
                             <p><strong>Position:</strong> <span x-text="selectedEmployee?.position"></span></p>
                             <p><strong>Type:</strong> <span x-text="formatEmploymentType(selectedEmployee?.employment_type)"></span></p>
                             <p><strong>Hire Date:</strong> <span x-text="formatDate(selectedEmployee?.hire_date)"></span></p>
-                            <p><strong>Status:</strong> 
-                                <span class="badge" 
+                            <p><strong>Status:</strong>
+                                <span class="badge"
                                     :class="selectedEmployee?.is_active ? 'bg-success' : 'bg-danger'"
                                     x-text="selectedEmployee?.is_active ? 'Active' : 'Inactive'">
                                 </span>
@@ -240,15 +240,15 @@
             sortDirection: 'asc',
             searchTimeout: null,
             viewModal: null,
-            
+
             init() {
                 this.loadEmployees();
                 this.viewModal = new bootstrap.Modal(document.getElementById('viewEmployeeModal'));
             },
-            
+
             loadEmployees() {
                 this.loading = true;
-                
+
                 let queryParams = new URLSearchParams();
                 if (this.filters.search) queryParams.append('search', this.filters.search);
                 if (this.filters.employment_type) queryParams.append('employment_type', this.filters.employment_type);
@@ -256,7 +256,7 @@
                 queryParams.append('sort_field', this.sortField);
                 queryParams.append('sort_direction', this.sortDirection);
                 queryParams.append('page', this.filters.page);
-                
+
                 fetch(`/api/employees?${queryParams.toString()}`)
                     .then(response => response.json())
                     .then(data => {
@@ -273,14 +273,14 @@
                         this.loading = false;
                     });
             },
-            
+
             debounceSearch() {
                 clearTimeout(this.searchTimeout);
                 this.searchTimeout = setTimeout(() => {
                     this.loadEmployees();
                 }, 300);
             },
-            
+
             resetFilters() {
                 this.filters = {
                     search: '',
@@ -290,7 +290,7 @@
                 };
                 this.loadEmployees();
             },
-            
+
             sort(field) {
                 if (this.sortField === field) {
                     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -300,25 +300,25 @@
                 }
                 this.loadEmployees();
             },
-            
+
             goToPage(url) {
                 if (!url) return;
-                
+
                 const urlObj = new URL(url);
                 this.filters.page = urlObj.searchParams.get('page') || 1;
                 this.loadEmployees();
             },
-            
+
             viewEmployee(employee) {
                 this.selectedEmployee = employee;
                 this.viewModal.show();
             },
-            
+
             editEmployee(employee) {
                 // Redirect to edit page
                 window.location.href = `/payroll/employees/${employee.id}/edit`;
             },
-            
+
             toggleEmployeeStatus(employee) {
                 if (confirm(`Are you sure you want to ${employee.is_active ? 'deactivate' : 'activate'} this employee?`)) {
                     fetch(`/api/employees/${employee.id}`, {
@@ -346,29 +346,29 @@
                     });
                 }
             },
-            
+
             formatEmploymentType(type) {
                 if (!type) return 'N/A';
                 return type.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
             },
-            
+
             formatPaymentFrequency(frequency) {
                 if (!frequency) return 'N/A';
-                
+
                 const formats = {
                     'weekly': 'Weekly',
                     'bi-weekly': 'Bi-Weekly',
                     'monthly': 'Monthly'
                 };
-                
+
                 return formats[frequency] || frequency;
             },
-            
+
             formatDate(dateString) {
                 if (!dateString) return 'N/A';
                 return new Date(dateString).toLocaleDateString();
             },
-            
+
             openCreateModal() {
                 window.location.href = '/payroll/employees/create';
             }
