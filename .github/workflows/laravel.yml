@@ -32,50 +32,27 @@ jobs:
         export DEPLOY_USER="${{ secrets.DEPLOY_USER }}"
 
         # Create deployment script
-        cat > deploy.sh << 'EOL'
+        cat > deploy.sh << EOL
         #!/bin/bash
         set -e
 
         echo "Changing to deploy directory..."
         echo "FAXTINA_DEPLOY_PATH value: $FAXTINA_DEPLOY_PATH"
+        echo "DEPLOY_USER value: $DEPLOY_USER"
         
         # Execute all commands as the deploy user
-        sudo -u $DEPLOY_USER bash << 'EOSUDO'
-          cd $FAXTINA_DEPLOY_PATH
-          echo "Current directory: $(pwd)"
-
-          # Check if this is a git repository
-          if [ -d ".git" ]; then
-            echo "This is a git repository"
-          else
-            echo "ERROR: Not a git repository. Contents of directory:"
-            ls -la
-            exit 1
-          fi
-
-          # Configure git to trust this directory
-          git config --global --add safe.directory "$FAXTINA_DEPLOY_PATH"
-
-          echo "Pulling latest changes..."
-          git fetch --all
-          git reset --hard origin/main
-        EOSUDO
-
-        echo "Installing PHP dependencies..."
-        composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-
-        echo "Installing Node.js dependencies..."
-        yarn install
-
-        echo "Running migrations..."
-        php artisan migrate --force
-
-        echo "Optimizing..."
-        php artisan optimize:clear
-        php artisan optimize
-        php artisan view:cache
-        php artisan route:cache
-        php artisan config:cache
+        echo "Switching to deploy user and executing deployment commands..."
+        cd_cmd="cd $FAXTINA_DEPLOY_PATH"
+        check_git="if [ -d '.git' ]; then echo 'This is a git repository'; else echo 'ERROR: Not a git repository'; ls -la; exit 1; fi"
+        trust_dir="git config --global --add safe.directory \"$FAXTINA_DEPLOY_PATH\""
+        pull_cmd="echo 'Pulling latest changes...' && git fetch --all && git reset --hard origin/main"
+        composer_cmd="echo 'Installing PHP dependencies...' && composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev"
+        yarn_cmd="echo 'Installing Node.js dependencies...' && yarn install"
+        migrate_cmd="echo 'Running migrations...' && php artisan migrate --force"
+        optimize_cmd="echo 'Optimizing...' && php artisan optimize:clear && php artisan optimize && php artisan view:cache && php artisan route:cache && php artisan config:cache"
+        
+        # Run all commands as the deploy user
+        sudo -u "$DEPLOY_USER" bash -c "$cd_cmd && $check_git && $trust_dir && $pull_cmd && $composer_cmd && $yarn_cmd && $migrate_cmd && $optimize_cmd"
 
         echo "Deployment completed successfully!"
         EOL
