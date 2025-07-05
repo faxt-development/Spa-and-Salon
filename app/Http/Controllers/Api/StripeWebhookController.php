@@ -235,6 +235,7 @@ Log::info($payload);
                     'name' => 'Subscription Plan',
                     'slug' => 'subscription-plan',
                     'stripe_plan_id' => $priceId,
+                    'billing_cycle' => 'monthly', // Add default billing cycle
                     'price' => $session->amount_total / 100,
                     'currency' => $session->currency ?? 'usd',
                     'is_active' => true,

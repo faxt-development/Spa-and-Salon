@@ -90,6 +90,9 @@ Route::get('/test-onboarding', function() {
                 'stripe_price' => 'test_price_id',
                 'quantity' => 1,
                 'trial_ends_at' => now()->addDays(14),
+                'status' => 'active',
+                'billing_cycle' => $plan->billing_cycle,
+                'next_billing_date' => now()->addDays(14),
             ]);
         }
 
