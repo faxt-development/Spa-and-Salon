@@ -262,6 +262,9 @@ Log::info($payload);
                 ]);
             }
             
+            // Calculate next billing date based on trial period
+            $nextBillingDate = $trialEndsAt ? $trialEndsAt : now();
+            
             // Create or update subscription record
             $subscription = Subscription::updateOrCreate(
                 ['stripe_id' => $session->subscription],
@@ -273,6 +276,9 @@ Log::info($payload);
                     'stripe_price' => $priceId,
                     'quantity' => 1,
                     'trial_ends_at' => $trialEndsAt,
+                    'status' => 'active',
+                    'billing_cycle' => $plan->billing_cycle,
+                    'next_billing_date' => $nextBillingDate,
                 ]
             );
 

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('quantity')->default(1);
             $table->timestamp('trial_ends_at')->nullable();
             $table->timestamp('ends_at')->nullable();
-            $table->string('status');
+            $table->string('status')->default('active');
             $table->string('billing_cycle')->default('monthly'); // e.g., 'monthly', 'yearly'
             $table->timestamp('next_billing_date')->nullable();
             $table->timestamp('cancelled_at')->nullable();
