@@ -46,7 +46,7 @@ Log::info('Stripe Webhook received');
 Log::info($payload);
         try {
             $event = Webhook::constructEvent(
-                $payload, $sigHeader, $webhookSecret
+                $request->getContent(), $sigHeader, $webhookSecret
             );
         } catch (UnexpectedValueException $e) {
             // Invalid payload
@@ -241,6 +241,27 @@ Log::info($payload);
                 ]);
             }
 
+            // Retrieve the subscription details from Stripe
+            $stripeSubscription = null;
+            $trialEndsAt = null;
+            
+            try {
+                if ($session->subscription) {
+                    $stripeSubscription = \Stripe\Subscription::retrieve($session->subscription);
+                    
+                    // Check if the subscription has a trial end date
+                    if (isset($stripeSubscription->trial_end) && $stripeSubscription->trial_end > 0) {
+                        $trialEndsAt = date('Y-m-d H:i:s', $stripeSubscription->trial_end);
+                        Log::info('Trial end date found', ['trial_end' => $trialEndsAt]);
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Error retrieving subscription from Stripe', [
+                    'subscription_id' => $session->subscription,
+                    'error' => $e->getMessage()
+                ]);
+            }
+            
             // Create or update subscription record
             $subscription = Subscription::updateOrCreate(
                 ['stripe_id' => $session->subscription],
@@ -251,9 +272,7 @@ Log::info($payload);
                     'stripe_status' => 'active',
                     'stripe_price' => $priceId,
                     'quantity' => 1,
-                    'trial_ends_at' => $session->subscription_data->trial_end
-                        ? date('Y-m-d H:i:s', $session->subscription_data->trial_end)
-                        : null,
+                    'trial_ends_at' => $trialEndsAt,
                 ]
             );
 
