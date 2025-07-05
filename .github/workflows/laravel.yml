@@ -25,33 +25,41 @@ jobs:
         SERVER_IP: ${{ secrets.SERVER_IP }}
         SERVER_USER: ${{ secrets.SERVER_USER }}
         FAXTINA_DEPLOY_PATH: ${{ secrets.FAXTINA_DEPLOY_PATH }}
+        DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
       run: |
         # Export the environment variables so they're available in the script
         export FAXTINA_DEPLOY_PATH="${{ secrets.FAXTINA_DEPLOY_PATH }}"
+        export DEPLOY_USER="${{ secrets.DEPLOY_USER }}"
 
         # Create deployment script
-        cat > deploy.sh << EOL
+        cat > deploy.sh << 'EOL'
         #!/bin/bash
         set -e
 
-        sudo -u prassoapp -i
         echo "Changing to deploy directory..."
         echo "FAXTINA_DEPLOY_PATH value: $FAXTINA_DEPLOY_PATH"
-        echo "Current directory before cd: $(pwd)"
-        cd $FAXTINA_DEPLOY_PATH
-        echo "Current directory after cd: $(pwd)"
+        
+        # Execute all commands as the deploy user
+        sudo -u $DEPLOY_USER bash << 'EOSUDO'
+          cd $FAXTINA_DEPLOY_PATH
+          echo "Current directory: $(pwd)"
 
-        # Check if this is a git repository
-        if [ -d ".git" ]; then
-          echo "This is a git repository"
-        else
-          echo "ERROR: Not a git repository. Contents of directory:"
-          ls -la
-        fi
+          # Check if this is a git repository
+          if [ -d ".git" ]; then
+            echo "This is a git repository"
+          else
+            echo "ERROR: Not a git repository. Contents of directory:"
+            ls -la
+            exit 1
+          fi
 
-        echo "Pulling latest changes..."
-        git fetch --all
-        git reset --hard origin/main
+          # Configure git to trust this directory
+          git config --global --add safe.directory "$FAXTINA_DEPLOY_PATH"
+
+          echo "Pulling latest changes..."
+          git fetch --all
+          git reset --hard origin/main
+        EOSUDO
 
         echo "Installing PHP dependencies..."
         composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
