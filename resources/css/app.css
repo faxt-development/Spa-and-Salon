@@ -1,3 +1,6 @@
+/* Import onboarding styles */
+@import 'onboarding.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -90,5 +93,8 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+  }
+  .btn-brand-primary {
+    @apply bg-brandAccent-500 text-primary-foreground hover:opacity-90 !important;
   }
 }

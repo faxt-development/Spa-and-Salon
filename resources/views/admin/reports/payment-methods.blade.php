@@ -28,14 +28,14 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">Payment Method Reports</h1>
             <div class="d-flex gap-2">
-                <x-export-buttons 
-                    type="payment-methods" 
-                    label="Export Report" 
-                    class="btn btn-success" 
+                <x-export-buttons
+                    type="payment-methods"
+                    label="Export Report"
+                    class="btn btn-success"
                     :showIcon="true"
                     size="sm"
                 />
-                <button class="btn btn-primary" onclick="window.print()">
+                <button class="btn btn-brand-primary" onclick="window.print()">
                     <i class="fas fa-print"></i> Print Report
                 </button>
                 <button class="btn btn-success" onclick="exportToExcel()">
@@ -52,12 +52,12 @@
                 <form action="{{ route('admin.reports.payment-methods') }}" method="GET" class="row g-3">
                     <div class="col-md-3">
                         <label for="start_date" class="form-label">Start Date</label>
-                        <input type="date" class="form-control" id="start_date" name="start_date" 
+                        <input type="date" class="form-control" id="start_date" name="start_date"
                                value="{{ $startDate }}" required>
                     </div>
                     <div class="col-md-3">
                         <label for="end_date" class="form-label">End Date</label>
-                        <input type="date" class="form-control" id="end_date" name="end_date" 
+                        <input type="date" class="form-control" id="end_date" name="end_date"
                                value="{{ $endDate }}" required>
                     </div>
                     <div class="col-md-4">
@@ -72,7 +72,7 @@
                         </select>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">
+                        <button type="submit" class="btn btn-brand-primary w-100">
                             <i class="fas fa-filter"></i> Apply Filters
                         </button>
                     </div>
@@ -145,12 +145,12 @@
             // Set max date for end date to today
             const today = new Date().toISOString().split('T')[0];
             $('#end_date').attr('max', today);
-            
+
             // Set min date for start date when end date changes
             $('#end_date').on('change', function() {
                 $('#start_date').attr('max', $(this).val());
             });
-            
+
             // Set max date for end date when start date changes
             $('#start_date').on('change', function() {
                 $('#end_date').attr('min', $(this).val());
@@ -161,21 +161,21 @@
         function exportToExcel() {
             // Get the table
             const table = document.getElementById('reportTable');
-            
+
             // Create a new workbook
             const wb = XLSX.utils.book_new();
-            
+
             // Convert table to worksheet
             const ws = XLSX.utils.table_to_sheet(table);
-            
+
             // Add worksheet to workbook
             XLSX.utils.book_append_sheet(wb, ws, 'Payment Method Report');
-            
+
             // Generate file name with date range
             const startDate = '{{ $startDate }}';
             const endDate = '{{ $endDate }}';
             const fileName = `payment-method-report-${startDate}-to-${endDate}.xlsx`;
-            
+
             // Save the file
             XLSX.writeFile(wb, fileName);
         }

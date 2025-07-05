@@ -82,7 +82,7 @@ class ExportButtons extends Component
     public function __construct(
         string $type,
         string $label = 'Export',
-        string $buttonClass = 'btn-primary',
+        string $buttonClass = 'btn-brand-primary',
         bool $showIcon = true,
         string $size = 'md'
     ) {

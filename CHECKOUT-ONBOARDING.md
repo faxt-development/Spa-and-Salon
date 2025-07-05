@@ -121,7 +121,7 @@ For local testing, you can use Stripe's webhook testing tools:
 1. Install the Stripe CLI: https://stripe.com/docs/stripe-cli
 2. Forward webhook events to your local server:
    ```
-   stripe listen --forward-to http://localhost:8000/api/webhook/stripe
+   stripe listen --forward-to localhost:8000/api/stripe/webhook --load-from-webhooks-api
    ```
 3. Trigger a test checkout.session.completed event:
    ```
@@ -142,6 +142,7 @@ If the onboarding process is not working as expected:
    - Note that emails sent with `Mail::queue()` or through mailables implementing `ShouldQueue` won't appear immediately in logs
    - Use `Mail::mailer('log')` to force immediate sending through the log driver
    -- release the email queue with php artisan queue:work
+   
 
 ## Future Improvements
 

@@ -29,5 +29,6 @@
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_297e33f1370a896e7d2ae52bb2a996394a0c2a710d2b6998284f32d67564e64"/>
     </php>
 </phpunit>

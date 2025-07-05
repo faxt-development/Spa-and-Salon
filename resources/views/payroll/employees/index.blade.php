@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Employee Management</h5>
-                    <button class="btn btn-primary" @click="openCreateModal">Add Employee</button>
+                    <button class="btn btn-brand-primary" @click="openCreateModal">Add Employee</button>
                 </div>
 
                 <div class="card-body">
@@ -117,7 +117,7 @@
                                                 <button class="btn btn-sm btn-info" @click="viewEmployee(employee)">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="btn btn-sm btn-primary" @click="editEmployee(employee)">
+                                                <button class="btn btn-sm btn-brand-primary" @click="editEmployee(employee)">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                                 <button class="btn btn-sm"
@@ -215,7 +215,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" @click="editEmployee(selectedEmployee)">Edit</button>
+                    <button type="button" class="btn btn-brand-primary" @click="editEmployee(selectedEmployee)">Edit</button>
                 </div>
             </div>
         </div>

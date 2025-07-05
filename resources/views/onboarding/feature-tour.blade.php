@@ -91,7 +91,7 @@
                     <div class="text-center mt-4">
                         <form method="POST" action="{{ route('onboarding.complete') }}">
                             @csrf
-                            <button type="submit" class="btn btn-primary btn-lg">
+                            <button type="submit" class="btn btn-brand-primary btn-lg">
                                 {{ __('Go to Dashboard') }}
                             </button>
                         </form>
@@ -102,95 +102,7 @@
     </div>
 </div>
 
-<style>
-    .onboarding-steps {
-        display: flex;
-        justify-content: space-between;
-        margin: 30px 0;
-    }
-
-    .step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        width: 25%;
-    }
-
-    .step:not(:last-child):after {
-        content: '';
-        position: absolute;
-        top: 15px;
-        right: -50%;
-        width: 100%;
-        height: 2px;
-        background-color: #e0e0e0;
-        z-index: 0;
-    }
-
-    .step.active .step-number {
-        background-color: #4299e1;
-        color: white;
-    }
-
-    .step.completed .step-number {
-        background-color: #48bb78;
-        color: white;
-    }
-
-    .step-number {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background-color: #e0e0e0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 8px;
-        font-weight: bold;
-        z-index: 1;
-    }
-
-    .step-text {
-        font-size: 0.8rem;
-        color: #718096;
-    }
-
-    .step.active .step-text {
-        color: #4299e1;
-        font-weight: bold;
-    }
-
-    .step.completed .step-text {
-        color: #48bb78;
-        font-weight: bold;
-    }
-
-    .feature-slide {
-        padding: 20px;
-        text-align: center;
-        height: 250px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .feature-icon {
-        margin-bottom: 20px;
-        color: #4299e1;
-    }
-
-    .carousel-control-prev,
-    .carousel-control-next {
-        width: 5%;
-        color: #4299e1;
-    }
-
-    .carousel-indicators button {
-        background-color: #4299e1;
-    }
-</style>
+<!-- Onboarding styles now loaded from onboarding.css -->
 
 @section('scripts')
 <script>

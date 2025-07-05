@@ -41,7 +41,7 @@
             <x-export-buttons
                 type="sales"
                 label="Export Report"
-                class="btn btn-primary"
+                class="btn btn-brand-primary"
                 :showIcon="true"
                 size="md"
             />
@@ -272,7 +272,7 @@
                     </div>
 
                     <div class="col-12 text-end">
-                        <button type="button" class="btn btn-primary me-2" @click="loadReport()">
+                        <button type="button" class="btn btn-brand-primary me-2" @click="loadReport()">
                             <i class="fas fa-sync-alt me-1"></i> Refresh
                         </button>
                         <div class="btn-group">

@@ -127,12 +127,12 @@
                                     </div>
                                     <div class="col-md-6 mb-3" x-show="compensationType === 'hourly'">
                                         <label for="hourly_rate" class="form-label">Hourly Rate ($) *</label>
-                                        <input type="number" step="0.01" min="0" class="form-control" id="hourly_rate" 
+                                        <input type="number" step="0.01" min="0" class="form-control" id="hourly_rate"
                                             x-model="form.hourly_rate" :required="compensationType === 'hourly'">
                                     </div>
                                     <div class="col-md-6 mb-3" x-show="compensationType === 'salary'">
                                         <label for="salary" class="form-label">Annual Salary ($) *</label>
-                                        <input type="number" step="0.01" min="0" class="form-control" id="salary" 
+                                        <input type="number" step="0.01" min="0" class="form-control" id="salary"
                                             x-model="form.salary" :required="compensationType === 'salary'">
                                     </div>
                                 </div>
@@ -173,7 +173,7 @@
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-secondary" @click="resetForm">Reset</button>
-                            <button type="submit" class="btn btn-primary" :disabled="loading">
+                            <button type="submit" class="btn btn-brand-primary" :disabled="loading">
                                 <span x-show="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                                 Save Employee
                             </button>
@@ -214,11 +214,11 @@
             loading: false,
             errors: [],
             successMessage: '',
-            
+
             init() {
                 this.loadAvailableStaff();
             },
-            
+
             loadAvailableStaff() {
                 fetch('/api/staff?unassigned=true')
                     .then(response => response.json())
@@ -233,18 +233,18 @@
                         console.error('Error:', error);
                     });
             },
-            
+
             submitForm() {
                 this.loading = true;
                 this.errors = [];
                 this.successMessage = '';
-                
+
                 // Validate form
                 if (!this.validateForm()) {
                     this.loading = false;
                     return;
                 }
-                
+
                 // Prepare form data based on compensation type
                 const formData = { ...this.form };
                 if (this.compensationType === 'hourly') {
@@ -252,7 +252,7 @@
                 } else if (this.compensationType === 'salary') {
                     formData.hourly_rate = null;
                 }
-                
+
                 // Submit form
                 fetch('/api/employees', {
                     method: 'POST',
@@ -265,7 +265,7 @@
                 .then(response => response.json())
                 .then(data => {
                     this.loading = false;
-                    
+
                     if (data.success) {
                         this.successMessage = 'Employee created successfully!';
                         setTimeout(() => {
@@ -287,11 +287,11 @@
                     this.errors.push('An unexpected error occurred. Please try again.');
                 });
             },
-            
+
             validateForm() {
                 let isValid = true;
                 this.errors = [];
-                
+
                 // Required fields
                 const requiredFields = ['first_name', 'last_name', 'email', 'position', 'employment_type', 'hire_date', 'payment_frequency'];
                 requiredFields.forEach(field => {
@@ -300,7 +300,7 @@
                         isValid = false;
                     }
                 });
-                
+
                 // Compensation validation
                 if (!this.compensationType) {
                     this.errors.push('Compensation type is required.');
@@ -312,21 +312,21 @@
                     this.errors.push('Salary is required.');
                     isValid = false;
                 }
-                
+
                 // Email validation
                 if (this.form.email && !this.isValidEmail(this.form.email)) {
                     this.errors.push('Please enter a valid email address.');
                     isValid = false;
                 }
-                
+
                 return isValid;
             },
-            
+
             isValidEmail(email) {
                 const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return re.test(email);
             },
-            
+
             resetForm() {
                 this.form = {
                     first_name: '',

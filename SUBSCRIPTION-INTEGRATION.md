@@ -80,7 +80,7 @@ For local development and testing of webhooks:
 1. Install the [Stripe CLI](https://stripe.com/docs/stripe-cli)
 2. Start the webhook forwarding with:
    ```
-   stripe listen --forward-to http://localhost:8000/api/stripe/webhook
+ stripe listen --forward-to localhost:8000/api/stripe/webhook --load-from-webhooks-api
    ```
 3. **Important**: When using the Stripe CLI for local testing, it generates a unique webhook signing secret that's different from your production webhook secret. You must update your local `.env` file with this CLI-generated webhook secret:
    ```

@@ -35,14 +35,22 @@
                     </div>
 
                     <div class="text-center">
+                        @if(isset($user) && $user->email)
+                            <div class="alert alert-info mb-4">
+                                Welcome back, {{ $user->email }}! Let's continue setting up your account.
+                            </div>
+                        @endif
+                        
                         <p>In the next few steps, we'll help you:</p>
                         <ul class="list-group list-group-flush mb-4">
-                            <li class="list-group-item">Create your admin account</li>
+                            <li class="list-group-item">{{ isset($user) && $user->email ? 'Complete' : 'Create' }} your admin account</li>
                             <li class="list-group-item">Set up your business information</li>
                             <li class="list-group-item">Learn about key features</li>
                         </ul>
 
-                        <a href="{{ route('onboarding.user-form') }}" class="btn btn-primary btn-lg">Let's Get Started</a>
+                        <a href="{{ route('onboarding.user-form') }}" class="btn btn-brand-primary btn-lg">
+                            {{ isset($user) && $user->email ? 'Continue Setup' : "Let's Get Started" }}
+                        </a>
                     </div>
                 </div>
             </div>
@@ -50,58 +58,5 @@
     </div>
 </div>
 
-<style>
-    .onboarding-steps {
-        display: flex;
-        justify-content: space-between;
-        margin: 30px 0;
-    }
-
-    .step {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-        width: 25%;
-    }
-
-    .step:not(:last-child):after {
-        content: '';
-        position: absolute;
-        top: 15px;
-        right: -50%;
-        width: 100%;
-        height: 2px;
-        background-color: #e0e0e0;
-        z-index: 0;
-    }
-
-    .step.active .step-number {
-        background-color: #4299e1;
-        color: white;
-    }
-
-    .step-number {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background-color: #e0e0e0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 8px;
-        font-weight: bold;
-        z-index: 1;
-    }
-
-    .step-text {
-        font-size: 0.8rem;
-        color: #718096;
-    }
-
-    .step.active .step-text {
-        color: #4299e1;
-        font-weight: bold;
-    }
-</style>
+<!-- Onboarding styles now loaded from onboarding.css -->
 @endsection

@@ -45,7 +45,7 @@
         <p class="lead">{{ $message ?? 'An error occurred while generating the export.' }}</p>
         <p>Please try again or contact support if the problem persists.</p>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <button onclick="window.history.back()" class="btn btn-primary btn-lg px-4 gap-3">
+            <button onclick="window.history.back()" class="btn btn-brand-primary btn-lg px-4 gap-3">
                 <i class="fas fa-arrow-left me-2"></i> Go Back
             </button>
             <button onclick="window.location.reload()" class="btn btn-outline-secondary btn-lg px-4">

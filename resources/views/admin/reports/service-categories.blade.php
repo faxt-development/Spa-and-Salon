@@ -13,10 +13,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 mb-0">Service Category Reports</h1>
             <div>
-                <x-export-buttons 
-                    type="service-categories" 
-                    label="Export Report" 
-                    class="btn btn-primary" 
+                <x-export-buttons
+                    type="service-categories"
+                    label="Export Report"
+                    class="btn btn-brand-primary"
                     :showIcon="true"
                     size="md"
                 />
@@ -53,7 +53,7 @@
                             </div>
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <button type="button" id="apply-filters" class="btn btn-primary mr-2">
+                            <button type="button" id="apply-filters" class="btn btn-brand-primary mr-2">
                                 <i class="fas fa-filter"></i> Apply Filters
                             </button>
                             <button type="button" id="export-pdf" class="btn btn-outline-secondary mr-2">
@@ -144,7 +144,7 @@
     <script src="{{ asset('vendor/daterangepicker/moment.min.js') }}"></script>
     <script src="{{ asset('vendor/daterangepicker/daterangepicker.js') }}"></script>
     <script src="{{ asset('vendor/datatables/datatables.min.js') }}"></script>
-    
+
     <script>
         $(document).ready(function() {
             // Initialize date range picker
@@ -178,14 +178,14 @@
                     { data: 'category_name' },
                     { data: 'service_name' },
                     { data: 'service_count', className: 'text-right' },
-                    { 
+                    {
                         data: 'total_revenue',
                         className: 'text-right',
                         render: function(data) {
                             return '$' + parseFloat(data).toFixed(2);
                         }
                     },
-                    { 
+                    {
                         data: 'average_price',
                         className: 'text-right',
                         render: function(data) {
@@ -203,7 +203,7 @@
             function loadReportData() {
                 const formData = $('#report-filters').serializeArray();
                 const params = {};
-                
+
                 // Convert form data to object
                 $.each(formData, function(i, field) {
                     if (field.name === 'date_range') {
@@ -248,7 +248,7 @@
                 const ctx = document.getElementById('categoryChart').getContext('2d');
                 const labels = data.map(item => item.category_name);
                 const revenueData = data.map(item => parseFloat(item.revenue));
-                
+
                 // Calculate percentages for tooltips
                 const totalRevenue = revenueData.reduce((sum, value) => sum + value, 0);
                 const percentages = revenueData.map(value => {
@@ -326,15 +326,15 @@
             function updateCategoryTable(data) {
                 const $tableBody = $('#categoryTableBody');
                 $tableBody.empty();
-                
+
                 // Calculate total revenue for percentages
                 const totalRevenue = data.reduce((sum, item) => sum + parseFloat(item.revenue), 0);
-                
+
                 // Add rows for each category
                 data.forEach(item => {
                     const revenue = parseFloat(item.revenue);
                     const percentage = totalRevenue > 0 ? (revenue / totalRevenue * 100).toFixed(1) : 0;
-                    
+
                     $tableBody.append(`
                         <tr>
                             <td>${item.category_name}</td>
@@ -345,7 +345,7 @@
                         </tr>
                     `);
                 });
-                
+
                 // Add total row
                 if (data.length > 0) {
                     $tableBody.append(`
@@ -364,11 +364,11 @@
             $(document).on('click', '[data-chart-type]', function(e) {
                 e.preventDefault();
                 chartType = $(this).data('chart-type');
-                
+
                 // Update active state
                 $('[data-chart-type]').removeClass('active');
                 $(this).addClass('active');
-                
+
                 // Toggle table view
                 if (chartType === 'table') {
                     $('.chart-area').addClass('d-none');
@@ -376,7 +376,7 @@
                 } else {
                     $('.chart-area').removeClass('d-none');
                     $('.table-responsive').addClass('d-none');
-                    
+
                     // Reload chart with new type
                     const currentData = categoryChart ? categoryChart.data : null;
                     if (currentData) {
