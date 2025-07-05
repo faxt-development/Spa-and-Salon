@@ -138,6 +138,7 @@ class PlanSeeder extends Seeder
                     'is_featured' => false,
                 ],
             ];
+        }
 
         foreach ($plans as $plan) {
             Plan::create($plan);
