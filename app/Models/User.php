@@ -44,6 +44,7 @@ class User extends Authenticatable
         'receive_special_offers',
         'receive_product_updates',
         'onboarding_completed',
+        'stripe_session_id',
     ];
 
     /**

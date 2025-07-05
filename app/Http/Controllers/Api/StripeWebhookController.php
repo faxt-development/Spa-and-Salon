@@ -200,11 +200,20 @@ Log::info($payload);
                     'password' => Hash::make($temporaryPassword),
                     'email_notifications' => true,
                     'onboarding_completed' => false, // Mark as not completed onboarding
+                    'stripe_session_id' => $session->id, // Store the session ID
                 ]);
 
-                Log::info('Created new user for subscription', ['user_id' => $user->id]);
+                Log::info('Created new user for subscription', [
+                    'user_id' => $user->id,
+                    'session_id' => $session->id
+                ]);
             } else {
-                Log::info('User already exists, using existing user', ['user_id' => $user->id]);
+                // Update existing user with session ID
+                $user->update(['stripe_session_id' => $session->id]);
+                Log::info('User already exists, using existing user', [
+                    'user_id' => $user->id,
+                    'session_id' => $session->id
+                ]);
                 $temporaryPassword = null; // Don't send password for existing users
             }
 

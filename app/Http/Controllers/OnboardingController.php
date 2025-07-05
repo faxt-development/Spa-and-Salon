@@ -38,9 +38,19 @@ class OnboardingController extends Controller
                     session(['onboarding_user_id' => $user->id]);
                 }
             } else {
-                // For real Stripe sessions, you would retrieve the user from Stripe API
-                // This is a placeholder for that implementation
-                // $user = $this->getUserFromStripeSession($sessionId);
+                // Look up the user by their stripe_session_id
+                $user = User::where('stripe_session_id', $sessionId)->first();
+                
+                if ($user) {
+                    Log::info('Found user by Stripe session ID', [
+                        'user_id' => $user->id,
+                        'email' => $user->email,
+                        'session_id' => $sessionId
+                    ]);
+                    session(['onboarding_user_id' => $user->id]);
+                } else {
+                    Log::warning('No user found with Stripe session ID', ['session_id' => $sessionId]);
+                }
             }
         }
         
