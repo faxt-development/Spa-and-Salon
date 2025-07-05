@@ -57,6 +57,17 @@ jobs:
         echo "Installing PHP dependencies..."
         composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
+        echo "Checking Node.js version..."
+        node -v
+
+        echo "Installing NVM to manage Node.js versions..."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+        echo "Installing Node.js LTS version..."
+        nvm use --lts
+
         echo "Installing Node.js dependencies..."
         yarn install
 
