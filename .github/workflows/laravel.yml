@@ -60,10 +60,6 @@ jobs:
         echo "Checking Node.js version..."
         node -v
 
-        echo "Installing NVM to manage Node.js versions..."
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-        export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
         echo "Installing Node.js LTS version..."
         nvm use --lts
