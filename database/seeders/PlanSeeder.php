@@ -72,7 +72,7 @@ class PlanSeeder extends Seeder
                 'is_active' => true,
                 'is_featured' => false,
             ],
-            [
+        /*    [
                 'name' => 'Self-Managed tier',
                 'slug' => 'self-managed',
                 'stripe_plan_id' => 'price_1RfpQbJmhER0XpDiOsfRwv4X',
@@ -128,6 +128,7 @@ class PlanSeeder extends Seeder
                 'is_active' => true,
                 'is_featured' => false,
             ],
+            */
 
         ];
 
