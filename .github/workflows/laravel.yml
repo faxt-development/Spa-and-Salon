@@ -34,6 +34,7 @@ jobs:
         #!/bin/bash
         set -e
 
+        sudo -u prassoapp -i
         echo "Changing to deploy directory..."
         echo "FAXTINA_DEPLOY_PATH value: $FAXTINA_DEPLOY_PATH"
         echo "Current directory before cd: $(pwd)"
@@ -57,9 +58,6 @@ jobs:
 
         echo "Installing Node.js dependencies..."
         yarn install
-
-        echo "Building front-end assets..."
-        yarn build
 
         echo "Running migrations..."
         php artisan migrate --force
