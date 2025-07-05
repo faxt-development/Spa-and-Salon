@@ -54,21 +54,8 @@ jobs:
         git fetch --all
         git reset --hard origin/main
 
-        echo "Installing PHP dependencies..."
+        echo "Installing dependencies..."
         composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-
-        echo "Checking Node.js version..."
-        node -v
-
-
-        echo "Installing Node.js LTS version..."
-        nvm use --lts
-
-        echo "Installing Node.js dependencies..."
-        yarn install
-
-        echo "Building front-end assets..."
-        yarn build
 
         echo "Running migrations..."
         php artisan migrate --force
