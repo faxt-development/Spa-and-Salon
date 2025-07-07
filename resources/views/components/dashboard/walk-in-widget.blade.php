@@ -2,7 +2,7 @@
     <div class="px-4 py-5 sm:p-6">
         <div class="flex items-center">
             <!-- Icon -->
-            <div class="flex-shrink-0 bg-brandprimary-500 rounded-md p-3">
+            <div class="flex-shrink-0 bg-primary-500 rounded-md p-3">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -41,7 +41,7 @@
 
             <!-- Refresh Button -->
             <button @click="fetchWalkInStats()"
-                    class="ml-5 flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brandprimary-500"
+                    class="ml-5 flex-shrink-0 bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                     :class="{'animate-spin': isLoading}"
                     :disabled="isLoading">
                 <span class="sr-only">Refresh</span>

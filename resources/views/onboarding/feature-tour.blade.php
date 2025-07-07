@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-brandprimary text-white">
+                <div class="card-header bg-primary text-white">
                     <h2 class="mb-0">Feature Tour</h2>
                 </div>
                 <div class="card-body">
@@ -91,7 +91,7 @@
                     <div class="text-center mt-4">
                         <form method="POST" action="{{ route('onboarding.complete') }}">
                             @csrf
-                            <button type="submit" class="btn btn-brand-primary btn-lg">
+                            <button type="submit" class="btn btn-primary btn-lg">
                                 {{ __('Go to Dashboard') }}
                             </button>
                         </form>

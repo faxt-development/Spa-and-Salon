@@ -16,6 +16,7 @@
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600|playfair+display:400,500,600,700&display=swap" rel="stylesheet" />
 
     <!-- Scripts -->
+    @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -35,29 +36,29 @@
                         <a href="{{ route('home') }}" class="flex items-center">
                             <!-- Replace src with your actual logo path -->
                             <img class="h-12 w-auto" src="{{ asset('images/faxtina-logo.jpg') }}" alt="{{ $companyName }}">
-                            <span class="ml-3 text-2xl font-display font-bold text-brandPrimary700 dark:text-brandPrimary400">{{ $companyName }}</span>
+                            <span class="ml-3 text-2xl font-display font-bold text-primary700 dark:text-primary400">{{ $companyName }}</span>
                         </a>
                     </div>
 
                     <!-- Navigation -->
                     <div class="hidden md:block">
                         <div class="ml-10 flex items-center space-x-8">
-                            <a href="#services" class="text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 px-3 py-2 text-sm font-medium">Services</a>
-                            <a href="#about" class="text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 px-3 py-2 text-sm font-medium">About Us</a>
-                            <a href="#testimonials" class="text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 px-3 py-2 text-sm font-medium">Testimonials</a>
+                            <a href="#services" class="text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 px-3 py-2 text-sm font-medium">Services</a>
+                            <a href="#about" class="text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 px-3 py-2 text-sm font-medium">About Us</a>
+                            <a href="#testimonials" class="text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 px-3 py-2 text-sm font-medium">Testimonials</a>
                             @if (Route::has('login'))
                                 @auth
                                     @if(auth()->user()->hasRole('admin'))
-                                    <a href="{{ url('/admin/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 px-3 py-2 text-sm font-medium">Dashboard</a>
+                                    <a href="{{ url('/admin/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 px-3 py-2 text-sm font-medium">Dashboard</a>
                                     @else
-                                    <a href="{{ url('/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 px-3 py-2 text-sm font-medium">Dashboard</a>
+                                    <a href="{{ url('/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 px-3 py-2 text-sm font-medium">Dashboard</a>
 
                                     @endif
                                 @else
-                                    <a href="{{ route('login') }}" class="text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 px-3 py-2 text-sm font-medium">Log in</a>
+                                    <a href="{{ route('login') }}" class="text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 px-3 py-2 text-sm font-medium">Log in</a>
 
                                     @if (Route::has('register'))
-                                        <a href="{{ route('register') }}" class="ml-4 px-4 py-2 bg-brandPrimary600 text-white text-sm font-medium rounded-md hover:bg-brandPrimary700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brandPrimary-500">Register</a>
+                                        <a href="{{ route('register') }}" class="ml-4 px-4 py-2 bg-primary600 text-white text-sm font-medium rounded-md hover:bg-primary700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">Register</a>
                                     @endif
                                 @endauth
                             @endif
@@ -66,7 +67,7 @@
 
                     <!-- Mobile menu button -->
                     <div class="-mr-2 flex md:hidden">
-                        <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none" aria-controls="mobile-menu" aria-expanded="false">
+                        <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none" aria-controls="mobile-menu" aria-expanded="false">
                             <span class="sr-only">Open main menu</span>
                             <!-- Menu icon -->
                             <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -80,21 +81,21 @@
             <!-- Mobile menu -->
             <div class="md:hidden hidden" id="mobile-menu">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                    <a href="#services" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brandPrimary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-brandPrimary400 dark:hover:bg-gray-800">Services</a>
-                    <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brandPrimary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-brandPrimary400 dark:hover:bg-gray-800">About Us</a>
-                    <a href="#testimonials" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brandPrimary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-brandPrimary400 dark:hover:bg-gray-800">Testimonials</a>
+                    <a href="#services" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-primary400 dark:hover:bg-gray-800">Services</a>
+                    <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-primary400 dark:hover:bg-gray-800">About Us</a>
+                    <a href="#testimonials" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-primary400 dark:hover:bg-gray-800">Testimonials</a>
                     @if (Route::has('login'))
                         @auth
                             @if(auth()->user()->hasRole('admin'))
-                                <a href="{{ url('/admin/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 px-3 py-2 text-sm font-medium">Dashboard</a>
+                                <a href="{{ url('/admin/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 px-3 py-2 text-sm font-medium">Dashboard</a>
                                 @else
-                                <a href="{{ url('/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-brandPrimary600 dark:hover:text-brandPrimary400 px-3 py-2 text-sm font-medium">Dashboard</a>
+                                <a href="{{ url('/dashboard') }}" class="text-gray-700 dark:text-gray-300 hover:text-primary600 dark:hover:text-primary400 px-3 py-2 text-sm font-medium">Dashboard</a>
 
                                 @endif
                             @else
-                            <a href="{{ route('login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brandPrimary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-brandPrimary400 dark:hover:bg-gray-800">Log in</a>
+                            <a href="{{ route('login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-primary400 dark:hover:bg-gray-800">Log in</a>
                             @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-brandPrimary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-brandPrimary400 dark:hover:bg-gray-800">Register</a>
+                                <a href="{{ route('register') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary600 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-primary400 dark:hover:bg-gray-800">Register</a>
                             @endif
                         @endauth
                     @endif
@@ -103,12 +104,12 @@
         </header>
 
         <!-- Hero Section -->
-        <section class="bg-gradient-to-r from-brandPrimary-400 to-brandPrimary-500 dark:from-gray-800 dark:to-gray-900 py-16">
+        <section class="bg-gradient-to-r from-primary-400 to-primary-500 dark:from-gray-800 dark:to-gray-900 py-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center">
                     <h1 class="text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
                         <span class="block">Welcome to</span>
-                        <span class="block text-brandPrimary600 dark:text-brandPrimary400">{{ $companyName }}</span>
+                        <span class="block text-primary600 dark:text-primary400">{{ $companyName }}</span>
                     </h1>
                     <div class="mt-8 mb-8 mx-auto max-w-3xl">
                         <img src="https://images.prasso.io/cleos/ai_generated_1750345785_ZpeE5xTM.png" alt="Luxury hair style" class="rounded-lg shadow-xl w-full h-auto">
@@ -118,12 +119,12 @@
                     </p>
                     <div class="mt-8 flex justify-center">
                         <div class="rounded-md shadow">
-                            <a href="#services" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brandPrimary600 hover:bg-brandPrimary700 md:py-4 md:text-lg md:px-10">
+                            <a href="#services" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary600 hover:bg-primary700 md:py-4 md:text-lg md:px-10">
                                 View Services
                             </a>
                         </div>
                         <div class="ml-3 rounded-md shadow">
-                            <a href="{{ route('register') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-brandPrimary600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
+                            <a href="{{ route('register') }}" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-primary600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
                                 Book Now
                             </a>
                         </div>
@@ -144,7 +145,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <!-- Hair Services -->
                     <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md transition-transform hover:scale-105">
-                        <div class="h-12 w-12 bg-brandPrimary100 dark:bg-brandPrimary900 rounded-full flex items-center justify-center mb-4">
+                        <div class="h-12 w-12 bg-primary100 dark:bg-primary900 rounded-full flex items-center justify-center mb-4">
                             ✂️
                         </div>
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Hair Services</h3>
@@ -188,7 +189,7 @@
                     </div>
                 </div>
                 <div class="mt-12 text-center">
-                    <a href="{{ route('services') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brandPrimary600 hover:bg-brandPrimary700">
+                    <a href="{{ route('services') }}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary600 hover:bg-primary700">
                         View All Services
                         <svg class="ml-2 -mr-1 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -208,7 +209,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
                         <div class="flex items-center mb-4">
-                            <div class="h-10 w-10 rounded-full bg-brandPrimary100 dark:bg-brandPrimary900 flex items-center justify-center text-brandPrimary600 dark:text-brandPrimary300 font-bold">AM</div>
+                            <div class="h-10 w-10 rounded-full bg-primary100 dark:bg-primary900 flex items-center justify-center text-primary600 dark:text-primary300 font-bold">AM</div>
                             <div class="ml-4">
                                 <h4 class="font-medium text-gray-900 dark:text-white">Amanda M.</h4>
                                 <div class="flex text-yellow-400">
@@ -247,20 +248,20 @@
         </div>
 
         <!-- Call to Action -->
-        <div class="bg-brandPrimary700 dark:bg-brandPrimary900">
+        <div class="bg-primary700 dark:bg-primary900">
             <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
                 <h2 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
                     <span class="block">Ready to experience the difference?</span>
-                    <span class="block text-brandPrimary200">Book your appointment today.</span>
+                    <span class="block text-primary200">Book your appointment today.</span>
                 </h2>
                 <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0">
                     <div class="inline-flex rounded-md shadow">
-                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-brandPrimary600 bg-white hover:bg-brandPrimary50">
+                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-primary600 bg-white hover:bg-primary50">
                             Book Now
                         </a>
                     </div>
                     <div class="ml-3 inline-flex rounded-md shadow">
-                        <a href="#" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brandPrimary600 bg-opacity-60 hover:bg-opacity-70">
+                        <a href="#" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary600 bg-opacity-60 hover:bg-opacity-70">
                             Call Us
                         </a>
                     </div>

@@ -25,7 +25,7 @@
                             <a href="#" class="block px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition">
                                 Add New Client
                             </a>
-                            <a href="#" class="block px-4 py-2 bg-brandprimary-100 text-brandprimary-800 rounded-md hover:bg-brandprimary-200 transition">
+                            <a href="#" class="block px-4 py-2 bg-primary-100 text-primary-800 rounded-md hover:bg-primary-200 transition">
                                 View Client List
                             </a>
                         </div>

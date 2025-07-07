@@ -242,9 +242,9 @@
                             </div>
                         </div>
 
-                        <div class="bg-brandPrimary50 p-4 rounded-lg">
+                        <div class="bg-primary50 p-4 rounded-lg">
                             <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-brandPrimary100 text-brandPrimary600">
+                                <div class="p-3 rounded-full bg-primary100 text-primary600">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
                                     </svg>

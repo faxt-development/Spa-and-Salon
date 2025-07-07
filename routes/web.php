@@ -19,9 +19,7 @@ use App\Http\Controllers\OnboardingController;
 
 
 // Public routes
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
+Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Pricing page route
 Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index'])->name('pricing');

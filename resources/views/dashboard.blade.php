@@ -248,8 +248,15 @@
                 },
                 close() {
                     this.open = false;
+                },
+                // Initialize with modal closed
+                init() {
+                    this.open = false;
                 }
             });
+
+            // Ensure modal is closed on page load
+            Alpine.store('bookingModal').close();
 
             // Appointment Form Component
             Alpine.data('appointmentForm', () => ({

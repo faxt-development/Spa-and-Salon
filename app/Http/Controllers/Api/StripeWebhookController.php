@@ -42,8 +42,7 @@ class StripeWebhookController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
         $webhookSecret = config('services.stripe.webhook_secret');
-Log::info('Stripe Webhook received');
-Log::info($payload);
+
         try {
             $event = Webhook::constructEvent(
                 $request->getContent(), $sigHeader, $webhookSecret
@@ -245,11 +244,11 @@ Log::info($payload);
             // Retrieve the subscription details from Stripe
             $stripeSubscription = null;
             $trialEndsAt = null;
-            
+
             try {
                 if ($session->subscription) {
                     $stripeSubscription = \Stripe\Subscription::retrieve($session->subscription);
-                    
+
                     // Check if the subscription has a trial end date
                     if (isset($stripeSubscription->trial_end) && $stripeSubscription->trial_end > 0) {
                         $trialEndsAt = date('Y-m-d H:i:s', $stripeSubscription->trial_end);
@@ -262,10 +261,10 @@ Log::info($payload);
                     'error' => $e->getMessage()
                 ]);
             }
-            
+
             // Calculate next billing date based on trial period
             $nextBillingDate = $trialEndsAt ? $trialEndsAt : now();
-            
+
             // Create or update subscription record
             $subscription = Subscription::updateOrCreate(
                 ['stripe_id' => $session->subscription],

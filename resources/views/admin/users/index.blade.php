@@ -114,7 +114,7 @@
                                         <div class="flex flex-wrap gap-1">
                                             @forelse ($user->roles as $role)
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
-                                                    {{ $role->name === 'admin' ? 'bg-brandprimary-100 text-brandprimary-800' :
+                                                    {{ $role->name === 'admin' ? 'bg-primary-100 text-primary-800' :
                                                        ($role->name === 'staff' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
                                                     {{ $role->name }}
                                                 </span>

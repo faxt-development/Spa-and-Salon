@@ -16,7 +16,7 @@
                 <x-export-buttons
                     type="service-categories"
                     label="Export Report"
-                    class="btn btn-brand-primary"
+                    class="btn btn-primary"
                     :showIcon="true"
                     size="md"
                 />
@@ -53,7 +53,7 @@
                             </div>
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <button type="button" id="apply-filters" class="btn btn-brand-primary mr-2">
+                            <button type="button" id="apply-filters" class="btn btn-primary mr-2">
                                 <i class="fas fa-filter"></i> Apply Filters
                             </button>
                             <button type="button" id="export-pdf" class="btn btn-outline-secondary mr-2">

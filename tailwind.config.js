@@ -3,6 +3,7 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+    important: true, // Add !important to all Tailwind utilities to ensure they override Bootstrap
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
@@ -18,7 +19,7 @@ theme: {
             },
   		colors: {
 
-            brandPrimary: {
+            primary: {
                 50: 'oklch(100% 0 none)',
                 100: 'oklch(100% 0 none)',
                 200: 'oklch(96.976% 0.00615 137.77)',
@@ -32,7 +33,7 @@ theme: {
                 950: 'oklch(0% 0 none)',
                 DEFAULT: 'oklch(80.594% 0.03831 122.27)', // optional fallback (same as 500)
               },
-            brandSecondary: {
+            secondary: {
                 50: 'oklch(66.441% 0.06811 262.28)',
                 100: 'oklch(63.743% 0.07163 257.58)',
                 200: 'oklch(58.822% 0.07977 247.62)',
@@ -46,7 +47,9 @@ theme: {
                 950: 'oklch(0% 0 none)',
                 DEFAULT: 'oklch(41.294% 0.04439 208.63)', // optional fallback (same as 500)
             },
-            brandAccent: {
+            accent: {
+                DEFAULT: 'hsl(var(--accent))',
+                foreground: 'hsl(var(--accent-foreground))',
                 50: 'oklch(66.015% 0.12233 56.774)',
                 100: 'oklch(91.498% 0.02908 60.748)',
                 200: 'oklch(88.534% 0.03882 60.95)',
@@ -58,7 +61,6 @@ theme: {
                 800: 'oklch(44.998% 0.08444 57.259)',
                 900: 'oklch(33.258% 0.05802 58.603)',
                 950: 'oklch(20.289% 0.02955 55.819)',
-                DEFAULT: 'oklch(71.54% 0.10244 58.704)', // optional fallback (same as 500)
             },
 
   			background: 'hsl(var(--background))',
@@ -82,10 +84,6 @@ theme: {
   			muted: {
   				DEFAULT: 'hsl(var(--muted))',
   				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
   			},
   			destructive: {
   				DEFAULT: 'hsl(var(--destructive))',

@@ -122,7 +122,7 @@
                         <!-- Click Rate -->
                         <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                             <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-brandprimary-50 text-brandprimary-600">
+                                <div class="p-3 rounded-full bg-primary-50 text-primary-600">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                                     </svg>
@@ -242,17 +242,17 @@
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-brandprimary-100">
-                                                <svg class="h-6 w-6 text-brandprimary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-primary-100">
+                                                <svg class="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                                                 </svg>
                                             </div>
                                             <div class="ml-4">
                                                 <div class="text-sm font-medium text-gray-900 truncate max-w-xs" x-data="{ showFull: false }" @click="showFull = !showFull">
-                                                    <span x-show="!showFull" class="cursor-pointer hover:text-brandprimary-600">
+                                                    <span x-show="!showFull" class="cursor-pointer hover:text-primary-600">
                                                         {{ Str::limit(parse_url($link['url'], PHP_URL_PATH) ?: $link['url'], 50) }}
                                                     </span>
-                                                    <span x-show="showFull" class="cursor-pointer text-brandprimary-600 break-all">
+                                                    <span x-show="showFull" class="cursor-pointer text-primary-600 break-all">
                                                         {{ $link['url'] }}
                                                     </span>
                                                 </div>
@@ -274,7 +274,7 @@
                                         @endphp
                                         <div class="flex items-center">
                                             <div class="w-24 bg-gray-200 rounded-full h-2.5 mr-2">
-                                                <div class="bg-brandprimary-600 h-2.5 rounded-full" style="width: {{ min($ctr, 100) }}%"></div>
+                                                <div class="bg-primary-600 h-2.5 rounded-full" style="width: {{ min($ctr, 100) }}%"></div>
                                             </div>
                                             <span class="text-sm font-medium text-gray-700">{{ number_format($ctr, 1) }}%</span>
                                         </div>

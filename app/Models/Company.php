@@ -23,8 +23,23 @@ class Company extends Model
         'zip',
         'phone',
         'website',
+        'domain',
+        'is_primary_domain',
+        'homepage_content',
+        'theme_settings',
         'logo',
         'description',
+    ];
+    
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_primary_domain' => 'boolean',
+        'homepage_content' => 'json',
+        'theme_settings' => 'json',
     ];
 
     /**

@@ -173,7 +173,7 @@
                         <!-- Form Actions -->
                         <div class="d-flex justify-content-end gap-2">
                             <button type="button" class="btn btn-secondary" @click="resetForm">Reset</button>
-                            <button type="submit" class="btn btn-brand-primary" :disabled="loading">
+                            <button type="submit" class="btn btn-primary" :disabled="loading">
                                 <span x-show="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
                                 Save Employee
                             </button>

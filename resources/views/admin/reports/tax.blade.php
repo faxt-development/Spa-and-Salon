@@ -41,7 +41,7 @@
             <x-export-buttons
                 type="tax"
                 label="Export Report"
-                class="btn btn-brand-primary"
+                class="btn btn-primary"
                 :showIcon="true"
                 size="md"
             />
@@ -282,7 +282,7 @@
                     </div>
 
                     <div class="col-12 text-end">
-                        <button type="button" class="btn btn-brand-primary me-2" @click="loadReport()">
+                        <button type="button" class="btn btn-primary me-2" @click="loadReport()">
                             <i class="fas fa-sync-alt me-1"></i> Refresh
                         </button>
                         <div class="btn-group">
@@ -320,7 +320,7 @@
         }
     }">
         <div class="col-xl-3 col-md-6">
-            <div class="card bg-brandprimary text-white summary-card h-100">
+            <div class="card bg-primary text-white summary-card h-100">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>

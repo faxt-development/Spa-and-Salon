@@ -40,7 +40,7 @@
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <dt class="text-sm font-medium text-gray-500 truncate">Avg. Visits/Client</dt>
-                    <dd class="mt-1 text-3xl font-semibold text-brandPrimary600">{{ number_format($metrics['avg_visits'], 1) }}</dd>
+                    <dd class="mt-1 text-3xl font-semibold text-primary600">{{ number_format($metrics['avg_visits'], 1) }}</dd>
                 </div>
             </div>
 

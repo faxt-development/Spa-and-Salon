@@ -94,7 +94,8 @@ body {
   body {
     @apply bg-background text-foreground;
   }
-  .btn-brand-primary {
-    @apply bg-brandAccent-500 text-primary-foreground hover:opacity-90 !important;
+
+  .btn-primary {
+    @apply bg-accent-500 text-primary-foreground hover:opacity-90 !important;
   }
 }

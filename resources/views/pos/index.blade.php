@@ -2,6 +2,7 @@
 
 @push('styles')
 <!-- Include the tax calculator styles -->
+    @viteReactRefresh
 @vite(['resources/js/components/tax-calculator.js'])
 
 <style>

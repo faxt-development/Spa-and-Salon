@@ -25,7 +25,7 @@
 }
 
 .step.active .step-number {
-    background-color: var(--color-brandAccent-500, oklch(71.54% 0.10244 58.704));
+    background-color: var(--color-accent-500, oklch(71.54% 0.10244 58.704));
     color: white;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .step.active .step-text {
-    color: var(--color-brandAccent-500, oklch(71.54% 0.10244 58.704));
+    color: var(--color-accent-500, oklch(71.54% 0.10244 58.704));
     font-weight: bold;
 }
 
@@ -75,17 +75,17 @@
 
 .feature-icon {
     margin-bottom: 20px;
-    color: var(--color-brandAccent-500, oklch(71.54% 0.10244 58.704));
+    color: var(--color-accent-500, oklch(71.54% 0.10244 58.704));
 
 }
 
 .carousel-control-prev,
 .carousel-control-next {
     width: 5%;
-    color: var(--color-brandAccent-500, oklch(71.54% 0.10244 58.704));
+    color: var(--color-accent-500, oklch(71.54% 0.10244 58.704));
 
 }
 
 .carousel-indicators button {
-    background-color: var(--color-brandAccent-500, oklch(71.54% 0.10244 58.704));
+    background-color: var(--color-accent-500, oklch(71.54% 0.10244 58.704));
 }

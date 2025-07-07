@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-brandprimary text-white">
+                <div class="card-header bg-primary text-white">
                     <h2 class="mb-0">Business Information</h2>
                 </div>
                 <div class="card-body">
@@ -133,7 +133,7 @@
 
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-brand-primary">
+                                <button type="submit" class="btn btn-primary">
                                     {{ __('Continue') }}
                                 </button>
                             </div>

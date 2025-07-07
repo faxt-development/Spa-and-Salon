@@ -35,7 +35,7 @@
                     :showIcon="true"
                     size="sm"
                 />
-                <button class="btn btn-brand-primary" onclick="window.print()">
+                <button class="btn btn-primary" onclick="window.print()">
                     <i class="fas fa-print"></i> Print Report
                 </button>
                 <button class="btn btn-success" onclick="exportToExcel()">
@@ -72,7 +72,7 @@
                         </select>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-brand-primary w-100">
+                        <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-filter"></i> Apply Filters
                         </button>
                     </div>

@@ -10,7 +10,7 @@
             <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Services</h1>
             <p class="text-xl text-gray-600 dark:text-gray-300">Explore our wide range of professional services</p>
             <div class="mt-8">
-                <a href="#services-list" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-brandPrimary-600 hover:bg-brandPrimary-700">
+                <a href="#services-list" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
                     View All Services
                     <svg class="ml-2 -mr-1 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -22,9 +22,9 @@
             <div class="mt-8">
                 <div class="flex flex-wrap justify-center gap-2">
                     @foreach($categories as $category)
-                        <a href="#category-{{ $category['id'] }}" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full text-sm font-medium hover:bg-brandPrimary-100 dark:hover:bg-brandPrimary-900 transition-colors">
+                        <a href="#category-{{ $category['id'] }}" class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-full text-sm font-medium hover:bg-primary-100 dark:hover:bg-primary-900 transition-colors">
                             {{ $category['name'] }}
-                            <span class="ml-1 text-xs bg-brandPrimary-600 text-white rounded-full px-2 py-0.5">{{ $category['services_count'] }}</span>
+                            <span class="ml-1 text-xs bg-primary-600 text-white rounded-full px-2 py-0.5">{{ $category['services_count'] }}</span>
                         </a>
                     @endforeach
                 </div>
@@ -60,7 +60,7 @@
                                         <p class="text-gray-600 dark:text-gray-300 mb-4">{{ $service['description'] }}</p>
                                     @endif
                                     <div class="flex justify-between items-center">
-                                        <span class="text-lg font-bold text-brandPrimary-600 dark:text-brandPrimary-400">
+                                        <span class="text-lg font-bold text-primary-600 dark:text-primary-400">
                                             ${{ number_format($service['price'] / 100, 2) }}
                                         </span>
                                         @if(isset($service['duration']) && $service['duration'] > 0)
@@ -82,7 +82,7 @@
         </div>
 
         <div class="mt-16 text-center">
-            <a href="{{ route('home') }}#contact" class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-white bg-brandPrimary-600 hover:bg-brandPrimary-700 transition-colors">
+            <a href="{{ route('home') }}#contact" class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors">
                 Book an Appointment
                 <svg class="ml-2 -mr-1 w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />

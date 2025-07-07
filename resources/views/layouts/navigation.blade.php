@@ -1,23 +1,46 @@
-<nav x-data="{ mobileMenuOpen: false }" class="bg-white border-b border-gray-100" @keydown.escape="mobileMenuOpen = false">
+@php
+    $company = $company ?? null;
+    $companyName = $company->name ?? config('app.name');
+    $theme = $company->theme_settings ?? [
+        'primary' => '#4f46e5',
+        'secondary' => '#10b981',
+        'accent' => '#f59e0b',
+        'logo' => null
+    ];
+@endphp
+
+<nav x-data="{ mobileMenuOpen: false }" class="bg-white border-b border-gray-100 shadow-sm" @keydown.escape="mobileMenuOpen = false">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
+            <div class="flex items-center">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     @auth
                         @role('admin|staff')
                         <a href="{{ route('admin.dashboard') }}" class="flex items-center">
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                            @if(isset($company->logo_url))
+                                <img src="{{ $company->logo_url }}" alt="{{ $companyName }} Logo" class="h-8 w-auto">
+                            @else
+                                <x-application-logo class="block h-9 w-auto fill-current text-primary-600" />
+                            @endif
                         </a>
                         @else
                         <a href="{{ route('dashboard') }}" class="flex items-center">
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                            @if(isset($company->logo_url))
+                                <img src="{{ $company->logo_url }}" alt="{{ $companyName }} Logo" class="h-8 w-auto">
+                            @else
+                                <x-application-logo class="block h-9 w-auto fill-current text-primary-600" />
+                            @endif
                         </a>
                         @endrole
                     @else
                         <a href="{{ route('dashboard') }}" class="flex items-center">
-                            <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                            @if(isset($company->logo_url))
+                                <img src="{{ $company->logo_url }}" alt="{{ $companyName }} Logo" class="h-8 w-auto">
+                            @else
+                                <x-application-logo class="block h-9 w-auto fill-current text-primary-600" />
+                            @endif
                         </a>
                     @endauth
                 </div>
@@ -26,17 +49,17 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     @auth
                         @role('admin|staff')
-                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard') || request()->is('admin*')">
+                        <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard') || request()->is('admin*')" class="text-gray-700 hover:text-primary-600 hover:border-primary-500 focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out">
                             {{ __('Dashboard') }}
                         </x-nav-link>
                         @else
-                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-700 hover:text-primary-600 hover:border-primary-500 focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out">
                             {{ __('Dashboard') }}
                         </x-nav-link>
                         @endrole
 
                         @role('admin|staff')
-                        <x-nav-link :href="route('web.appointments.index')" :active="request()->routeIs('appointments.*')">
+                        <x-nav-link :href="route('web.appointments.index')" :active="request()->routeIs('appointments.*')" class="text-gray-700 hover:text-primary-600 hover:border-primary-500 focus:outline-none focus:border-primary-500 transition duration-150 ease-in-out">
                             {{ __('Appointments') }}
                         </x-nav-link>
                         @endrole

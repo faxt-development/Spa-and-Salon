@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-brandprimary text-white">
+                <div class="card-header bg-primary text-white">
                     <h2 class="mb-0">Welcome to Faxtina!</h2>
                 </div>
                 <div class="card-body">
@@ -40,7 +40,7 @@
                                 Welcome back, {{ $user->email }}! Let's continue setting up your account.
                             </div>
                         @endif
-                        
+
                         <p>In the next few steps, we'll help you:</p>
                         <ul class="list-group list-group-flush mb-4">
                             <li class="list-group-item">{{ isset($user) && $user->email ? 'Complete' : 'Create' }} your admin account</li>
@@ -48,7 +48,7 @@
                             <li class="list-group-item">Learn about key features</li>
                         </ul>
 
-                        <a href="{{ route('onboarding.user-form') }}" class="btn btn-brand-primary btn-lg">
+                        <a href="{{ route('onboarding.user-form') }}" class="btn btn-primary btn-lg">
                             {{ isset($user) && $user->email ? 'Continue Setup' : "Let's Get Started" }}
                         </a>
                     </div>
