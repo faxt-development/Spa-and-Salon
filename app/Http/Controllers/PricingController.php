@@ -15,11 +15,11 @@ class PricingController extends Controller
     {
         // Get the selected priceId from the querystring if it exists
         $selectedPriceId = $request->query('priceId');
-        
+
         $pricingTiers = [
             [
                 'name' => 'Self-Managed',
-                'price' => '$49.95',
+                'price' => '$29.00',
                 'period' => '/month',
                 'description' => 'Perfect for individual practitioners',
                 'features' => [
@@ -38,7 +38,7 @@ class PricingController extends Controller
             ],
             [
                 'name' => 'Single Location',
-                'price' => '$150',
+                'price' => '$79.00',
                 'period' => '/month',
                 'description' => 'Ideal for small to medium salons',
                 'features' => [
@@ -85,7 +85,7 @@ class PricingController extends Controller
         if ($selectedPriceId) {
             foreach ($pricingTiers as $key => $tier) {
                 // If this tier matches the selected priceId (either the env variable name or the actual price ID)
-                if ($selectedPriceId === 'price_' . strtolower(str_replace(' ', '_', $tier['name'])) || 
+                if ($selectedPriceId === 'price_' . strtolower(str_replace(' ', '_', $tier['name'])) ||
                     $selectedPriceId === $tier['priceId']) {
                     // Set this tier as highlighted
                     $pricingTiers[$key]['highlight'] = true;
@@ -95,7 +95,7 @@ class PricingController extends Controller
                 }
             }
         }
-        
+
         return view('pricing', [
             'pricingTiers' => $pricingTiers,
             'selectedPriceId' => $selectedPriceId

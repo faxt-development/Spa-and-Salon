@@ -86,10 +86,10 @@ class PlanSeeder extends Seeder
                     'slug' => 'self-managed',
                     'stripe_plan_id' => 'price_1RgT3OJmhER0XpDiBNKUELdh',
                     'billing_cycle' => 'monthly',
-                    'price' => 49.95,
+                    'price' => 29.00,
                     'currency' => 'usd',
                     'trial_days' => 0,
-                    'description' => 'LOCAL DEV Self-Managed tier (49.95/month)',
+                    'description' => 'LOCAL DEV Self-Managed tier (29.00/month)',
                     'features' => json_encode([
                         'Basic features',
                         'Self-managed scheduling',
