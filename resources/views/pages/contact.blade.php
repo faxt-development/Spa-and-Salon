@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.guest-content')
 
 @section('title', 'Contact Us - ' . config('app.name'))
 
@@ -143,7 +143,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- FAQ Section - Full Width -->
         <div class="col-span-1 md:col-span-2 mt-12">
             <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6">

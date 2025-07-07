@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.guest-content')
 
 @section('content')
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -46,8 +46,8 @@
                     Update your email preferences below.
                 </p>
             </div>
-            
-            <div x-data="{ 
+
+            <div x-data="{
                 loading: false,
                 selectAll: {{ isset($allSelected) && $allSelected ? 'true' : 'false' }},
                 subscriptions: {},
@@ -63,16 +63,16 @@
             }" class="px-4 py-5 sm:p-6">
                 <form x-ref="preferencesForm" action="{{ route('email.preferences.update', $token) }}" method="POST">
                     @csrf
-                    
+
                     <div class="space-y-4">
                         <p class="text-sm text-gray-600 mb-4">
                             Email: <span class="font-medium">{{ $email }}</span>
                         </p>
-                        
+
                         <div class="flex items-start mb-4">
                             <div class="flex items-center h-5">
-                                <input id="select-all" 
-                                       type="checkbox" 
+                                <input id="select-all"
+                                       type="checkbox"
                                        x-model="selectAll"
                                        @change="toggleAll()"
                                        class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
@@ -83,18 +83,18 @@
                                 </label>
                             </div>
                         </div>
-                        
+
                         <div class="space-y-4">
                             <p class="text-sm font-medium text-gray-700">
                                 I'd like to receive:
                             </p>
-                            
+
                             @foreach($subscriptionTypes as $key => $label)
                             <div class="flex items-start">
                                 <div class="flex items-center h-5">
-                                    <input id="subscription-{{ $key }}" 
-                                           name="subscriptions[{{ $key }}]" 
-                                           type="checkbox" 
+                                    <input id="subscription-{{ $key }}"
+                                           name="subscriptions[{{ $key }}]"
+                                           type="checkbox"
                                            value="1"
                                            x-model="subscriptions.{{ $key }}"
                                            x-init="subscriptions.{{ $key }} = {{ isset($currentSubscriptions[$key]) && $currentSubscriptions[$key] ? 'true' : 'false' }}"
@@ -113,9 +113,9 @@
                             </div>
                             @endforeach
                         </div>
-                        
+
                         <div class="pt-4 border-t border-gray-200 mt-6">
-                            <button type="submit" 
+                            <button type="submit"
                                     @click.prevent="submitForm()"
                                     :disabled="loading"
                                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
@@ -128,7 +128,7 @@
                                     Saving...
                                 </span>
                             </button>
-                            
+
                             <p class="mt-3 text-sm text-gray-500">
                                 <a href="{{ route('email.unsubscribe', $token) }}" class="text-red-600 hover:text-red-500">
                                     Or, unsubscribe from all emails
@@ -139,7 +139,7 @@
                 </form>
             </div>
         </div>
-        
+
         <div class="mt-8 text-center text-sm text-gray-500">
             <p>Need help? <a href="{{ route('contact') }}" class="font-medium text-blue-600 hover:text-blue-500">Contact support</a></p>
             <p class="mt-1">{{ config('app.name') }} &copy; {{ date('Y') }}</p>

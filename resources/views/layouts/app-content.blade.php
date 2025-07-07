@@ -101,7 +101,9 @@
                 </div>
             </main>
 
-            @include('partials.footer')
+                    <!-- Footer -->
+        <x-footer />
+
         </div>
 
         @stack('modals')

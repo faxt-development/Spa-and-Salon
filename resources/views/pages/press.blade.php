@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.guest-content')
 
 @section('title', 'Press - ' . config('app.name'))
 

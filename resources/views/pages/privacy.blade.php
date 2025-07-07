@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.guest-content')
 
 @section('title', 'Privacy Policy - ' . config('app.name'))
 

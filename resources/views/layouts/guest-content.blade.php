@@ -126,9 +126,9 @@
         </nav>
 
         <!-- Page Content -->
-        <main class="flex-grow py-12">
-            <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
-                {{ $slot }}
+        <main class="flex-grow">
+            <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                @yield('content')
             </div>
         </main>
 
@@ -140,13 +140,13 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const mobileMenuButton = document.querySelector('button[aria-controls="mobile-menu"]');
                 const mobileMenu = document.getElementById('mobile-menu');
-
+                
                 if (mobileMenuButton && mobileMenu) {
                     mobileMenuButton.addEventListener('click', function() {
                         const isExpanded = this.getAttribute('aria-expanded') === 'true';
                         this.setAttribute('aria-expanded', !isExpanded);
                         mobileMenu.classList.toggle('hidden');
-
+                        
                         // Toggle between menu and close icons
                         const menuIcon = this.querySelector('svg:not(.hidden)');
                         const closeIcon = this.querySelector('svg.hidden');

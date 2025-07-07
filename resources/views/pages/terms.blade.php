@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('layouts.guest-content')
 
 @section('title', 'Terms of Service - ' . config('app.name'))
 

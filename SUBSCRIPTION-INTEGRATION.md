@@ -19,7 +19,7 @@ The subscription system is now fully integrated within the spa-and-salon applica
 
 The pricing page is now available at `/pricing` and displays three subscription tiers:
 - Self-Managed ($29.00/month)
-- Single Location ($150/month)
+- Single Location ($79/month)
 - Multi-Location ($295/month)
 
 Each tier includes:

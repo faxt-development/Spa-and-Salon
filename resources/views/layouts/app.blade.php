@@ -2,10 +2,10 @@
     $company = $company ?? null;
     $companyName = $company->name ?? config('app.name');
     $theme = $theme ?? null;
-    
+
     // Set page title
     $pageTitle = isset($pageTitle) ? "$pageTitle - $companyName" : $companyName;
-    
+
     // Set theme variables for inline styles if needed
     $inlineThemeVars = [];
     if ($theme) {
@@ -27,7 +27,7 @@
                     {{ $var }}: {{ $value }};
                 @endforeach
             }
-            
+
             /* Dark mode overrides */
             .dark {
                 --background-color: #0f172a;
@@ -128,7 +128,9 @@
                 {{ $slot }}
             </main>
 
-            @include('partials.footer')
+                    <!-- Footer -->
+        <x-footer />
+
         </div>
 
         @stack('modals')
