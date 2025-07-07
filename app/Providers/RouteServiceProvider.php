@@ -43,6 +43,10 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
         });
 
+        //set this to not run if this is not a web request
+        if (app()->runningInConsole()) {
+            return;
+        }
         // Set theme and company context for the request
         $this->setThemeAndCompanyContext();
     }

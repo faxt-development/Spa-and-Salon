@@ -66,18 +66,23 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground font-sans;
     font-family: Arial, Helvetica, sans-serif;
   }
 
   .btn-primary {
-    @apply bg-accent-500 text-primary-foreground hover:opacity-90;
+    @apply bg-accent text-white hover:opacity-90;
   }
 }
 
-/* Utility classes */
+@layer components {
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-secondary-600 transition-colors duration-200;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
