@@ -63,21 +63,21 @@
     --background-secondary: #EDDFC0;
     --card-bg: #EDDFC0;
     --popover-bg: #EDDFC0;
-    --sidebar-bg: #f8fafc;
-    --sidebar-foreground: #1e293b;
-    --sidebar-primary: #3b82f6;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #8b5cf6;
-    --sidebar-accent-foreground: #ffffff;
-    --sidebar-border: #e2e8f0;
-    --sidebar-ring: #3b82f6;
+    --sidebar-bg: var(--secondary-color-100, #f5f0e0);
+    --sidebar-foreground: var(--text-color, #1F4B48);
+    --sidebar-primary: var(--primary-color, #8B9259);
+    --sidebar-primary-foreground: var(--text-on-primary, #ffffff);
+    --sidebar-accent: var(--accent-color, #F4C96C);
+    --sidebar-accent-foreground: var(--text-on-accent, #1F4B48);
+    --sidebar-border: var(--secondary-color-300, #e8d9b8);
+    --sidebar-ring: var(--primary-color-600, #636a3f);
 
     /* Border colors */
-    --border: #e5e7eb;
-    --border-color: #e2e8f0;
-    --input-border: #cbd5e1;
-    --ring: #3b82f6;
-    --ring-color: #3b82f6;
+    --border: var(--secondary-color-300, #e8d9b8);
+    --border-color: var(--secondary-color-300, #e8d9b8);
+    --input-border: var(--secondary-color-300, #e8d9b8);
+    --ring: var(--primary-color-600, #636a3f);
+    --ring-color: var(--primary-color-600, #636a3f);
 
     /* State colors */
     --success-color: #10b981;
