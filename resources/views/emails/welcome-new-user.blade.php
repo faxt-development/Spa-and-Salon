@@ -56,11 +56,11 @@
 
     <div class="content">
         <p>Hello {{ $user->name }},</p>
-        
+
         <p>Thank you for signing up for Faxtina! We're excited to have you on board.</p>
-        
+
         <p>Your account has been created and you now have admin access to manage your salon's operations.</p>
-        
+
         @if($temporaryPassword)
         <div class="credentials">
             <p><strong>Your login credentials:</strong></p>
@@ -69,15 +69,15 @@
             <p>Please change your password after your first login.</p>
         </div>
         @endif
-        
+
         <p>To get started, click the button below to complete your onboarding:</p>
-        
+
         @if($onboardingUrl)
         <a href="{{ $onboardingUrl }}" class="button">Complete Your Setup</a>
         @else
         <a href="{{ config('app.url') }}/login" class="button">Access Your Dashboard</a>
         @endif
-        
+
         <p>Here's what you can do with your Faxtina account:</p>
         <ul>
             <li>Manage your salon's appointments</li>
@@ -85,9 +85,9 @@
             <li>Manage staff and clients</li>
             <li>Access reports and analytics</li>
         </ul>
-        
-        <p>If you have any questions or need assistance, please don't hesitate to contact our support team at support@faxtina.com.</p>
-        
+
+        <p>If you have any questions or need assistance, please don't hesitate to contact our support team at info@faxt.com.</p>
+
         <p>Best regards,<br>The Faxtina Team</p>
     </div>
 

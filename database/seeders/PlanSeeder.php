@@ -24,12 +24,12 @@ class PlanSeeder extends Seeder
                 [
                     'name' => 'Self-Managed tier',
                     'slug' => 'self-managed',
-                    'stripe_plan_id' => 'price_1RfpQbJmhER0XpDiOsfRwv4X',
+                    'stripe_plan_id' => 'price_1RiKZzJmhER0XpDisIj8UJw7',
                     'billing_cycle' => 'monthly',
-                    'price' => 49.95,
+                    'price' => 29.00,
                     'currency' => 'usd',
                     'trial_days' => 0,
-                    'description' => 'Self-Managed tier (49.95/month)',
+                    'description' => 'Self-Managed tier (29.00/month)',
                     'features' => json_encode([
                         'Basic features',
                         'Self-managed scheduling',
@@ -42,12 +42,12 @@ class PlanSeeder extends Seeder
                 [
                     'name' => 'Single Location tier',
                     'slug' => 'single-location',
-                    'stripe_plan_id' => 'price_1RfpRkJmhER0XpDi4cUCBw0O',
+                    'stripe_plan_id' => 'price_1RiKdIJmhER0XpDiL1m3xsHi',
                     'billing_cycle' => 'monthly',
-                    'price' => 150.00,
+                    'price' => 79.00,
                     'currency' => 'usd',
                     'trial_days' => 0,
-                    'description' => 'Single Location tier ($150/month)',
+                    'description' => 'Single Location tier ($79/month)',
                     'features' => json_encode([
                         'All Self-Managed features',
                         'Single location support',

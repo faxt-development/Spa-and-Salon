@@ -297,7 +297,7 @@ class StripeWebhookController extends Controller
             ]);
 
             // Send notification to admin
-            $adminEmails = config('services.admin_notification_emails', ['admin@faxtina.com']);
+            $adminEmails = config('services.admin_notification_emails', ['info@faxt.com']);
             foreach ($adminEmails as $adminEmail) {
                 Mail::to($adminEmail)->send(new AdminNewTrialNotification($user, $subscription));
             }

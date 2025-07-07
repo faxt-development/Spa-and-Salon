@@ -16,7 +16,9 @@ use App\Http\Controllers\DripCampaignController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\OnboardingController;
-
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\GdprController;
+use App\Http\Controllers\ContactController;
 
 // Public routes
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -40,6 +42,24 @@ Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index']
 Route::get('/success', function() {
     return view('success');
 })->name('success');
+
+// Static Pages
+Route::controller(PageController::class)->group(function () {
+    Route::get('/privacy', 'privacy')->name('privacy');
+    Route::get('/terms', 'terms')->name('terms');
+});
+
+// Contact Routes
+Route::controller(ContactController::class)->group(function () {
+    Route::get('/contact', 'show')->name('contact');
+    Route::post('/contact', 'submit')->name('contact.submit');
+});
+
+// GDPR Compliance
+Route::get('/gdpr', [GdprController::class, 'index'])->name('gdpr');
+
+// Press
+Route::get('/press', [PageController::class, 'press'])->name('press');
 
 // Onboarding routes
 Route::prefix('onboarding')->name('onboarding.')->group(function () {

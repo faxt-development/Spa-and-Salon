@@ -49,26 +49,13 @@ theme: {
                 700: 'var(--secondary-color-700, #b8a77d)',
                 800: 'var(--secondary-color-800, #8a7e5f)',
                 900: 'var(--secondary-color-900, #5c5440)',
+                950: 'var(--secondary-color-950, #2e2a20)'
             },
             border: {
                 DEFAULT: 'var(--border, #e5e7eb)' // Default border color
             },
             ring: {
                 DEFAULT: 'var(--ring, #3b82f6)' // Default ring color
-            },
-            secondary: {
-                DEFAULT: 'var(--secondary-color, #EDDFC0)',
-                50: 'var(--secondary-color-50, #faf8f2)',
-                100: 'var(--secondary-color-100, #f5f0e0)',
-                200: 'var(--secondary-color-200, #efe6d0)',
-                300: 'var(--secondary-color-300, #e8d9b8)',
-                400: 'var(--secondary-color-400, #e3d2ac)',
-                500: 'var(--secondary-color-500, #EDDFC0)',
-                600: 'var(--secondary-color-600, #d4c5a0)',
-                700: 'var(--secondary-color-700, #b8a77d)',
-                800: 'var(--secondary-color-800, #8a7e5f)',
-                900: 'var(--secondary-color-900, #5c5440)',
-                950: 'var(--secondary-color-950, #2e2a20)'
             },
             accent: {
                 DEFAULT: 'var(--accent-color, #F4C96C)',

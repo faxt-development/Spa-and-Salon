@@ -135,7 +135,7 @@ class TestOnboardingFlow extends Command
             $this->info("Password: {$temporaryPassword}");
 
             // Send notification to admin
-            $adminEmails = config('services.admin_notification_emails', ['admin@faxtina.com']);
+            $adminEmails = config('services.admin_notification_emails', ['info@faxt.com']);
             $this->info('Sending admin notifications to: ' . implode(', ', $adminEmails));
             Log::info('Sending admin notifications', ['to' => $adminEmails]);
 

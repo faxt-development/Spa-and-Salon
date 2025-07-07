@@ -54,7 +54,7 @@ The onboarding flow is implemented using:
 A new configuration option has been added to `config/services.php` for admin notification emails:
 
 ```php
-'admin_notification_emails' => explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'admin@faxtina.com')),
+'admin_notification_emails' => explode(',', env('ADMIN_NOTIFICATION_EMAILS', 'info@faxt.com')),
 ```
 
 This allows multiple admin email addresses to be specified in the `.env` file as a comma-separated list.
