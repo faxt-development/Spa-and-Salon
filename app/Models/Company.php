@@ -16,6 +16,7 @@ class Company extends Model
      */
     protected $fillable = [
         'user_id',
+        'theme_id',
         'name',
         'address',
         'city',
@@ -45,8 +46,19 @@ class Company extends Model
     /**
      * Get the user that owns the company.
      */
+    /**
+     * Get the user that owns the company.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the theme associated with the company.
+     */
+    public function theme()
+    {
+        return $this->belongsTo(Theme::class);
     }
 }

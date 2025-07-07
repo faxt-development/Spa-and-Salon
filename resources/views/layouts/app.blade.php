@@ -1,16 +1,47 @@
 @php
     $company = $company ?? null;
     $companyName = $company->name ?? config('app.name');
-    $theme = $company->theme_settings ?? [
-        'primary' => '#4f46e5',
-        'secondary' => '#10b981',
-        'accent' => '#f59e0b',
-        'logo' => null
-    ];
-
+    $theme = $theme ?? null;
+    
     // Set page title
     $pageTitle = isset($pageTitle) ? "$pageTitle - $companyName" : $companyName;
+    
+    // Set theme variables for inline styles if needed
+    $inlineThemeVars = [];
+    if ($theme) {
+        $inlineThemeVars = [
+            '--primary-color' => $theme->primary_color,
+            '--secondary-color' => $theme->secondary_color,
+            '--accent-color' => $theme->accent_color,
+            '--text-color' => $theme->text_color,
+            '--background-color' => '#ffffff',
+        ];
+    }
 @endphp
+
+@if(!empty($inlineThemeVars))
+    @push('styles')
+        <style>
+            :root {
+                @foreach($inlineThemeVars as $var => $value)
+                    {{ $var }}: {{ $value }};
+                @endforeach
+            }
+            
+            /* Dark mode overrides */
+            .dark {
+                --background-color: #0f172a;
+                --text-color: #f8fafc;
+                --text-color-light: #cbd5e1;
+                --text-color-lighter: #94a3b8;
+                --card-bg: #1e293b;
+                --popover-bg: #1e293b;
+                --border-color: #334155;
+                --input-border: #475569;
+            }
+        </style>
+    @endpush
+@endif
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">

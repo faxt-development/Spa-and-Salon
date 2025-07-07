@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         // Seed roles and permissions
         $this->call([
+            // Theme seeder must run before company seeder
+            ThemeSeeder::class,
             RoleAndPermissionSeeder::class,
             ServiceCategorySeeder::class,
             WalkInSeeder::class,

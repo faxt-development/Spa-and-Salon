@@ -1,0 +1,172 @@
+/*
+|--------------------------------------------------------------------------
+| Theme Styles
+|--------------------------------------------------------------------------
+|
+| This file contains the base theme styles and CSS variables that will be
+| dynamically updated by the ThemeService based on the current company's theme.
+| The default values here serve as fallbacks.
+|
+*/
+
+:root {
+    /* Base colors */
+    --primary-color: #8B9259;
+    --primary-color-50: #f6f7f2;
+    --primary-color-100: #e9ecdf;
+    --primary-color-200: #d4d9c0;
+    --primary-color-300: #b8bf96;
+    --primary-color-400: #8B9259;
+    --primary-color-500: #7a814e;
+    --primary-color-600: #636a3f;
+    --primary-color-700: #4d5332;
+    --primary-color-800: #3e4329;
+    --primary-color-900: #2a2e1c;
+    --primary-color-950: #1a1c10;
+
+    --secondary-color: #EDDFC0;
+    --secondary-color-50: #faf8f2;
+    --secondary-color-100: #f5f0e0;
+    --secondary-color-200: #efe6d0;
+    --secondary-color-300: #e8d9b8;
+    --secondary-color-400: #e3d2ac;
+    --secondary-color-500: #EDDFC0;
+    --secondary-color-600: #d4c5a0;
+    --secondary-color-700: #b8a77d;
+    --secondary-color-800: #8a7e5f;
+    --secondary-color-900: #5c5440;
+    --secondary-color-950: #2e2a20;
+
+    --accent-color: #F4C96C;
+    --accent-color-50: #fffbf2;
+    --accent-color-100: #fdf0cc;
+    --accent-color-200: #fbe8b3;
+    --accent-color-300: #f8d98a;
+    --accent-color-400: #F4C96C;
+    --accent-color-500: #e8b53d;
+    --accent-color-600: #c79824;
+    --accent-color-700: #8a6a19;
+    --accent-color-800: #5c460f;
+    --accent-color-900: #3d2f0a;
+    --accent-color-950: #2e2508;
+
+    /* Text colors */
+    --text-color: #1F4B48;
+    --text-color-light: #64748b;
+    --text-color-lighter: #94a3b8;
+    --text-on-primary: #ffffff;
+    --text-on-secondary: #ffffff;
+    --text-on-accent: #ffffff;
+
+    /* Background colors */
+    --background-color: #EDDFC0;
+    --background-secondary: #EDDFC0;
+    --card-bg: #EDDFC0;
+    --popover-bg: #EDDFC0;
+    --sidebar-bg: #f8fafc;
+    --sidebar-foreground: #1e293b;
+    --sidebar-primary: #3b82f6;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #8b5cf6;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #e2e8f0;
+    --sidebar-ring: #3b82f6;
+
+    /* Border colors */
+    --border: #e5e7eb;
+    --border-color: #e2e8f0;
+    --input-border: #cbd5e1;
+    --ring: #3b82f6;
+    --ring-color: #3b82f6;
+
+    /* State colors */
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #3b82f6;
+}
+
+/* Dark mode overrides */
+.dark {
+    --background-color: #0f172a;
+    --card-bg: #1e293b;
+    --popover-bg: #1e293b;
+    --text-color: #f8fafc;
+    --text-color-light: #cbd5e1;
+    --text-color-lighter: #94a3b8;
+    --border-color: #334155;
+    --input-border: #475569;
+    --sidebar-bg: #1e293b;
+    --sidebar-foreground: #f8fafc;
+    --sidebar-border: #334155;
+}
+
+/* Apply the theme colors to Tailwind classes */
+@layer base {
+    body {
+        @apply bg-background text-foreground;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        @apply text-foreground;
+    }
+
+    a {
+        @apply text-primary hover:text-primary-600 transition-colors;
+    }
+
+    .btn-primary {
+        @apply bg-primary text-white hover:bg-primary-600;
+    }
+
+    .btn-secondary {
+        @apply bg-secondary text-white hover:bg-secondary-600;
+    }
+
+    .btn-accent {
+        @apply bg-accent text-white hover:bg-accent-600;
+    }
+}
+
+/* Make sure theme colors are applied to form elements */
+input,
+select,
+textarea {
+    @apply border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+}
+
+/* Apply theme to form controls */
+.form-input,
+.form-select,
+.form-textarea,
+.form-multiselect,
+.form-checkbox,
+.form-radio {
+    @apply border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+}
+
+/* Apply theme to buttons */
+.btn {
+    @apply font-medium rounded-md transition-colors duration-200;
+}
+
+/* Apply theme to alerts and badges */
+.alert {
+    @apply p-4 rounded-md border border-opacity-20;
+}
+
+.alert-success {
+    @apply bg-green-50 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-100 dark:border-green-800;
+}
+
+.alert-warning {
+    @apply bg-yellow-50 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-100 dark:border-yellow-800;
+}
+
+.alert-danger {
+    @apply bg-red-50 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-100 dark:border-red-800;
+}
+
+.alert-info {
+    @apply bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-100 dark:border-blue-800;
+}

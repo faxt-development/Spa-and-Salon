@@ -3,7 +3,8 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-    important: true, // Add !important to all Tailwind utilities to ensure they override Bootstrap
+    // important: false, // Removed to avoid conflicts with @apply directives
+    // Use the 'important' utility class when needed instead
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
@@ -19,87 +20,81 @@ theme: {
             },
   		colors: {
 
+            // Theme colors using CSS variables for dynamic theming
             primary: {
-                50: 'oklch(100% 0 none)',
-                100: 'oklch(100% 0 none)',
-                200: 'oklch(96.976% 0.00615 137.77)',
-                300: 'oklch(91.4% 0.01729 128.67)',
-                400: 'oklch(86.059% 0.0288 126.86)',
-                500: 'oklch(80.594% 0.03831 122.27)',
-                600: 'oklch(69.643% 0.05974 118.85)',
-                700: 'oklch(55.828% 0.05561 114.32)',
-                800: 'oklch(33.877% 0.03223 18.881)',
-                900: 'oklch(19.913% 0.01162 99.509)',
-                950: 'oklch(0% 0 none)',
-                DEFAULT: 'oklch(80.594% 0.03831 122.27)', // optional fallback (same as 500)
-              },
+                DEFAULT: 'var(--primary-color, #8B9259)',
+                // Generated color scale based on #8B9259 (olive green)
+                50: 'var(--primary-color-50, #f6f7f2)',
+                100: 'var(--primary-color-100, #e9ecdf)',
+                200: 'var(--primary-color-200, #d4d9c0)',
+                300: 'var(--primary-color-300, #b8bf96)',
+                400: 'var(--primary-color-400, #8B9259)', // Base color
+                500: 'var(--primary-color-500, #7a814e)',
+                600: 'var(--primary-color-600, #636a3f)',
+                700: 'var(--primary-color-700, #4d5332)',
+                800: 'var(--primary-color-800, #3e4329)',
+                900: 'var(--primary-color-900, #2a2e1c)',
+                950: 'var(--primary-color-950, #1a1c10)',
+            },
             secondary: {
-                50: 'oklch(66.441% 0.06811 262.28)',
-                100: 'oklch(63.743% 0.07163 257.58)',
-                200: 'oklch(58.822% 0.07977 247.62)',
-                300: 'oklch(53.709% 0.06421 235.08)',
-                400: 'oklch(48.123% 0.05275 220.93)',
-                500: 'oklch(41.294% 0.04439 208.63)',
-                600: 'oklch(29.746% 0.03108 198.94)',
-                700: 'oklch(15.239% 0.00997 196.15)',
-                800: 'oklch(0% 0 none)',
-                900: 'oklch(0% 0 none)',
-                950: 'oklch(0% 0 none)',
-                DEFAULT: 'oklch(41.294% 0.04439 208.63)', // optional fallback (same as 500)
+                DEFAULT: 'var(--secondary-color, #EDDFC0)',
+                // Generated color scale with #EDDFC0 as 500
+                50: 'var(--secondary-color-50, #faf8f2)',
+                100: 'var(--secondary-color-100, #f5f0e0)',
+                200: 'var(--secondary-color-200, #efe6d0)',
+                300: 'var(--secondary-color-300, #e8d9b8)',
+                400: 'var(--secondary-color-400, #e3d2ac)',
+                500: 'var(--secondary-color-500, #EDDFC0)', // Base color
+                600: 'var(--secondary-color-600, #d4c5a0)',
+                700: 'var(--secondary-color-700, #b8a77d)',
+                800: 'var(--secondary-color-800, #8a7e5f)',
+                900: 'var(--secondary-color-900, #5c5440)',
+            },
+            border: {
+                DEFAULT: 'var(--border, #e5e7eb)' // Default border color
+            },
+            ring: {
+                DEFAULT: 'var(--ring, #3b82f6)' // Default ring color
+            },
+            secondary: {
+                ...defaultTheme.colors.secondary,
+                950: 'var(--secondary-color-950, #2e2a20)'
             },
             accent: {
-                DEFAULT: 'hsl(var(--accent))',
-                foreground: 'hsl(var(--accent-foreground))',
-                50: 'oklch(66.015% 0.12233 56.774)',
-                100: 'oklch(91.498% 0.02908 60.748)',
-                200: 'oklch(88.534% 0.03882 60.95)',
-                300: 'oklch(82.802% 0.06042 59.377)',
-                400: 'oklch(77.031% 0.08161 58.741)',
-                500: 'oklch(71.54% 0.10244 58.704)',
-                600: 'oklch(66.015% 0.12233 56.774)',
-                700: 'oklch(56.031% 0.10835 56.186)',
-                800: 'oklch(44.998% 0.08444 57.259)',
-                900: 'oklch(33.258% 0.05802 58.603)',
-                950: 'oklch(20.289% 0.02955 55.819)',
+                DEFAULT: 'var(--accent-color, #F4C96C)',
+                foreground: 'var(--text-color, #1F4B48)',
+                // Generated color scale with #F4C96C as 500
+                50: 'var(--accent-color-50, #fffbf2)',
+                100: 'var(--accent-color-100, #fef7e5)',
+                200: 'var(--accent-color-200, #fdf0cc)',
+                300: 'var(--accent-color-300, #fbe8b3)',
+                400: 'var(--accent-color-400, #f8d98a)',
+                500: 'var(--accent-color-500, #F4C96C)', // Base color
+                600: 'var(--accent-color-600, #e8b53d)',
+                700: 'var(--accent-color-700, #c79824)',
+                800: 'var(--accent-color-800, #8a6a19)',
+                900: 'var(--accent-color-900, #5c460f)',
+                950: 'var(--accent-color-950, #3d2f0a)',
             },
-
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
-  			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
-  			},
-  			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
-  			},
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
-  			},
-  			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
-  			},
-  			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			},
-  			sidebar: {
+            text: {
+                DEFAULT: 'var(--text-color, #1F4B48)',
+                light: 'var(--text-color-light, #64748b)',
+                lighter: 'var(--text-color-lighter, #94a3b8)',
+            },
+            background: {
+                DEFAULT: 'var(--background-color, #EDDFC0)',
+                secondary: 'var(--background-secondary, var(--secondary-color, #EDDFC0))'
+            },
+            foreground: 'var(--text-color, #1F4B48)',
+            card: {
+                DEFAULT: 'var(--card-bg, #EDDFC0)',
+                foreground: 'var(--text-color, #1F4B48)'
+            },
+            popover: {
+                DEFAULT: 'var(--popover-bg, #EDDFC0)',
+                foreground: 'var(--text-color, #1F4B48)'
+            },
+            sidebar: {
   				DEFAULT: 'hsl(var(--sidebar-background))',
   				foreground: 'hsl(var(--sidebar-foreground))',
   				primary: 'hsl(var(--sidebar-primary))',
@@ -138,6 +133,6 @@ theme: {
   			'accordion-up': 'accordion-up 0.2s ease-out'
   		}
   	}
-  },
-    plugins: [forms],
+    },
+    plugins: [forms]
 };

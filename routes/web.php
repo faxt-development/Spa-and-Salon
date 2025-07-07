@@ -21,6 +21,18 @@ use App\Http\Controllers\OnboardingController;
 // Public routes
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+// Test theme route
+Route::get('/theme-test', function () {
+    $theme = app(\App\Services\ThemeService::class)->getCurrentTheme();
+    $company = request()->attributes->get('company');
+    
+    return view('theme-test', [
+        'theme' => $theme,
+        'company' => $company,
+        'pageTitle' => 'Theme Test Page',
+    ]);
+})->name('theme.test');
+
 // Pricing page route
 Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index'])->name('pricing');
 
