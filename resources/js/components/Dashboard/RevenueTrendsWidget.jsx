@@ -90,7 +90,10 @@ const RevenueTrendsWidget = ({
 
   // Format the data for the chart
   const formatData = (data) => {
-    if (!data || data.length === 0) return [];
+    // If no data, return an array with a single zero value point
+    if (!data || data.length === 0) {
+      return [{ name: 'No Data', revenue: 0 }];
+    }
 
     return data.map(item => {
       let label;
@@ -191,37 +194,58 @@ const RevenueTrendsWidget = ({
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
             <CircularProgress />
           </Box>
-        ) : error ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <Typography color="error">{error}</Typography>
-          </Box>
-        ) : data.length === 0 ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-            <Typography>No revenue data available for the selected period</Typography>
-          </Box>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={formatData(data)}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                stroke={data.length === 0 ? 'rgba(0, 0, 0, 0.06)' : 'rgba(0, 0, 0, 0.1)'}
+              />
+              <XAxis 
+                dataKey="name" 
+                tick={{ fill: data.length === 0 ? 'transparent' : 'inherit' }}
+              />
               <YAxis 
                 tickFormatter={(value) => `$${value}`}
-                domain={['auto', 'auto']}
+                domain={[0, 'auto']}
+                tick={{ fill: data.length === 0 ? 'transparent' : 'inherit' }}
               />
-              <Tooltip content={<CustomTooltip />} />
-              <Legend />
+              {data.length > 0 && <Tooltip content={<CustomTooltip />} />}
+              {data.length > 0 && <Legend />}
               <Line 
                 type="monotone" 
                 dataKey="revenue" 
-                stroke="#8884d8" 
-                activeDot={{ r: 8 }} 
+                stroke={data.length === 0 ? '#e0e0e0' : '#8884d8'}
+                strokeWidth={data.length === 0 ? 2 : 1}
+                dot={data.length > 0}
+                activeDot={data.length > 0 ? { r: 8 } : false}
                 name="Revenue"
               />
             </LineChart>
           </ResponsiveContainer>
+        )}
+        {data.length === 0 && !loading && !error && (
+          <Box 
+            sx={{ 
+              position: 'absolute', 
+              top: '50%', 
+              left: '50%', 
+              transform: 'translate(-50%, -50%)',
+              textAlign: 'center',
+              color: 'text.secondary',
+              pointerEvents: 'none'
+            }}
+          >
+            <Typography variant="subtitle1" gutterBottom>
+              No revenue data available
+            </Typography>
+            <Typography variant="body2">
+              Revenue data will appear here when available
+            </Typography>
+          </Box>
         )}
       </Box>
     </DashboardWidget>

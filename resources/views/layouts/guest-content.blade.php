@@ -15,7 +15,7 @@
             ];
         @endphp
 
-        <title>@yield('title', $companyName . ' - Salon & Spa Management')</title>
+        <title>@yield('title', $companyName . ' - Management')</title>
 
         <!-- Favicon -->
         <link rel="icon" href="{{ $company->favicon_url ?? asset('favicon.ico') }}" type="image/x-icon">
@@ -140,13 +140,13 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const mobileMenuButton = document.querySelector('button[aria-controls="mobile-menu"]');
                 const mobileMenu = document.getElementById('mobile-menu');
-                
+
                 if (mobileMenuButton && mobileMenu) {
                     mobileMenuButton.addEventListener('click', function() {
                         const isExpanded = this.getAttribute('aria-expanded') === 'true';
                         this.setAttribute('aria-expanded', !isExpanded);
                         mobileMenu.classList.toggle('hidden');
-                        
+
                         // Toggle between menu and close icons
                         const menuIcon = this.querySelector('svg:not(.hidden)');
                         const closeIcon = this.querySelector('svg.hidden');

@@ -5,7 +5,6 @@
             <div class="space-y-4">
                 <div class="flex items-center">
                     <x-application-logo class="h-8 w-auto" />
-                    <span class="ml-2 text-xl font-bold text-gray-900 dark:text-white">Faxtina</span>
                 </div>
                 <p class="text-gray-600 dark:text-gray-300">
                     Empowering your business with our comprehensive salon and spa management solution.

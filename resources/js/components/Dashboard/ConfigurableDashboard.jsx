@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  Box, 
-  Typography, 
-  CircularProgress, 
-  Button, 
-  Grid, 
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Button,
+  Grid,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -39,19 +39,36 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
 
   // Fetch user's dashboard widgets
   useEffect(() => {
-    setLoading(true);
-    setError(null);
+    const fetchWidgets = async () => {
+      setLoading(true);
+      setError(null);
 
-    axios.get('/api/dashboard/widgets')
-      .then(response => {
+      try {
+        // Ensure we have a CSRF cookie for API requests
+        await axios.get('/sanctum/csrf-cookie');
+
+        const response = await axios.get('/api/dashboard/widgets');
         setWidgets(response.data.data || []);
-        setLoading(false);
-      })
-      .catch(error => {
+      } catch (error) {
         console.error('Error fetching dashboard widgets:', error);
-        setError('Failed to load dashboard widgets. Please try again.');
+
+        if (error.response) {
+          // Handle specific error statuses
+          if (error.response.status === 401) {
+            setError('Session not recognized by the api call.');
+
+          } else {
+            setError(error.response.data.message || 'Failed to load dashboard widgets. Please try again.');
+          }
+        } else {
+          setError('Network error. Please check your connection and try again.');
+        }
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchWidgets();
   }, []);
 
   // Handle widget deletion
@@ -79,7 +96,7 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
   const handleWidgetSettingsUpdate = (widgetId, settings) => {
     axios.put(`/api/dashboard/widgets/${widgetId}`, { settings })
       .then(response => {
-        setWidgets(widgets.map(widget => 
+        setWidgets(widgets.map(widget =>
           widget.id === widgetId ? { ...widget, settings: response.data.data.settings } : widget
         ));
       })
@@ -216,8 +233,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
 
   // Add Widget Dialog
   const AddWidgetDialog = () => (
-    <Dialog 
-      open={addWidgetDialogOpen} 
+    <Dialog
+      open={addWidgetDialogOpen}
       onClose={() => setAddWidgetDialogOpen(false)}
       maxWidth="sm"
       fullWidth
@@ -229,8 +246,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
             <ListItemIcon>
               <TrendingUpIcon />
             </ListItemIcon>
-            <ListItemText 
-              primary="Revenue Overview" 
+            <ListItemText
+              primary="Revenue Overview"
               secondary="Shows revenue trends over time (daily, weekly, monthly)"
             />
           </ListItem>
@@ -239,8 +256,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
-            <ListItemText 
-              primary="Top Services" 
+            <ListItemText
+              primary="Top Services"
               secondary="Shows top performing services by revenue"
             />
           </ListItem>
@@ -249,8 +266,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
             <ListItemIcon>
               <PeopleIcon />
             </ListItemIcon>
-            <ListItemText 
-              primary="Top Staff" 
+            <ListItemText
+              primary="Top Staff"
               secondary="Shows top performing staff by revenue"
             />
           </ListItem>
@@ -259,8 +276,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
             <ListItemIcon>
               <PlaceIcon />
             </ListItemIcon>
-            <ListItemText 
-              primary="Revenue by Location" 
+            <ListItemText
+              primary="Revenue by Location"
               secondary="Shows revenue breakdown by location"
             />
           </ListItem>
@@ -278,8 +295,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
         <Typography variant="h5" component="h1">
           {compact ? 'Analytics Widgets' : 'Dashboard'}
         </Typography>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setAddWidgetDialogOpen(true)}
           size={compact ? 'small' : 'medium'}
@@ -295,8 +312,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
       ) : error ? (
         <Box sx={{ p: 3, textAlign: 'center' }}>
           <Typography color="error">{error}</Typography>
-          <Button 
-            variant="outlined" 
+          <Button
+            variant="outlined"
             sx={{ mt: 2 }}
             onClick={() => window.location.reload()}
           >
@@ -309,8 +326,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
           <Typography variant="body1" sx={{ mb: 3 }}>
             Add widgets to customize your dashboard
           </Typography>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setAddWidgetDialogOpen(true)}
           >
@@ -321,8 +338,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="dashboard">
             {(provided) => (
-              <Grid 
-                container 
+              <Grid
+                container
                 spacing={3}
                 ref={provided.innerRef}
                 {...provided.droppableProps}
@@ -332,10 +349,10 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
                   .map((widget, index) => (
                     <Draggable key={widget.id} draggableId={`widget-${widget.id}`} index={index}>
                       {(provided) => (
-                        <Grid 
-                          item 
-                          xs={12} 
-                          md={compact ? 4 : 6} 
+                        <Grid
+                          item
+                          xs={12}
+                          md={compact ? 4 : 6}
                           lg={compact ? 3 : 4}
                           ref={provided.innerRef}
                           {...provided.draggableProps}
@@ -360,8 +377,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
         autoHideDuration={6000}
         onClose={() => setSnackbar({ ...snackbar, open: false })}
       >
-        <Alert 
-          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
           severity={snackbar.severity}
           sx={{ width: '100%' }}
         >
