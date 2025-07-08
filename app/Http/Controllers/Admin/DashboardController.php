@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Product;
 
 class DashboardController extends Controller
 {
@@ -30,7 +31,7 @@ class DashboardController extends Controller
     public function getTodaysSchedule()
     {
         $today = Carbon::today();
-        
+
         $appointments = Appointment::with(['client', 'services', 'staff'])
             ->whereDate('start_time', $today)
             ->orderBy('start_time')
