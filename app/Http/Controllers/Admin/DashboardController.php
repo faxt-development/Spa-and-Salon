@@ -62,16 +62,16 @@ class DashboardController extends Controller
         $alerts = [];
 
         // Get low stock products (assuming threshold is 5)
-        $lowStockProducts = Product::where('stock_quantity', '<=', 5)
-            ->where('stock_quantity', '>', 0)
-            ->orderBy('stock_quantity')
+        $lowStockProducts = Product::where('quantity', '<=', 5)
+            ->where('quantity', '>', 0)
+            ->orderBy('quantity')
             ->get();
 
         foreach ($lowStockProducts as $product) {
             $alerts[] = [
                 'type' => 'warning',
                 'title' => 'Low Stock Alert',
-                'message' => "{$product->name} is running low ({$product->stock_quantity} remaining)"
+                'message' => "{$product->name} is running low ({$product->quantity} remaining)"
             ];
         }
 
