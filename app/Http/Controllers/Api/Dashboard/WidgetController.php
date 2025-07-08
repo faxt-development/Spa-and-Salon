@@ -97,9 +97,9 @@ class WidgetController extends Controller
     public function destroy(DashboardWidget $widget): JsonResponse
     {
         $this->authorize('delete', $widget);
-        
+
         $this->dashboardService->removeWidget(Auth::user(), $widget->id);
-        
+
         return response()->json([
             'message' => 'Widget removed successfully',
         ]);

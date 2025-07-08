@@ -61,19 +61,22 @@ Route::get('/gdpr', [GdprController::class, 'index'])->name('gdpr');
 // Press
 Route::get('/press', [PageController::class, 'press'])->name('press');
 
-// Onboarding routes
-Route::prefix('onboarding')->name('onboarding.')->group(function () {
-    Route::get('/start', [OnboardingController::class, 'showStart'])->name('start');
-    Route::get('/user', [OnboardingController::class, 'showUserForm'])->name('user-form');
-    Route::post('/user', [OnboardingController::class, 'processUserForm'])->name('process-user');
-    Route::get('/company', [OnboardingController::class, 'showCompanyForm'])->name('company-form');
-    Route::post('/company', [OnboardingController::class, 'processCompanyForm'])->name('process-company');
-    Route::get('/feature-tour', [OnboardingController::class, 'showFeatureTour'])->name('feature-tour');
-    Route::post('/complete', [OnboardingController::class, 'complete'])->name('complete');
-});
+// Onboarding routes - require authentication and check onboarding status
+Route::middleware(['auth:web', 'check.onboarding'])
+    ->prefix('onboarding')
+    ->name('onboarding.')
+    ->group(function () {
+        Route::get('/start', [OnboardingController::class, 'showStart'])->name('start');
+        Route::get('/user', [OnboardingController::class, 'showUserForm'])->name('user-form');
+        Route::post('/user', [OnboardingController::class, 'processUserForm'])->name('process-user');
+        Route::get('/company', [OnboardingController::class, 'showCompanyForm'])->name('company-form');
+        Route::post('/company', [OnboardingController::class, 'processCompanyForm'])->name('process-company');
+        Route::get('/feature-tour', [OnboardingController::class, 'showFeatureTour'])->name('feature-tour');
+        Route::post('/complete', [OnboardingController::class, 'complete'])->name('complete');
+    });
 
-// Test route for simulating onboarding (DEVELOPMENT ONLY - REMOVE IN PRODUCTION)
-Route::get('/test-onboarding', function() {
+// Test route for simulating onboarding (PROTECTED - DEVELOPMENT ONLY)
+Route::middleware(['auth:web'])->get('/test-onboarding', function() {
     // Simulate a session ID from Stripe
     $sessionId = 'test_session_' . time();
 

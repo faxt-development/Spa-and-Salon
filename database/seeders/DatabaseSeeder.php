@@ -6,6 +6,7 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,7 +15,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed roles and permissions
+        // First, seed the plans since other seeders might depend on them
+        $this->call([PlanSeeder::class]);
+
+        // Then seed other data
         $this->call([
             // Theme seeder must run before company seeder
             ThemeSeeder::class,
@@ -35,21 +39,53 @@ class DatabaseSeeder extends Seeder
             TransactionSeeder::class,
             // Generate sample revenue data
             RevenueDataSeeder::class,
-            // Subscription plans
-            PlanSeeder::class,
         ]);
 
-        // Create admin user
+        // Create or get admin user
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Admin User',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
+                'onboarding_completed' => true, // Mark onboarding as completed
             ]
         );
+        
+        // Ensure admin role is assigned
         if (!$admin->hasRole('admin')) {
             $admin->assignRole('admin');
+        }
+        
+        // Ensure admin is associated with a company by running the TestCompanySeeder
+        $this->call([
+            TestCompanySeeder::class,
+        ]);
+        
+        // Update the test company to be owned by our admin user
+        $company = \App\Models\Company::where('domain', 'test-spa.localhost')->first();
+        if ($company) {
+            $company->update(['user_id' => $admin->id]);
+        }
+
+        // Ensure admin has an active subscription to the first plan
+        if ($admin->subscriptions()->doesntExist()) {
+            $plan = \App\Models\Plan::orderBy('sort_order')->first();
+
+            // Create the subscription
+            $admin->subscriptions()->create([
+                'plan_id' => $plan->id,
+                'name' => $plan->name,
+                'stripe_id' => 'seeded_subscription_' . Str::random(10),
+                'stripe_status' => 'active',
+                'stripe_price' => $plan->stripe_plan_id,
+                'quantity' => 1,
+                'trial_ends_at' => null,
+                'ends_at' => now()->addYear(),
+                'status' => 'active',
+                'billing_cycle' => $plan->billing_cycle,
+                'next_billing_date' => now()->addMonth(),
+            ]);
         }
 
         // Client user will be created by the StaffSeeder if needed

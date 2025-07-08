@@ -29,12 +29,12 @@ class AppServiceProvider extends ServiceProvider
     {
         // Share company name with all views
         View::composer('*', function ($view) {
-            $companyName = 'Salon';
-            
+            $companyName = config('app.name');
+
             if (Auth::check() && Auth::user()->company) {
-                $companyName = Auth::user()->company->name ?: 'Salon';
+                $companyName = Auth::user()->company->name ?: config('app.name');
             }
-            
+
             $view->with('companyName', $companyName);
         });
 

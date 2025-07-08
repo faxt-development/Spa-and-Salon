@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Company;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -17,9 +18,23 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+        // Check if user is authenticated
+        if (Auth::check()) {
+            $user = Auth::user();
+            
+            // Redirect based on user role
+            if ($user->hasRole('admin') || $user->hasRole('staff')) {
+                return redirect()->route('admin.dashboard');
+            }
+            
+            // For clients or users with no specific role
+            return redirect()->route('dashboard');
+        }
+
+        // For unauthenticated users, show the appropriate homepage
         // Try to get company from different sources
         $company = $request->attributes->get('company') 
-                   ?? app()->bound('currentCompany') ? app()->make('currentCompany') : null;
+                   ?? (app()->bound('currentCompany') ? app()->make('currentCompany') : null);
         
         // Log the current state for debugging
         \Log::debug('HomeController: Company detection', [
