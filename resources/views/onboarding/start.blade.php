@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header text-white" style="background-color: var(--primary-color, #8B9259);">
                     <h2 class="mb-0">Welcome to Faxtina!</h2>
                 </div>
                 <div class="card-body">

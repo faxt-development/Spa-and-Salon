@@ -387,6 +387,10 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
     });
 });
 
+// Subscription required page
+Route::get('/subscription-required', [\App\Http\Controllers\SubscriptionController::class, 'showRequired'])
+    ->name('subscription.required');
+
 // Auth Routes
 Route::namespace('App\Http\Controllers\Auth')->group(function () {
     // Authentication Routes...

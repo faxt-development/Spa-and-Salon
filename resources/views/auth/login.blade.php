@@ -93,7 +93,7 @@
         <div class="mt-6 text-center text-sm">
             <p class="text-gray-600">
                 Don't have an account?
-                <a href="{{ route('register') }}" class="font-medium text-primary-600 hover:text-primary-500">
+                <a href="{{ route('pricing') }}" class="font-medium text-primary-600 hover:text-primary-500">
                     {{ __('Sign up') }}
                 </a>
             </p>

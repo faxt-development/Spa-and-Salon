@@ -43,10 +43,14 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(base_path('routes/web.php'));
         });
 
-        //set this to not run if this is not a web request
+        // Set this to not run if this is not a web request
         if (app()->runningInConsole()) {
             return;
         }
+
+        // Handle subscription check for authenticated users
+        $this->checkSubscriptionStatus();
+
         // Set theme and company context for the request
         $this->setThemeAndCompanyContext();
     }
@@ -175,6 +179,60 @@ class RouteServiceProvider extends ServiceProvider
     {
         $defaultTheme = $this->themeService->getDefaultTheme();
         $this->applyTheme($defaultTheme);
+    }
+
+    /**
+     * Check if the authenticated user has an active subscription
+     * and redirect to subscription page if not
+     */
+    protected function checkSubscriptionStatus()
+    {
+        // Skip if user is not authenticated - let the auth middleware handle this
+        if (!auth()->check()) {
+            return;
+        }
+
+        $user = auth()->user();
+        $currentRoute = request()->route();
+        // Skip if already on the subscription required page or auth routes
+        $excludedRoutes = [
+            'subscription.required',
+            'logout',
+            'pricing',
+            'subscription.*',
+            'billing.*',
+            'login',
+            'register',
+            'password.*',
+            'verification.*',
+            'onboarding.*',
+            'home'
+        ];
+        
+        // If we can't determine the route name, allow the request to continue
+        if (!$currentRoute || !$currentRoute->getName()) {
+            return;
+        }
+
+        foreach ($excludedRoutes as $excludedRoute) {
+            if (str_is($excludedRoute, $currentRoute->getName())) {
+                return;
+            }
+        }
+info('checking subscription');
+        // Check if user has an active subscription
+        if (!$user->hasActiveSubscription()) {
+            // Skip if this is an API request
+            if (request()->expectsJson()) {
+                return;
+            }
+
+            // Only redirect if we're not already on the subscription required page
+            if ($currentRoute->getName() !== 'subscription.required') {
+                // Use response()->redirectToRoute() which is safe to use in service providers
+                return response()->redirectToRoute('subscription.required')->sendHeaders();
+            }
+        }
     }
 
     /**
