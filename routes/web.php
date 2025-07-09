@@ -27,7 +27,7 @@ Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('h
 Route::get('/theme-test', function () {
     $theme = app(\App\Services\ThemeService::class)->getCurrentTheme();
     $company = request()->attributes->get('company');
-    
+
     return view('theme-test', [
         'theme' => $theme,
         'company' => $company,
@@ -212,7 +212,6 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
 
     // Admin routes
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'admin'])->name('dashboard');
         Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
 
         // Staff Management Routes
@@ -288,11 +287,6 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
         Route::get('/gift-cards/purchase', [GiftCardWebController::class, 'purchaseForm'])->name('gift-cards.purchase');
       });
 
-    // Staff routes
-    Route::middleware(['auth:web', 'role:staff'])->prefix('staff')->name('staff.')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'staff'])->name('dashboard');
-    });
-
     // Inventory Management Routes
     Route::middleware(['auth:web', 'role:admin|staff'])->prefix('inventory')->name('inventory.')->group(function () {
         // Main inventory dashboard
@@ -332,13 +326,6 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
     Route::name('web.')->group(function () {
         Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
             ;
-    });
-
-
-    // Client routes
-    Route::middleware(['auth:web', 'role:admin|staff'])->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'client'])->name('dashboard');
-        // Add more client routes here
     });
 
     Route::middleware(['auth:web', 'role:admin'])->group(function () {

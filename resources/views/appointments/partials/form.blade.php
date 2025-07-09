@@ -1,4 +1,4 @@
-<form id="appointmentForm" method="POST" action="{{ route('appointments.store') }}" class="space-y-4" x-data="appointmentForm">
+<form id="appointmentForm" method="POST" action="{{ route('appointments.store') }}" class="space-y-4" x-data="appointmentForm()">
     @csrf
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -46,6 +46,19 @@
         <!-- Appointment Details -->
         <div class="space-y-4">
             <h4 class="text-md font-medium">Appointment Details</h4>
+            <div>
+                <label for="services" class="block text-sm font-medium text-gray-700">Services</label>
+                <select id="services" name="service_ids[]" multiple x-model="selectedServices" @change="updateTotals()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                    @forelse($services ?? [] as $service)
+                        <option value="{{ $service->id }}" data-duration="{{ $service->duration }}" data-price="{{ $service->price }}">
+                            {{ $service->name }} - ${{ number_format($service->price, 2) }} ({{ $service->duration }} min)
+                        </option>
+                    @empty
+                        <option disabled>No services available</option>
+                    @endforelse
+                </select>
+                <p class="mt-1 text-sm text-gray-500">Hold Ctrl/Cmd to select multiple services</p>
+            </div>
 
             <div>
                 <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
@@ -55,7 +68,7 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time</label>
-                    <input type="time" name="start_time" id="start_time" value="{{ old('start_time') }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md">
+                    <input type="time" name="start_time" id="start_time" x-model="startTime" @change="updateEndTime()" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md timepicker">
                 </div>
 
                 <div>
@@ -77,18 +90,6 @@
             </div>
 
             <div>
-                <label for="services" class="block text-sm font-medium text-gray-700">Services</label>
-                <select id="services" name="service_ids[]" multiple class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
-                    @foreach($services as $service)
-                        <option value="{{ $service->id }}" data-duration="{{ $service->duration }}" data-price="{{ $service->price }}">
-                            {{ $service->name }} - ${{ number_format($service->price, 2) }} ({{ $service->duration }} min)
-                        </option>
-                    @endforeach
-                </select>
-                <p class="mt-1 text-sm text-gray-500">Hold Ctrl/Cmd to select multiple services</p>
-            </div>
-
-            <div>
                 <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
                 <textarea id="notes" name="notes" rows="2" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md">{{ old('notes') }}</textarea>
             </div>
@@ -101,15 +102,163 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <p class="text-sm text-gray-500">Total Duration:</p>
-                    <p id="total-duration" class="font-medium">0 minutes</p>
+                    <p x-text="totalDuration + ' minutes'" class="font-medium">0 minutes</p>
                 </div>
                 <div>
                     <p class="text-sm text-gray-500">Total Price:</p>
-                    <p id="total-price" class="font-medium">$0.00</p>
+                    <p x-text="'$' + (typeof totalPrice !== 'undefined' ? totalPrice.toFixed(2) : '0.00')" class="font-medium">$0.00</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('appointmentForm', () => ({
+            // Form data model
+            formData: {
+                client_name: '{{ auth()->user()->name }}',
+                client_email: '{{ auth()->user()->email }}',
+                client_phone: '{{ old('client_phone') }}',
+                start_time: '',
+                end_time: ''
+            },
+            // Initialize selectedServices as an array
+            selectedServices: {{ json_encode(old('service_ids', [])) }},
+            startTime: '{{ old('start_time', '09:00') }}',
+            endTime: '{{ old('end_time', '10:00') }}',
+            totalDuration: 0,
+            totalPrice: 0,
+
+            // Initialize the component
+            init() {
+                // Initialize reactive properties
+                this.totalDuration = 0;
+                this.totalPrice = 0;
+
+                // Set initial form data
+                this.formData.start_time = this.startTime;
+                this.formData.end_time = this.endTime;
+
+                // Set initial values from old input if available
+                @if(old('start_time'))
+                    this.startTime = '{{ old('start_time') }}';
+                    this.formData.start_time = '{{ old('start_time') }}';
+                @endif
+
+                @if(old('end_time'))
+                    this.endTime = '{{ old('end_time') }}';
+                    this.formData.end_time = '{{ old('end_time') }}';
+                @endif
+
+                // Initialize time pickers
+                this.initTimePickers();
+
+                // Initialize selected services and update totals
+                if (this.selectedServices && this.selectedServices.length > 0) {
+                    this.$nextTick(() => {
+                        this.updateTotals();
+                    });
+                }
+
+                // Debug: Log initial state
+                console.log('Appointment form initialized', {
+                    startTime: this.startTime,
+                    endTime: this.endTime,
+                    selectedServices: this.selectedServices,
+                    totalDuration: this.totalDuration,
+                    totalPrice: this.totalPrice
+                });
+            },
+
+            initTimePickers() {
+                // Start time picker
+                flatpickr('#start_time', {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true,
+                    minuteIncrement: 15,
+                    defaultHour: 9,
+                    defaultMinute: 0,
+                    onChange: (selectedDates, dateStr) => {
+                        this.startTime = dateStr;
+                        this.formData.start_time = dateStr;
+                        this.updateEndTime();
+                    }
+                });
+
+                // End time picker (readonly, updated programmatically)
+                flatpickr('#end_time', {
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true,
+                    minuteIncrement: 15,
+                    defaultHour: 10,
+                    defaultMinute: 0,
+                    clickOpens: false
+                });
+            },
+
+            updateEndTime() {
+                if (!this.startTime) return;
+
+                // Parse start time
+                const [hours, minutes] = this.startTime.split(':').map(Number);
+                const startDate = new Date();
+                startDate.setHours(hours, minutes, 0, 0);
+
+                // Add total duration to start time (default to 60 minutes if no services selected)
+                const duration = this.totalDuration > 0 ? this.totalDuration : 60;
+                const endDate = new Date(startDate.getTime() + duration * 60000);
+
+                // Format end time as HH:MM
+                this.endTime = endDate.toTimeString().substring(0, 5);
+                this.formData.end_time = this.endTime;
+
+                // Update end time input
+                const endTimeInput = document.querySelector('#end_time');
+                if (endTimeInput && endTimeInput._flatpickr) {
+                    endTimeInput._flatpickr.setDate(this.endTime);
+                }
+            },
+
+            updateTotals() {
+                this.totalDuration = 0;
+                this.totalPrice = 0;
+
+                // Get all service options
+                const serviceSelect = document.getElementById('services');
+                if (!serviceSelect) return;
+
+                // Calculate totals based on selected services
+                this.selectedServices.forEach(serviceId => {
+                    const option = serviceSelect.querySelector(`option[value="${serviceId}"]`);
+                    if (option) {
+                        const duration = parseInt(option.dataset.duration) || 0;
+                        const price = parseFloat(option.dataset.price) || 0;
+
+                        this.totalDuration += duration;
+                        this.totalPrice += price;
+                    }
+                });
+
+                // Update end time when services change
+                this.updateEndTime();
+
+                // Update the select element to reflect the model
+                this.$nextTick(() => {
+                    const options = serviceSelect.options;
+                    for (let i = 0; i < options.length; i++) {
+                        const option = options[i];
+                        option.selected = this.selectedServices.includes(option.value);
+                    }
+                });
+            }
+        }));
+    });
+    </script>
 
     <!-- Form Actions -->
     <div class="flex justify-between pt-4 border-t border-gray-200 mt-6">

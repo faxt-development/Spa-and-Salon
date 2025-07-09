@@ -243,12 +243,30 @@ class AppointmentController extends Controller
         $clients = Client::orderBy('last_name')->get();
         $staff = Staff::orderBy('last_name')->get();
         $services = Service::orderBy('name')->get();
+        
+        // Log staff data for debugging
+        \Log::info('Staff data in create method:', [
+            'count' => $staff->count(),
+            'staff' => $staff->map(fn($s) => [
+                'id' => $s->id,
+                'name' => $s->full_name,
+                'email' => $s->email
+            ])->toArray()
+        ]);
 
         // Check if the user is a client
         $isClient = false;
         if (Auth::check()) {
             $user = Auth::user();
             $isClient = $user->hasRole('client');
+            
+            // Log user and role info
+            \Log::info('User info in create method:', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'is_client' => $isClient,
+                'roles' => $user->getRoleNames()->toArray()
+            ]);
         }
 
         return view('appointments.create', compact('clients', 'staff', 'services', 'isClient'));
