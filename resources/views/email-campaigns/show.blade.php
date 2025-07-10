@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.0/dist/apexcharts.min.css">
