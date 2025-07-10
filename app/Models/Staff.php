@@ -149,7 +149,7 @@ class Staff extends Model
      */
     public function services(): BelongsToMany
     {
-        return $this->belongsToMany(Service::class, 'staff_service')
+        return $this->belongsToMany(Service::class, 'service_staff')
             ->withPivot('price_override', 'duration_override', 'is_primary')
             ->withTimestamps();
     }

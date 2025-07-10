@@ -11,6 +11,7 @@
         "dev:server": "php artisan serve"
     },
     "devDependencies": {
+        "@alpinejs/persist": "*",
         "@tailwindcss/forms": "^0.5.2",
         "@tailwindcss/vite": "^4.0.0",
         "@types/react": "^19.1.8",

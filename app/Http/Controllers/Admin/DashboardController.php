@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use App\Models\Product;
 
 class DashboardController extends Controller
@@ -18,8 +17,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Admin/Dashboard', [
-            'title' => 'Admin Dashboard',
+        return view('admin.dashboard', [
+            'title' => 'Admin Dashboard'
         ]);
     }
 

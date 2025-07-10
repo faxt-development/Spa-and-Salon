@@ -1,5 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
+// Configure axios defaults
+axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true;
+
+// Create an axios instance with default config
+const api = axios.create({
+    baseURL: '/api',
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+    },
+    withCredentials: true
+});
 import {
   Box,
   Typography,
@@ -44,10 +59,16 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
       setError(null);
 
       try {
-        // Ensure we have a CSRF cookie for API requests
-        await axios.get('/sanctum/csrf-cookie');
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        
+        // Set the CSRF token in the headers
+        api.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken;
+        api.defaults.headers.common['X-XSRF-TOKEN'] = decodeURIComponent(
+            document.cookie.replace(/(?:(?:^|.*;\s*)XSRF-TOKEN\s*\=\s*([^;]*).*$)|^.*$/, '$1')
+        );
 
-        const response = await axios.get('/api/dashboard/widgets');
+        const response = await api.get('/dashboard/widgets');
         setWidgets(response.data.data || []);
       } catch (error) {
         console.error('Error fetching dashboard widgets:', error);
@@ -73,7 +94,7 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
 
   // Handle widget deletion
   const handleDeleteWidget = (widgetId) => {
-    axios.delete(`/api/dashboard/widgets/${widgetId}`)
+    api.delete(`/dashboard/widgets/${widgetId}`)
       .then(() => {
         setWidgets(widgets.filter(widget => widget.id !== widgetId));
         setSnackbar({
@@ -94,7 +115,7 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
 
   // Handle widget settings update
   const handleWidgetSettingsUpdate = (widgetId, settings) => {
-    axios.put(`/api/dashboard/widgets/${widgetId}`, { settings })
+    api.put(`/dashboard/widgets/${widgetId}`, { settings })
       .then(response => {
         setWidgets(widgets.map(widget =>
           widget.id === widgetId ? { ...widget, settings: response.data.data.settings } : widget
@@ -112,7 +133,9 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
 
   // Handle adding a new widget
   const handleAddWidget = (type) => {
-    let widgetData = {
+    setAddWidgetDialogOpen(false);
+    
+    const widgetData = {
       type,
       settings: {}
     };
@@ -130,10 +153,9 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
         break;
     }
 
-    axios.post('/api/dashboard/widgets', widgetData)
+    api.post('/dashboard/widgets', widgetData)
       .then(response => {
         setWidgets([...widgets, response.data.data]);
-        setAddWidgetDialogOpen(false);
         setSnackbar({
           open: true,
           message: 'Widget added successfully',
@@ -154,24 +176,19 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
   const handleDragEnd = (result) => {
     if (!result.destination) return;
 
-    const reorderedWidgets = Array.from(widgets);
-    const [removed] = reorderedWidgets.splice(result.source.index, 1);
-    reorderedWidgets.splice(result.destination.index, 0, removed);
+    const items = Array.from(widgets);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
 
-    // Update positions
-    const updatedWidgets = reorderedWidgets.map((widget, index) => ({
-      ...widget,
-      position: index
-    }));
+    setWidgets(items);
 
-    setWidgets(updatedWidgets);
-
-    // Update layout on the server
-    const layout = updatedWidgets.map(widget => ({
+    // Update order in the backend
+    const widgetOrder = items.map((widget, index) => ({
       id: widget.id,
-      position: widget.position
+      order: index + 1
     }));
 
+    api.post('/dashboard/widgets/reorder', { widgets: widgetOrder })
     axios.put('/api/dashboard/preferences', { layout })
       .catch(error => {
         console.error('Error updating dashboard layout:', error);

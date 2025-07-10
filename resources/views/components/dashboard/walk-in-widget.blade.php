@@ -73,25 +73,34 @@
                 this.isLoading = true;
                 this.error = null;
 
-                fetch('/api/dashboard/walk-ins/queue-stats', {
+                // Use the configured axios instance from the window object
+                const api = window.axios || axios;
+
+                // Get CSRF token from meta tag
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                // Make the request with proper headers and credentials
+                api.get('/dashboard/walk-ins/queue-stats', {
                     headers: {
                         'Accept': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': csrfToken
                     },
-                    credentials: 'same-origin'
+                    withCredentials: true
                 })
                 .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    return response.json();
-                })
-                .then(data => {
-                    this.waitingCount = data.waiting_count;
-                    this.waitTimeFormatted = data.wait_time_formatted;
+                    if (response.data && typeof response.data === 'object') {
+                        this.waitingCount = response.data.waiting_count || 0;
+                        this.waitTimeFormatted = response.data.wait_time_formatted || '~0 min';
+                    } else {
+                        throw new Error('Invalid response format');
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching walk-in stats:', error);
                     this.error = 'Failed to load walk-in queue data';
+                    this.waitingCount = 0;
+                    this.waitTimeFormatted = '~0 min';
                 })
                 .finally(() => {
                     this.isLoading = false;
