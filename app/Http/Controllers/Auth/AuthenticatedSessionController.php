@@ -34,7 +34,7 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
         $deviceName = $request->userAgent() ?? 'Web Browser';
         $token = $user->createToken($deviceName)->plainTextToken;
-
+info('token: ' . $token);
         // Store the token in the session for later use
         session(['api_token' => $token]);
 
