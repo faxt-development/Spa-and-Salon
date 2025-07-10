@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
 @section('content')
 <div class="py-6">
@@ -6,8 +6,8 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">Create New Email Campaign</h2>
-                
-                <form action="{{ route('email-campaigns.store') }}" method="POST" enctype="multipart/form-data"
+
+                <form action="{{ route('admin.email-campaigns.store') }}" method="POST" enctype="multipart/form-data"
                       x-data="{
                         form: {
                             name: '{{ old('name') }}',
@@ -23,17 +23,17 @@
                             last_name: 'Doe',
                             email: 'john@example.com'
                         },
-                        
+
                         init() {
                             // Initialize any listeners or setup
                         },
-                        
+
                         updatePreview() {
                             // Update preview with actual values
                             this.showPreview = true;
                             // This would be handled by Livewire or Alpine.js to update the preview
                         },
-                        
+
                         insertMergeTag(tag) {
                             const textarea = this.$refs.editor;
                             const start = textarea.selectionStart;
@@ -41,9 +41,9 @@
                             const text = textarea.value;
                             const before = text.substring(0, start);
                             const after = text.substring(end, text.length);
-                            
+
                             this.form.content = before + tag + after;
-                            
+
                             // Set cursor position after the inserted tag
                             this.$nextTick(() => {
                                 const newCursorPos = start + tag.length;
@@ -54,12 +54,12 @@
                       }"
                       @submit="$event.preventDefault(); $refs.form.submit()">
                     @csrf
-                    
+
                     <div class="grid grid-cols-1 gap-6">
                         <!-- Campaign Info -->
                         <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Campaign Details</h3>
-                            
+
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label for="name" class="block text-sm font-medium text-gray-700">Campaign Name *</label>
@@ -69,7 +69,7 @@
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                
+
                                 <div>
                                     <label for="segment" class="block text-sm font-medium text-gray-700">Recipient Segment *</label>
                                     <select id="segment" name="segment" x-model="form.segment" required
@@ -86,10 +86,10 @@
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                
+
                                 <div>
                                     <label for="scheduled_for" class="block text-sm font-medium text-gray-700">Schedule Send (optional)</label>
-                                    <input type="datetime-local" id="scheduled_for" name="scheduled_for" 
+                                    <input type="datetime-local" id="scheduled_for" name="scheduled_for"
                                            x-model="form.scheduled_for"
                                            min="{{ now()->format('Y-m-d\TH:i') }}"
                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
@@ -100,11 +100,11 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Email Content -->
                         <div class="bg-white p-6 rounded-lg shadow border border-gray-200">
                             <h3 class="text-lg font-medium text-gray-900 mb-4">Email Content</h3>
-                            
+
                             <div class="space-y-4">
                                 <div>
                                     <label for="subject" class="block text-sm font-medium text-gray-700">Subject *</label>
@@ -114,7 +114,7 @@
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                
+
                                 <div>
                                     <label for="preview_text" class="block text-sm font-medium text-gray-700">Preview Text</label>
                                     <input type="text" id="preview_text" name="preview_text" x-model="form.preview_text"
@@ -125,7 +125,7 @@
                                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                     @enderror
                                 </div>
-                                
+
                                 <div>
                                     <div class="flex justify-between items-center">
                                         <label for="content" class="block text-sm font-medium text-gray-700">Email Content *</label>
@@ -135,7 +135,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                    
+
                                     <!-- Merge Tags -->
                                     <div class="mt-1 mb-2 flex flex-wrap gap-1">
                                         <span class="text-xs text-gray-500">Insert merge tags:</span>
@@ -146,7 +146,7 @@
                                             </button>
                                         </template>
                                     </div>
-                                    
+
                                     <!-- Editor/Preview Toggle -->
                                     <div x-show="!showPreview">
                                         <textarea id="content" name="content" x-model="form.content" rows="15" required
@@ -156,7 +156,7 @@
                                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                                         @enderror
                                     </div>
-                                    
+
                                     <!-- Email Preview -->
                                     <div x-show="showPreview" class="mt-2 p-4 border border-gray-200 rounded-md bg-white">
                                         <div class="border-b border-gray-200 pb-2 mb-4">
@@ -168,10 +168,10 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Form Actions -->
                         <div class="flex justify-end space-x-3">
-                            <a href="{{ route('admin.email-campaigns.index') }}" 
+                            <a href="{{ route('admin.email-campaigns.index') }}"
                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 Cancel
                             </a>

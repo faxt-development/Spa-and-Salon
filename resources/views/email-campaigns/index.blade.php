@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
 @section('content')
 <div class="py-6">
@@ -7,7 +7,7 @@
             <div class="p-6 bg-white border-b border-gray-200">
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800">Email Campaigns</h2>
-                    <a href="{{ route('email-campaigns.create') }}" 
+                    <a href="{{ route('admin.email-campaigns.create') }}"
                        class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                         Create Campaign
                     </a>
@@ -58,21 +58,21 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex space-x-2">
-                                        <a href="{{ route('email-campaigns.show', $campaign) }}" class="text-blue-600 hover:text-blue-900">View</a>
+                                        <a href="{{ route('admin.email-campaigns.show', $campaign) }}" class="text-blue-600 hover:text-blue-900">View</a>
                                         @if($campaign->isDraft())
-                                            <a href="{{ route('email-campaigns.edit', $campaign) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                                            <form action="{{ route('email-campaigns.send', $campaign) }}" method="POST" class="inline">
+                                            <a href="{{ route('admin.email-campaigns.edit', $campaign) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                            <form action="{{ route('admin.email-campaigns.send', $campaign) }}" method="POST" class="inline">
                                                 @csrf
                                                 <button type="submit" class="text-green-600 hover:text-green-900">Send</button>
                                             </form>
-                                            <form action="{{ route('email-campaigns.destroy', $campaign) }}" method="POST" class="inline">
+                                            <form action="{{ route('admin.email-campaigns.destroy', $campaign) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this campaign?')">Delete</button>
                                             </form>
                                         @endif
                                         @if($campaign->isScheduled())
-                                            <form action="{{ route('email-campaigns.cancel', $campaign) }}" method="POST" class="inline">
+                                            <form action="{{ route('admin.email-campaigns.cancel', $campaign) }}" method="POST" class="inline">
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="submit" class="text-yellow-600 hover:text-yellow-900">Cancel</button>
@@ -84,7 +84,7 @@
                             @empty
                             <tr>
                                 <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
-                                    No email campaigns found. <a href="{{ route('email-campaigns.create') }}" class="text-blue-600 hover:text-blue-800">Create your first campaign</a>.
+                                    No email campaigns found. <a href="{{ route('admin.email-campaigns.create') }}" class="text-blue-600 hover:text-blue-800">Create your first campaign</a>.
                                 </td>
                             </tr>
                             @endforelse

@@ -20,9 +20,9 @@ class EmailCampaignController extends Controller
 
     public function __construct(EmailSegmentationService $segmentationService)
     {
-        
-        
-        
+
+
+
         $this->segmentationService = $segmentationService;
     }
 
@@ -36,7 +36,7 @@ class EmailCampaignController extends Controller
         $campaigns = EmailCampaign::latest()
             ->withCount('recipients')
             ->paginate(10);
-            
+
         return view('email-campaigns.index', [
             'campaigns' => $campaigns,
         ]);
@@ -57,7 +57,7 @@ class EmailCampaignController extends Controller
             ['id' => 'birthday_this_month', 'name' => 'Birthdays This Month'],
             ['id' => 'no_appointments', 'name' => 'No Appointments Yet'],
         ];
-        
+
         return view('email-campaigns.create', [
             'segments' => $segments,
             'defaultFrom' => config('mail.from.address'),
@@ -103,11 +103,11 @@ class EmailCampaignController extends Controller
 
         // Get recipients based on segment
         $recipients = $this->getRecipientsForSegment($validated['segment']);
-        
+
         // Add recipients to campaign in chunks to avoid memory issues
         $recipientData = [];
         $now = now();
-        
+
         foreach ($recipients as $recipient) {
             $recipientData[] = [
                 'email_campaign_id' => $campaign->id,
@@ -120,14 +120,14 @@ class EmailCampaignController extends Controller
                 'created_at' => $now,
                 'updated_at' => $now,
             ];
-            
+
             // Insert in chunks of 100
             if (count($recipientData) >= 100) {
                 EmailRecipient::insert($recipientData);
                 $recipientData = [];
             }
         }
-        
+
         // Insert any remaining recipients
         if (!empty($recipientData)) {
             EmailRecipient::insert($recipientData);
@@ -140,7 +140,7 @@ class EmailCampaignController extends Controller
         if ($campaign->isScheduled()) {
             SendMarketingEmail::dispatch($campaign)
                 ->delay($campaign->scheduled_for);
-                
+
             $message = 'Campaign scheduled successfully.';
         } else {
             $message = 'Campaign saved as draft.';
@@ -159,7 +159,7 @@ class EmailCampaignController extends Controller
     public function show(EmailCampaign $emailCampaign)
     {
         $emailCampaign->load(['user']);
-        
+
         // Basic stats
         $stats = [
             'sent' => $emailCampaign->recipients_count,
@@ -169,7 +169,7 @@ class EmailCampaignController extends Controller
             'unsubscribed' => $emailCampaign->unsubscribed_recipients_count ?? 0,
             'complained' => $emailCampaign->recipients()->whereNotNull('complained_at')->count(),
         ];
-        
+
         // Calculate rates
         $stats['open_rate'] = $stats['sent'] > 0 ? round(($stats['opened'] / $stats['sent']) * 100, 2) : 0;
         $stats['click_rate'] = $stats['sent'] > 0 ? round(($stats['clicked'] / $stats['sent']) * 100, 2) : 0;
@@ -177,14 +177,14 @@ class EmailCampaignController extends Controller
         $stats['unsubscribe_rate'] = $stats['sent'] > 0 ? round(($stats['unsubscribed'] / $stats['sent']) * 100, 2) : 0;
         $stats['complaint_rate'] = $stats['sent'] > 0 ? round(($stats['complained'] / $stats['sent']) * 100, 2) : 0;
         $stats['click_to_open_rate'] = $stats['opened'] > 0 ? round(($stats['clicked'] / $stats['opened']) * 100, 2) : 0;
-        
+
         // Get engagement timeline data for the chart
         $timeline = [];
         if ($emailCampaign->sent_at) {
             $startDate = $emailCampaign->sent_at->copy()->subDay();
-            $endDate = now()->gt($emailCampaign->sent_at->copy()->addDays(14)) ? 
+            $endDate = now()->gt($emailCampaign->sent_at->copy()->addDays(14)) ?
                 $emailCampaign->sent_at->copy()->addDays(14) : now();
-            
+
             // Get daily counts
             $dailyOpens = $emailCampaign->recipients()
                 ->select(DB::raw('DATE(opened_at) as date'), DB::raw('count(*) as count'))
@@ -193,7 +193,7 @@ class EmailCampaignController extends Controller
                 ->groupBy('date')
                 ->pluck('count', 'date')
                 ->toArray();
-                
+
             $dailyClicks = $emailCampaign->recipients()
                 ->select(DB::raw('DATE(clicked_at) as date'), DB::raw('count(*) as count'))
                 ->whereNotNull('clicked_at')
@@ -201,7 +201,7 @@ class EmailCampaignController extends Controller
                 ->groupBy('date')
                 ->pluck('count', 'date')
                 ->toArray();
-                
+
             // Build timeline data
             $currentDate = $startDate->copy();
             while ($currentDate <= $endDate) {
@@ -215,7 +215,7 @@ class EmailCampaignController extends Controller
                 $currentDate->addDay();
             }
         }
-        
+
         // Get device and platform data
         $devices = $emailCampaign->recipients()
             ->select('device_type', DB::raw('count(*) as count'))
@@ -223,14 +223,14 @@ class EmailCampaignController extends Controller
             ->groupBy('device_type')
             ->pluck('count', 'device_type')
             ->toArray();
-            
+
         $platforms = $emailCampaign->recipients()
             ->select('platform', DB::raw('count(*) as count'))
             ->whereNotNull('platform')
             ->groupBy('platform')
             ->pluck('count', 'platform')
             ->toArray();
-        
+
         // Get top links clicked
         $topLinks = $emailCampaign->recipients()
             ->select('clicked_links')
@@ -250,7 +250,7 @@ class EmailCampaignController extends Controller
             ->sortByDesc('clicks')
             ->take(5)
             ->values();
-        
+
         // Get recent activity
         $recentActivity = $emailCampaign->recipients()
             ->with('client')
@@ -282,7 +282,7 @@ class EmailCampaignController extends Controller
                     ] : null
                 ];
             });
-        
+
         return view('email-campaigns.show', [
             'campaign' => $emailCampaign,
             'stats' => $stats,
@@ -315,7 +315,7 @@ class EmailCampaignController extends Controller
             default => collect(),
         };
     }
-    
+
     /**
      * Queue emails for sending.
      *
@@ -347,7 +347,7 @@ class EmailCampaignController extends Controller
                 'status' => 'sending',
                 'sent_at' => now()
             ]);
-            
+
             return redirect()->back()->with('success', 'Campaign is being sent to recipients.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to send campaign: ' . $e->getMessage());
@@ -367,10 +367,10 @@ class EmailCampaignController extends Controller
         }
 
         $campaign->update(['status' => 'cancelled']);
-        
+
         // Here you would also want to cancel any queued jobs for this campaign
         // This would depend on your queue implementation
-        
+
         return redirect()->back()->with('success', 'Campaign has been canceled.');
     }
 
@@ -401,7 +401,7 @@ class EmailCampaignController extends Controller
             $newRecipient->save();
         });
 
-        return redirect()->route('email-campaigns.edit', $newCampaign)
+        return redirect()->route('admin.email-campaigns.edit', $newCampaign)
             ->with('success', 'Campaign duplicated successfully. You can now edit the new campaign.');
     }
 

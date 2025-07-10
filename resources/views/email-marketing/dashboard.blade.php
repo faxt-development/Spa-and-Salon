@@ -115,7 +115,7 @@
                                 @forelse($recentCampaigns as $campaign)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <a href="{{ route('email-campaigns.show', $campaign) }}" class="text-indigo-600 hover:text-indigo-900">
+                                            <a href="{{ route('admin.email-campaigns.show', $campaign) }}" class="text-indigo-600 hover:text-indigo-900">
                                                 {{ $campaign->name }}
                                             </a>
                                         </td>
@@ -208,11 +208,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const dailyStats = @json($dailyStats);
-            
+
             const dates = dailyStats.map(item => item.date);
             const sentCounts = dailyStats.map(item => item.sent);
             const openedCounts = dailyStats.map(item => item.opened);
-            
+
             const options = {
                 chart: {
                     type: 'line',
@@ -274,7 +274,7 @@
                     horizontalAlign: 'right'
                 }
             };
-            
+
             const chart = new ApexCharts(document.querySelector("#performance-chart"), options);
             chart.render();
         });
