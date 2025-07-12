@@ -10,6 +10,13 @@
             <!-- Configurable Dashboard Area -->
             <x-dashboard.configurable-area />
             
+            @if(isset($isNewAdmin) && $isNewAdmin)
+            <!-- Onboarding Checklist Widget for New Admins -->
+            <div class="mt-6">
+                <x-dashboard.onboarding-checklist-widget />
+            </div>
+            @endif
+            
             <div class="border-t border-gray-200 my-6"></div>
             
             <!-- Original Dashboard Content -->

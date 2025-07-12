@@ -34,16 +34,12 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
         $deviceName = $request->userAgent() ?? 'Web Browser';
         $token = $user->createToken($deviceName)->plainTextToken;
-info('token: ' . $token);
+        
         // Store the token in the session for later use
         session(['api_token' => $token]);
-
-  // Generate a Sanctum token for the user
-  $deviceName = $request->userAgent() ?? 'Web Browser';
-  $token = $user->createToken($deviceName)->plainTextToken;
-
-  // Store the token in the session for later use
-  session(['api_token' => $token]);
+        
+        // Log the token for debugging
+        info('API token set in session: ' . substr($token, 0, 10) . '...');
 
   // Redirect based on role
   if ($user->hasRole('admin')) {

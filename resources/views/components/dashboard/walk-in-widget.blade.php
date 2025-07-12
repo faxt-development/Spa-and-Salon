@@ -73,25 +73,58 @@
                 this.isLoading = true;
                 this.error = null;
 
-                // Use the configured axios instance from the window object
-                const api = window.axios || axios;
-
+                // Add debugging to see exactly what's happening
+                console.log('Starting API request...');
+                
+                // Get the API token directly from the session - show the actual value for debugging
+                const apiToken = '{{ session()->get('api_token') }}';
+                console.log('API Token from session:', apiToken || 'Not present');
+                
                 // Get CSRF token from meta tag
                 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-
-                // Make the request with proper headers and credentials
-                api.get('/dashboard/walk-ins/queue-stats', {
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    withCredentials: true
+                console.log('CSRF Token from meta:', csrfToken ? 'Present (not shown for security)' : 'Not present');
+                
+                // Construct headers object
+                const headers = {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                };
+                
+                // Add CSRF token if available
+                if (csrfToken) {
+                    headers['X-CSRF-TOKEN'] = csrfToken;
+                }
+                
+                // Add Authorization header if API token is available
+                if (apiToken && apiToken.trim() !== '') {
+                    headers['Authorization'] = `Bearer ${apiToken}`;
+                    console.log('Authorization header set:', `Bearer ${apiToken.substring(0, 10)}...`);
+                } else {
+                    console.warn('No API token available for authorization');
+                }
+                
+                // Log the full headers for debugging
+                console.log('Request headers:', headers);
+                
+                // Use fetch with the constructed headers
+                fetch('/api/dashboard/walk-ins/queue-stats', {
+                    method: 'GET',
+                    headers: headers,
+                    credentials: 'same-origin'
                 })
                 .then(response => {
-                    if (response.data && typeof response.data === 'object') {
-                        this.waitingCount = response.data.waiting_count || 0;
-                        this.waitTimeFormatted = response.data.wait_time_formatted || '~0 min';
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API Response:', data);
+                    // With fetch, the response data is directly available (not in a data property like axios)
+                    if (data && typeof data === 'object') {
+                        this.waitingCount = data.waiting_count || 0;
+                        this.waitTimeFormatted = data.wait_time_formatted || '~0 min';
                     } else {
                         throw new Error('Invalid response format');
                     }

@@ -19,6 +19,7 @@ use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\GdprController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\Admin\OnboardingChecklistController;
 
 // Public routes
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -185,6 +186,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/todays-schedule', [\App\Http\Controllers\Admin\DashboardController::class, 'getTodaysSchedule'])->name('dashboard.todays-schedule');
     Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('dashboard.alerts');
+    
+    // Onboarding checklist route
+    Route::get('/onboarding-checklist', [OnboardingChecklistController::class, 'show'])->name('onboarding-checklist');
 
     // Appointments routes - using consolidated AppointmentController
     Route::prefix('appointments')->name('appointments.')->group(function () {

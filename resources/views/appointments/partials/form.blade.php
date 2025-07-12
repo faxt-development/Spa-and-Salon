@@ -1,44 +1,81 @@
-<form id="appointmentForm" method="POST" action="{{ route('appointments.store') }}" class="space-y-4" x-data="appointmentForm()">
+<form id="appointmentForm" method="POST" action="{{ $formAction ?? route('appointments.store') }}" class="space-y-4" x-data="appointmentForm({{ json_encode([
+    'isAdmin' => $isAdmin ?? false,
+    'clientId' => $client->id ?? null,
+    'clientName' => $client->full_name ?? auth()->user()->name,
+    'clientEmail' => $client->email ?? auth()->user()->email,
+    'clientPhone' => $client->phone ?? old('client_phone'),
+    'selectedServices' => old('service_ids', $selectedServices ?? []),
+    'startTime' => old('start_time', $appointment->start_time->format('H:i') ?? '09:00'),
+    'endTime' => old('end_time', $appointment->end_time->format('H:i') ?? '10:00')
+]) }})">
     @csrf
+    @if(isset($appointment) && $appointment->id)
+        @method('PUT')
+    @endif
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Client Information -->
         <div class="space-y-4">
             <h4 class="text-md font-medium">Client Information</h4>
 
-            <div>
+            @if($isAdmin ?? false)
+                <div>
+                    <label for="client_id" class="block text-sm font-medium text-gray-700 mb-1">Select Existing Client</label>
+                    <select id="client_id" name="client_id" x-model="clientId" @change="updateClientInfo()" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                        <option value="">-- Select Client --</option>
+                        @foreach($clients ?? [] as $client)
+                            <option value="{{ $client->id }}" data-email="{{ $client->email }}" data-phone="{{ $client->phone }}">
+                                {{ $client->full_name }} ({{ $client->email }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="border-t border-gray-200 pt-4">
+                    <div class="flex items-center">
+                        <input id="new_client" name="new_client" type="checkbox" x-model="isNewClient" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="new_client" class="ml-2 block text-sm text-gray-900">
+                            Create New Client
+                        </label>
+                    </div>
+                </div>
+            @endif
+
+            <div x-show="!isAdmin || isNewClient">
                 <label for="client_name" class="block text-sm font-medium text-gray-700 mb-1">Client Name</label>
                 <input type="text"
                     id="client_name"
                     name="client_name"
                     x-model="formData.client_name"
-                    value="{{ auth()->user()->name }}"
-                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md"
-                    placeholder="Enter client name">
+                    :readonly="!isNewClient && isAdmin"
+                    class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+                    placeholder="Enter client name"
+                    required>
             </div>
 
-            <div>
+            <div x-show="!isAdmin || isNewClient">
                 <label for="client_email" class="block text-sm font-medium text-gray-700">Email</label>
                 <input type="email"
                     name="client_email"
                     id="client_email"
                     x-model="formData.client_email"
-                    value="{{ auth()->user()->email }}"
+                    :readonly="!isNewClient && isAdmin"
                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md"
-                    placeholder="Enter client email (optional)">
+                    placeholder="Enter client email"
+                    :required="!isAdmin || isNewClient">
             </div>
 
-            <div>
+            <div x-show="!isAdmin || isNewClient">
                 <label for="client_phone" class="block text-sm font-medium text-gray-700">Phone</label>
                 <input type="tel"
                     name="client_phone"
                     id="client_phone"
                     x-model="formData.client_phone"
-                    value="{{ old('client_phone') }}"
+                    :readonly="!isNewClient && isAdmin"
                     class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md"
                     placeholder="Enter client phone"
-                    required
-                    pattern="[0-9\-\+\(\)\s]+">
+                    pattern="[0-9\-\+\(\)\s]+"
+                    :required="!isAdmin || isNewClient">
             </div>
         </div>
 
@@ -62,7 +99,7 @@
 
             <div>
                 <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
-                <input type="date" name="date" id="date" value="{{ old('date', request('date', date('Y-m-d'))) }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md datepicker">
+                <input type="date" name="date" id="date" value="{{ old('date', $appointment->start_time->format('Y-m-d') ?? request('date', date('Y-m-d'))) }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md datepicker">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
@@ -82,7 +119,7 @@
                 <select id="staff_id" name="staff_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                     <option value="">-- Select Staff --</option>
                     @foreach($staff as $staffMember)
-                        <option value="{{ $staffMember->id }}" {{ old('staff_id') == $staffMember->id ? 'selected' : '' }}>
+                        <option value="{{ $staffMember->id }}" {{ (old('staff_id', $appointment->staff_id ?? '') == $staffMember->id) ? 'selected' : '' }}>
                             {{ $staffMember->full_name }}
                         </option>
                     @endforeach
@@ -91,7 +128,7 @@
 
             <div>
                 <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
-                <textarea id="notes" name="notes" rows="2" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md">{{ old('notes') }}</textarea>
+                <textarea id="notes" name="notes" rows="2" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md">{{ old('notes', $appointment->notes ?? '') }}</textarea>
             </div>
         </div>
     </div>
@@ -114,19 +151,25 @@
 
     <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.data('appointmentForm', () => ({
+        Alpine.data('appointmentForm', (config = {}) => ({
+            // Form configuration
+            isAdmin: config.isAdmin || false,
+            isNewClient: false,
+            clientId: config.clientId || null,
+            
             // Form data model
             formData: {
-                client_name: '{{ auth()->user()->name }}',
-                client_email: '{{ auth()->user()->email }}',
-                client_phone: '{{ old('client_phone') }}',
+                client_name: config.clientName || '',
+                client_email: config.clientEmail || '',
+                client_phone: config.clientPhone || '',
                 start_time: '',
                 end_time: ''
             },
+            
             // Initialize selectedServices as an array
-            selectedServices: {{ json_encode(old('service_ids', [])) }},
-            startTime: '{{ old('start_time', '09:00') }}',
-            endTime: '{{ old('end_time', '10:00') }}',
+            selectedServices: config.selectedServices || [],
+            startTime: config.startTime || '09:00',
+            endTime: config.endTime || '10:00',
             totalDuration: 0,
             totalPrice: 0,
 
@@ -161,14 +204,13 @@
                     });
                 }
 
-                // Debug: Log initial state
-                console.log('Appointment form initialized', {
-                    startTime: this.startTime,
-                    endTime: this.endTime,
-                    selectedServices: this.selectedServices,
-                    totalDuration: this.totalDuration,
-                    totalPrice: this.totalPrice
-                });
+                // If admin and client is selected, update form fields
+                if (this.isAdmin && this.clientId) {
+                    this.updateClientInfo();
+                }
+                
+                // Set initial end time based on services
+                this.updateEndTime();
             },
 
             initTimePickers() {
@@ -224,6 +266,25 @@
                 }
             },
 
+            // Update client info when selected from dropdown (admin only)
+            updateClientInfo() {
+                if (!this.isAdmin) return;
+                
+                const clientSelect = document.getElementById('client_id');
+                if (!clientSelect) return;
+                
+                const selectedOption = clientSelect.options[clientSelect.selectedIndex];
+                if (selectedOption && selectedOption.value) {
+                    this.formData.client_name = selectedOption.text.split(' (')[0];
+                    this.formData.client_email = selectedOption.dataset.email || '';
+                    this.formData.client_phone = selectedOption.dataset.phone || '';
+                } else {
+                    this.formData.client_name = '';
+                    this.formData.client_email = '';
+                    this.formData.client_phone = '';
+                }
+            },
+            
             updateTotals() {
                 this.totalDuration = 0;
                 this.totalPrice = 0;

@@ -13,13 +13,29 @@ class DashboardController extends Controller
     /**
      * Show the admin dashboard.
      *
-     * @return \Inertia\Response
+     * @return \Illuminate\View\View
      */
     public function index()
     {
+        $user = auth()->user();
+        $isNewAdmin = $this->isNewAdmin($user);
+        
         return view('admin.dashboard', [
-            'title' => 'Admin Dashboard'
+            'title' => 'Admin Dashboard',
+            'isNewAdmin' => $isNewAdmin
         ]);
+    }
+    
+    /**
+     * Check if the user is a new admin (registered within the last 14 days)
+     *
+     * @param \App\Models\User $user
+     * @return bool
+     */
+    private function isNewAdmin($user)
+    {
+        // Consider an admin as new if they registered within the last 14 days
+        return $user && $user->hasRole('admin') && $user->created_at->diffInDays(now()) <= 14;
     }
 
     /**

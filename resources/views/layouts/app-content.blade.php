@@ -31,6 +31,11 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+        <!-- API Token for AJAX Requests -->
+        <script>
+            window.apiToken = '{{ session()->get('api_token') }}';
+        </script>
+
         <!-- Scripts -->
     @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.js'])
