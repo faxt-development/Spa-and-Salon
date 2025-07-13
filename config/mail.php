@@ -50,6 +50,12 @@ return [
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
             'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+            'options' => [
+                'ConfigurationSetName' => env('SES_CONFIGURATION_SET'),
+                'EmailTags' => [
+                    ['Name' => 'sender', 'Value' => 'faxtina-app']
+                ],
+            ],
         ],
 
         'mailgun' => [
@@ -88,7 +94,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'info@faxt.com'),
-        'name' => env('MAIL_FROM_NAME', 'Faxt Support'),
+        'name' => env('MAIL_FROM_NAME', 'faxt Support'),
     ],
 
     /*

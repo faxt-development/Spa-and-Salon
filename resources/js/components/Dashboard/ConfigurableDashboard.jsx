@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from 'react';
+// Import regular axios for type definitions, but we'll use the global instance
 import axios from 'axios';
 
-// Configure axios defaults
-axios.defaults.withCredentials = true;
-axios.defaults.withXSRFToken = true;
-
-// Create an axios instance with default config
-const api = axios.create({
-    baseURL: '/api',
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-    },
-    withCredentials: true
-});
+// Use the global axios instance configured in bootstrap.js
+// bootstrap.js sets this up as window.axios
+const api = window.axios;
 import {
   Box,
   Typography,
