@@ -37,7 +37,7 @@
                             <label for="company_name" class="col-md-4 col-form-label text-md-right">{{ __('Business Name') }}</label>
 
                             <div class="col-md-6">
-                                <input id="company_name" type="text" class="form-control @error('company_name') is-invalid @enderror" name="company_name" value="{{ old('company_name') }}" required autocomplete="company_name" autofocus>
+                                <input id="company_name" type="text" class="form-control @error('company_name') is-invalid @enderror" name="company_name" value="{{ old('company_name') }}" required autocomplete="organization" autofocus>
 
                                 @error('company_name')
                                     <span class="invalid-feedback" role="alert">
@@ -51,7 +51,7 @@
                             <label for="address" class="col-md-4 col-form-label text-md-right">{{ __('Address') }}</label>
 
                             <div class="col-md-6">
-                                <input id="address" type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" required autocomplete="address">
+                                <input id="address" type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address') }}" required autocomplete="street-address">
 
                                 @error('address')
                                     <span class="invalid-feedback" role="alert">
@@ -65,7 +65,7 @@
                             <label for="city" class="col-md-4 col-form-label text-md-right">{{ __('City') }}</label>
 
                             <div class="col-md-6">
-                                <input id="city" type="text" class="form-control @error('city') is-invalid @enderror" name="city" value="{{ old('city') }}" required autocomplete="city">
+                                <input id="city" type="text" class="form-control @error('city') is-invalid @enderror" name="city" value="{{ old('city') }}" required autocomplete="address-level2">
 
                                 @error('city')
                                     <span class="invalid-feedback" role="alert">
@@ -79,7 +79,7 @@
                             <label for="state" class="col-md-4 col-form-label text-md-right">{{ __('State/Province') }}</label>
 
                             <div class="col-md-6">
-                                <input id="state" type="text" class="form-control @error('state') is-invalid @enderror" name="state" value="{{ old('state') }}" required autocomplete="state">
+                                <input id="state" type="text" class="form-control @error('state') is-invalid @enderror" name="state" value="{{ old('state') }}" required autocomplete="address-level1">
 
                                 @error('state')
                                     <span class="invalid-feedback" role="alert">
@@ -93,7 +93,7 @@
                             <label for="zip" class="col-md-4 col-form-label text-md-right">{{ __('ZIP/Postal Code') }}</label>
 
                             <div class="col-md-6">
-                                <input id="zip" type="text" class="form-control @error('zip') is-invalid @enderror" name="zip" value="{{ old('zip') }}" required autocomplete="zip">
+                                <input id="zip" type="text" class="form-control @error('zip') is-invalid @enderror" name="zip" value="{{ old('zip') }}" required autocomplete="postal-code">
 
                                 @error('zip')
                                     <span class="invalid-feedback" role="alert">
@@ -107,7 +107,7 @@
                             <label for="phone" class="col-md-4 col-form-label text-md-right">{{ __('Phone Number') }}</label>
 
                             <div class="col-md-6">
-                                <input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" required autocomplete="phone">
+                                <input id="phone" type="text" class="form-control @error('phone') is-invalid @enderror" name="phone" value="{{ old('phone') }}" required autocomplete="tel">
 
                                 @error('phone')
                                     <span class="invalid-feedback" role="alert">
@@ -121,7 +121,7 @@
                             <label for="website" class="col-md-4 col-form-label text-md-right">{{ __('Website (Optional)') }}</label>
 
                             <div class="col-md-6">
-                                <input id="website" type="url" class="form-control @error('website') is-invalid @enderror" name="website" value="{{ old('website') }}" autocomplete="website">
+                                <input id="website" type="url" class="form-control @error('website') is-invalid @enderror" name="website" value="{{ old('website') }}" autocomplete="url">
 
                                 @error('website')
                                     <span class="invalid-feedback" role="alert">

@@ -31,11 +31,15 @@ class CheckOnboardingStatus
         $user = Auth::user();
 
         // Only apply onboarding logic to admin users with active subscriptions
-        if ($user->hasRole('admin') && $user->hasActiveSubscription()) {
+        $hasAdminRole = $user->hasRole('admin');
+        $hasActiveSubscription = $user->hasActiveSubscription();
+
+        if ($hasAdminRole && $hasActiveSubscription) {
             // If admin has not completed onboarding
             if (!$user->onboarding_completed) {
                 // If not already on an onboarding route, redirect to onboarding
                 if (!$request->routeIs('onboarding.*') && !$request->routeIs('logout')) {
+                    \Illuminate\Support\Facades\Log::info('Redirecting to onboarding', ['user_id' => $user->id]);
                     return redirect()->route('onboarding.start');
                 }
             } else {

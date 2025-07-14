@@ -276,11 +276,15 @@ class StripeWebhookController extends Controller
                     'stripe_price' => $priceId,
                     'quantity' => 1,
                     'trial_ends_at' => $trialEndsAt,
-                    'status' => 'active',
+                    'status' => 'active', // Ensure this is set to active
                     'billing_cycle' => $plan->billing_cycle,
                     'next_billing_date' => $nextBillingDate,
+                    'ends_at' => null, // Ensure ends_at is null for active subscriptions
                 ]
             );
+            
+            // Force refresh the user's relationship with subscriptions
+            $user->load('subscriptions');
 
             Log::info('Created/updated subscription record', ['subscription_id' => $subscription->id]);
 

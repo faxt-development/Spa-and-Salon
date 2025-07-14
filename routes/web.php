@@ -1,25 +1,25 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PosController;
-use App\Http\Controllers\InventoryController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GiftCardWebController;
+use App\Http\Controllers\Admin\OnboardingChecklistController;
 use App\Http\Controllers\Inventory\CategoryController;
 use App\Http\Controllers\Inventory\ProductController;
-use App\Http\Controllers\PromotionController;
-use App\Http\Controllers\EmailCampaignController;
-use App\Http\Controllers\EmailTrackingController;
-use App\Http\Controllers\EmailMarketingDashboardController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DripCampaignController;
-use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\EmailCampaignController;
+use App\Http\Controllers\EmailMarketingDashboardController;
+use App\Http\Controllers\EmailTrackingController;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\GdprController;
+use App\Http\Controllers\GiftCardWebController;
+use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\GdprController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\Admin\OnboardingChecklistController;
+use App\Http\Controllers\PosController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PromotionController;
+use App\Http\Controllers\ServiceController;
+use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::get('/', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
@@ -40,7 +40,7 @@ Route::get('/theme-test', function () {
 Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index'])->name('pricing');
 
 // Success page after checkout
-Route::get('/success', function() {
+Route::get('/success', function () {
     return view('success');
 })->name('success');
 
@@ -63,7 +63,7 @@ Route::get('/gdpr', [GdprController::class, 'index'])->name('gdpr');
 Route::get('/press', [PageController::class, 'press'])->name('press');
 
 // Onboarding routes - require authentication and check onboarding status
-Route::middleware(['auth:web', 'check.onboarding'])
+Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class])
     ->prefix('onboarding')
     ->name('onboarding.')
     ->group(function () {
@@ -77,7 +77,7 @@ Route::middleware(['auth:web', 'check.onboarding'])
     });
 
 // Test route for simulating onboarding (PROTECTED - DEVELOPMENT ONLY)
-Route::middleware(['auth:web'])->get('/test-onboarding', function() {
+Route::middleware(['auth:web'])->get('/test-onboarding', function () {
     // Simulate a session ID from Stripe
     $sessionId = 'test_session_' . time();
 
@@ -137,7 +137,6 @@ Route::middleware(['auth:web'])->get('/test-onboarding', function() {
     return redirect()->route('onboarding.start', ['session_id' => $sessionId]);
 })->name('test-onboarding');
 
-
 Route::get('/services', [ServiceController::class, 'index'])->name('services');
 
 // Gift card routes
@@ -183,10 +182,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
         Route::get('tax', [\App\Http\Controllers\Admin\ReportController::class, 'tax'])
             ->name('tax');
     });
+    Route::middleware([ \App\Http\Middleware\CheckOnboardingStatus::class])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/todays-schedule', [\App\Http\Controllers\Admin\DashboardController::class, 'getTodaysSchedule'])->name('dashboard.todays-schedule');
     Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('dashboard.alerts');
-    
+    });
+
     // Onboarding checklist route
     Route::get('/onboarding-checklist', [OnboardingChecklistController::class, 'show'])->name('onboarding-checklist');
 
@@ -200,7 +201,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
     });
 });
 
-Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class])->group(function () {
+Route::middleware(['auth:web'])->group(function () {
     // Common authenticated user routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -246,40 +247,37 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
             Route::get('/reports/tax', [\App\Http\Controllers\Admin\ReportController::class, 'tax'])->name('reports.tax');
         });
 
-
         Route::get('/reports/sales', [\App\Http\Controllers\Admin\ReportController::class, 'sales'])->name('reports.sales');
         Route::get('/reports/payment-methods', [\App\Http\Controllers\Admin\ReportController::class, 'paymentMethods'])->name('reports.payment-methods');
 
+        // Email Campaign Routes
+        Route::resource('email-campaigns', EmailCampaignController::class);
 
-          // Email Campaign Routes
-    Route::resource('email-campaigns', EmailCampaignController::class);
+        // Email Campaign Actions
+        Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
+            Route::post('/{campaign}/send', [EmailCampaignController::class, 'send'])->name('send');
+            Route::post('/{campaign}/cancel', [EmailCampaignController::class, 'cancel'])->name('cancel');
+            Route::post('/{campaign}/duplicate', [EmailCampaignController::class, 'duplicate'])->name('duplicate');
+        });
 
-    // Email Campaign Actions
-    Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
-        Route::post('/{campaign}/send', [EmailCampaignController::class, 'send'])->name('send');
-        Route::post('/{campaign}/cancel', [EmailCampaignController::class, 'cancel'])->name('cancel');
-        Route::post('/{campaign}/duplicate', [EmailCampaignController::class, 'duplicate'])->name('duplicate');
+        // Email Campaign Additional Actions
+        Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
+            Route::get('/{emailCampaign}/preview', [EmailCampaignController::class, 'preview'])->name('preview');
+            Route::get('/{emailCampaign}/export', [EmailCampaignController::class, 'export'])->name('export');
+        });
+
+        // Email Tracking Routes (public routes that don't require authentication)
+        Route::prefix('email')->name('email.')->group(function () {
+            Route::get('/track/open/{token}.gif', [EmailTrackingController::class, 'trackOpen'])->name('track.open');
+            Route::get('/track/click/{token}/{url}', [EmailTrackingController::class, 'trackClick'])->name('track.click');
+            Route::get('/unsubscribe/{token}', [EmailTrackingController::class, 'unsubscribe'])->name('unsubscribe');
+            Route::post('/resubscribe/{token}', [EmailTrackingController::class, 'resubscribe'])->name('resubscribe');
+            Route::get('/preferences/{token}', [EmailTrackingController::class, 'preferences'])->name('preferences');
+            Route::post('/preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])->name('preferences.update');
+        });
     });
 
-    // Email Campaign Additional Actions
-    Route::prefix('email-campaigns')->name('email-campaigns.')->group(function () {
-        Route::get('/{emailCampaign}/preview', [EmailCampaignController::class, 'preview'])->name('preview');
-        Route::get('/{emailCampaign}/export', [EmailCampaignController::class, 'export'])->name('export');
-    });
-
-    // Email Tracking Routes (public routes that don't require authentication)
-    Route::prefix('email')->name('email.')->group(function () {
-        Route::get('/track/open/{token}.gif', [EmailTrackingController::class, 'trackOpen'])->name('track.open');
-        Route::get('/track/click/{token}/{url}', [EmailTrackingController::class, 'trackClick'])->name('track.click');
-        Route::get('/unsubscribe/{token}', [EmailTrackingController::class, 'unsubscribe'])->name('unsubscribe');
-        Route::post('/resubscribe/{token}', [EmailTrackingController::class, 'resubscribe'])->name('resubscribe');
-        Route::get('/preferences/{token}', [EmailTrackingController::class, 'preferences'])->name('preferences');
-        Route::post('/preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])->name('preferences.update');
-    });
-
-    });
-
-        // POS Routes
+    // POS Routes
     Route::prefix('pos')->name('pos.')->group(function () {
         Route::get('/', [PosController::class, 'index'])->name('index');
         Route::get('/receipt/{order}', [PosController::class, 'receipt'])->name('receipt');
@@ -289,7 +287,7 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
         Route::get('/products', [PosController::class, 'getProducts']);
         Route::post('/process-payment', [PosController::class, 'processPayment'])->name('process-payment');
         Route::get('/gift-cards/purchase', [GiftCardWebController::class, 'purchaseForm'])->name('gift-cards.purchase');
-      });
+    });
 
     // Inventory Management Routes
     Route::middleware(['auth:web', 'role:admin|staff'])->prefix('inventory')->name('inventory.')->group(function () {
@@ -299,7 +297,7 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
         // Product resource routes
         Route::resource('products', InventoryController::class)->except(['index', 'show']);
         Route::get('/products/index', [ProductController::class, 'index'])
-                    ->name('products.index');
+            ->name('products.index');
 
         // Product details and actions
         Route::get('products/{product}/details', [InventoryController::class, 'show'])->name('products.details');
@@ -323,13 +321,12 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
             ->name('categories.products.count');
 
         // Suppliers management
-       // Route::resource('suppliers', 'App\Http\Controllers\SupplierController')->except(['show']);
+        // Route::resource('suppliers', 'App\Http\Controllers\SupplierController')->except(['show']);
     });
 
     // Appointments routes for both admin and staff
     Route::name('web.')->group(function () {
-        Route::resource('appointments', 'App\Http\Controllers\AppointmentController')
-            ;
+        Route::resource('appointments', 'App\Http\Controllers\AppointmentController');
     });
 
     Route::middleware(['auth:web', 'role:admin'])->group(function () {
@@ -343,31 +340,31 @@ Route::middleware(['auth:web', \App\Http\Middleware\CheckOnboardingStatus::class
         // Email Marketing Dashboard
         Route::get('/email-marketing/dashboard', [EmailMarketingDashboardController::class, 'index'])->name('email-marketing.dashboard');
 
-    // Drip Campaign Routes
-    Route::resource('drip-campaigns', DripCampaignController::class);
+        // Drip Campaign Routes
+        Route::resource('drip-campaigns', DripCampaignController::class);
 
-    // Test Export Page
-    Route::get('/test-export', function () {
-        return view('test-export');
-    })->middleware('auth');
+        // Test Export Page
+        Route::get('/test-export', function () {
+            return view('test-export');
+        })->middleware('auth');
 
-    // Export Routes
-    Route::prefix('export')->name('export.')->middleware(['auth', 'admin'])->group(function () {
-        // Excel Exports
-        Route::get('excel/{type}', [ExportController::class, 'exportExcel'])
-            ->name('excel')
-            ->where('type', 'appointments|services|orders');
+        // Export Routes
+        Route::prefix('export')->name('export.')->middleware(['auth', 'admin'])->group(function () {
+            // Excel Exports
+            Route::get('excel/{type}', [ExportController::class, 'exportExcel'])
+                ->name('excel')
+                ->where('type', 'appointments|services|orders');
 
-        // PDF Exports
-        Route::get('pdf/{type}', [ExportController::class, 'exportPdf'])
-            ->name('pdf')
-            ->where('type', 'appointments|services|orders');
+            // PDF Exports
+            Route::get('pdf/{type}', [ExportController::class, 'exportPdf'])
+                ->name('pdf')
+                ->where('type', 'appointments|services|orders');
 
-        // Preview PDF (for testing)
-        Route::get('preview/{type}', function ($type) {
-            return app(ExportController::class)->exportPdf(request(), $type);
-        })->name('preview')->where('type', 'appointments|services|orders');
-    });
+            // Preview PDF (for testing)
+            Route::get('preview/{type}', function ($type) {
+                return app(ExportController::class)->exportPdf(request(), $type);
+            })->name('preview')->where('type', 'appointments|services|orders');
+        });
 
         Route::resource('promotions', PromotionController::class);
 
@@ -404,31 +401,28 @@ Route::namespace('App\Http\Controllers\Auth')->group(function () {
 
     // Email Verification Routes...
     Route::get('email/verify', 'EmailVerificationPromptController@__invoke')
-                ->middleware('auth:web')
-                ->name('verification.notice');
+        ->middleware('auth:web')
+        ->name('verification.notice');
 
     Route::get('email/verify/{id}/{hash}', 'VerifyEmailController@__invoke')
-                ->middleware(['auth:web', 'signed', 'throttle:6,1'])
-                ->name('verification.verify');
+        ->middleware(['auth:web', 'signed', 'throttle:6,1'])
+        ->name('verification.verify');
 
     Route::post('email/verification-notification', 'EmailVerificationNotificationController@store')
-                ->middleware(['auth:web', 'throttle:6,1'])
-                ->name('verification.send');
+        ->middleware(['auth:web', 'throttle:6,1'])
+        ->name('verification.send');
 
     // Confirm Password...
     Route::get('confirm-password', 'ConfirmablePasswordController@show')
-                ->middleware('auth:web')
-                ->name('password.confirm');
+        ->middleware('auth:web')
+        ->name('password.confirm');
 
     Route::post('confirm-password', 'ConfirmablePasswordController@store')
-                ->middleware('auth:web');
+        ->middleware('auth:web');
 });
 
 // Protected Routes
 Route::middleware(['auth:web', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
 
     // Payroll Management Routes
     Route::middleware(['auth:sanctum', 'verified'])->prefix('payroll')->name('payroll.')->group(function () {

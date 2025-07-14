@@ -23,8 +23,14 @@ class OnboardingController extends Controller
     {
         $user = null;
 
-        // Store session ID if provided
-        if ($request->has('session_id')) {
+        // If user is already authenticated, use that user first
+        if (Auth::check()) {
+            $user = Auth::user();
+            session(['onboarding_user_id' => $user->id]);
+        }
+
+        // If not authenticated or we want to override with session data
+        if ($request->has('session_id') && !$user) {
             $sessionId = $request->session_id;
             session(['stripe_session_id' => $sessionId]);
 
@@ -54,12 +60,6 @@ class OnboardingController extends Controller
             }
         }
 
-        // If user is already authenticated, use that user
-        if (Auth::check() && !$user) {
-            $user = Auth::user();
-            session(['onboarding_user_id' => $user->id]);
-        }
-
         return view('onboarding.start', [
             'user' => $user
         ]);
@@ -74,10 +74,19 @@ class OnboardingController extends Controller
     public function showUserForm(Request $request)
     {
         $user = null;
-        $sessionId = session('stripe_session_id');
 
-        // Try to find user from session ID
-        if ($sessionId) {
+        // If user is already authenticated, use that user first
+        if (Auth::check()) {
+            $user = Auth::user();
+            session(['onboarding_user_id' => $user->id]);
+            Log::info('Using authenticated user for onboarding user form', [
+                'user_id' => $user->id,
+                'email' => $user->email
+            ]);
+        } else {
+            // Try to find user from session data if not authenticated
+            $sessionId = session('stripe_session_id');
+
             // First check if we have a user ID stored in the session
             if (session()->has('onboarding_user_id')) {
                 $user = User::find(session('onboarding_user_id'));

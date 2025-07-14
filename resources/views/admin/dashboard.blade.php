@@ -7,15 +7,15 @@
 
     <div class="py-6" x-data="dashboard">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Configurable Dashboard Area -->
-            <x-dashboard.configurable-area />
-            
             @if(isset($isNewAdmin) && $isNewAdmin)
-            <!-- Onboarding Checklist Widget for New Admins -->
-            <div class="mt-6">
+            <!-- Onboarding Checklist Widget for New Admins - Positioned First -->
+            <div class="mb-6">
                 <x-dashboard.onboarding-checklist-widget />
             </div>
             @endif
+            
+            <!-- Configurable Dashboard Area -->
+            <x-dashboard.configurable-area />
             
             <div class="border-t border-gray-200 my-6"></div>
             
