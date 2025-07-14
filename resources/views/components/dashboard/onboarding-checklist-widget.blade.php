@@ -32,7 +32,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <p class="ml-3 text-sm text-gray-500">Add staff members</p>
+                <a href="{{ route('admin.staff.index') }}" class="ml-3 text-sm text-blue-600 hover:text-blue-800 hover:underline">Add staff members</a>
             </div>
             <div class="flex items-start">
                 <div class="flex-shrink-0 h-5 w-5 relative mt-1">

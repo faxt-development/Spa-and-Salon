@@ -219,7 +219,8 @@ Route::middleware(['auth:web'])->group(function () {
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
 
-        // Staff Management Routes
+        // Staff Management Routes, important order here
+        Route::get('/staff/add-admin-as-staff', [App\Http\Controllers\StaffController::class, 'addAdminAsStaff'])->name('staff.add-admin');
         Route::resource('staff', 'App\Http\Controllers\StaffController');
         Route::get('/roles-permissions', [App\Http\Controllers\StaffController::class, 'rolesAndPermissions'])->name('staff.roles');
         Route::post('/roles', [App\Http\Controllers\StaffController::class, 'storeRole'])->name('staff.roles.store');

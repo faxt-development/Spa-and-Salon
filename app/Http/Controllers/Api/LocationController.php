@@ -16,7 +16,7 @@ class LocationController extends Controller
      */
     public function index(): JsonResponse
     {
-        $locations = Location::active()->orderBy('name')->get();
+        $locations = Location::getActive();
         
         return response()->json([
             'data' => $locations->map(function ($location) {
