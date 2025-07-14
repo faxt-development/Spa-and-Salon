@@ -21,10 +21,10 @@ class TestCompanySeeder extends Seeder
         if (!Role::where('name', 'admin')->exists()) {
             Role::create(['name' => 'admin']);
         }
-        
+
         // Create a test admin user
         $user = User::firstOrCreate(
-            ['email' => 'testadmin@example.com'],
+            ['email' => 'admin@example.com'],
             [
                 'name' => 'Test Admin',
                 'password' => Hash::make('password'),
@@ -32,15 +32,14 @@ class TestCompanySeeder extends Seeder
                 'onboarding_completed' => true,
             ]
         );
-        
+
         // Assign admin role
         $user->assignRole('admin');
-        
+
         // Create a test company with custom domain
         $company = Company::firstOrCreate(
             ['domain' => 'test-spa.localhost'],
             [
-                'user_id' => $user->id,
                 'name' => 'Test Spa & Salon',
                 'address' => '123 Test Street',
                 'city' => 'Test City',
@@ -105,7 +104,17 @@ class TestCompanySeeder extends Seeder
                 ]
             ]
         );
-        
+
+        // Associate the user with the company through the pivot table
+        $company->users()->syncWithoutDetaching([
+            $user->id => [
+                'is_primary' => true,
+                'role' => 'admin',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        ]);
+
         $this->command->info('Test company created with domain: test-spa.localhost');
         $this->command->info('Admin login: testadmin@example.com / password');
     }

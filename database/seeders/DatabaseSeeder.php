@@ -26,6 +26,9 @@ class DatabaseSeeder extends Seeder
             ServiceCategorySeeder::class,
             WalkInSeeder::class,
             ServiceSeeder::class,
+            // Create admin user and test company
+            TestCompanySeeder::class,
+            // Staff seeder depends on company seeder
             StaffSeeder::class,
             AppointmentSeeder::class,
             SettingsTableSeeder::class,
@@ -41,31 +44,14 @@ class DatabaseSeeder extends Seeder
             RevenueDataSeeder::class,
         ]);
 
-        // Create or get admin user
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Admin User',
-                'password' => Hash::make('password'),
-                'email_verified_at' => now(),
-                'onboarding_completed' => true, // Mark onboarding as completed
-            ]
-        );
-        
-        // Ensure admin role is assigned
-        if (!$admin->hasRole('admin')) {
-            $admin->assignRole('admin');
-        }
-        
-        // Ensure admin is associated with a company by running the TestCompanySeeder
-        $this->call([
-            TestCompanySeeder::class,
-        ]);
-        
-        // Update the test company to be owned by our admin user
-        $company = \App\Models\Company::where('domain', 'test-spa.localhost')->first();
-        if ($company) {
-            $company->update(['user_id' => $admin->id]);
+        // Note: Admin user and test company are now created by TestCompanySeeder
+        // which runs earlier in the seeding process to ensure proper order
+
+        // Get the admin user created by TestCompanySeeder
+        $admin = User::where('email', 'testadmin@example.com')->first();
+        if (!$admin) {
+            $this->command->warn('Admin user not found. Skipping subscription creation.');
+            return;
         }
 
         // Ensure admin has an active subscription to the first plan

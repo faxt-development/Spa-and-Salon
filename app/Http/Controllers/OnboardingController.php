@@ -79,10 +79,6 @@ class OnboardingController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
             session(['onboarding_user_id' => $user->id]);
-            Log::info('Using authenticated user for onboarding user form', [
-                'user_id' => $user->id,
-                'email' => $user->email
-            ]);
         } else {
             // Try to find user from session data if not authenticated
             $sessionId = session('stripe_session_id');
@@ -90,7 +86,6 @@ class OnboardingController extends Controller
             // First check if we have a user ID stored in the session
             if (session()->has('onboarding_user_id')) {
                 $user = User::find(session('onboarding_user_id'));
-                Log::info('Found user from session onboarding_user_id', ['user_id' => $user->id ?? null]);
             }
 
             // If no user found, try to find by email from Stripe session
@@ -244,10 +239,14 @@ class OnboardingController extends Controller
             'website' => 'nullable|url|max:255',
         ]);
 
-        // Create or update the company
-        $company = Company::updateOrCreate(
-            ['user_id' => Auth::id()],
-            [
+        // Find existing company for this user or create a new one
+        $user = Auth::user();
+        $existingCompany = $user->companies()->first();
+        
+        if ($existingCompany) {
+            // Update existing company
+            $company = $existingCompany;
+            $company->update([
                 'name' => $validated['company_name'],
                 'address' => $validated['address'],
                 'city' => $validated['city'],
@@ -255,8 +254,39 @@ class OnboardingController extends Controller
                 'zip' => $validated['zip'],
                 'phone' => $validated['phone'],
                 'website' => $validated['website'] ?? null,
-            ]
-        );
+            ]);
+        } else {
+            // Create new company
+            $company = Company::create([
+                'name' => $validated['company_name'],
+                'address' => $validated['address'],
+                'city' => $validated['city'],
+                'state' => $validated['state'],
+                'zip' => $validated['zip'],
+                'phone' => $validated['phone'],
+                'website' => $validated['website'] ?? null,
+            ]);
+        }
+        
+        // Get the authenticated user
+        $user = Auth::user();
+        
+        // Associate the user with the company using the pivot table
+        // First detach to avoid duplicates if re-running onboarding
+        $user->companies()->detach($company->id);
+        
+        // Then attach with the admin role and mark as primary
+        $user->companies()->attach($company->id, [
+            'is_primary' => true,
+            'role' => 'admin'
+        ]);
+        
+        Log::info('Associated user with company', [
+            'user_id' => $user->id,
+            'company_id' => $company->id,
+            'is_primary' => true,
+            'role' => 'admin'
+        ]);
 
         // Redirect to the feature tour
         return redirect()->route('onboarding.feature-tour');

@@ -104,11 +104,39 @@ class User extends Authenticatable
     }
     
     /**
-     * Get the company associated with the user.
+     * Get the companies associated with the user.
      */
-    public function company(): HasOne
+    public function companies()
     {
-        return $this->hasOne(Company::class);
+        return $this->belongsToMany(Company::class)
+            ->withPivot('is_primary', 'role')
+            ->withTimestamps();
+    }
+    
+    /**
+     * Get the primary company associated with the user.
+     */
+    public function primaryCompany()
+    {
+        return $this->belongsToMany(Company::class)
+            ->withPivot('is_primary', 'role')
+            ->wherePivot('is_primary', true)
+            ->first();
+    }
+    
+    /**
+     * Legacy method for backward compatibility.
+     * @deprecated Use primaryCompany() instead
+     */
+    public function company()
+    {
+        // For backward compatibility, we'll keep this method
+        // but it should be updated throughout the codebase
+        // Must return a relationship instance, not the result of a method call
+        return $this->belongsToMany(Company::class)
+            ->withPivot('is_primary', 'role')
+            ->wherePivot('is_primary', true)
+            ->withTimestamps();
     }
 
     /**

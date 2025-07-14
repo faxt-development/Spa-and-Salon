@@ -123,8 +123,17 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
-                                            {{ __('No staff members found.') }}
+                                        <td colspan="7" class="px-6 py-4 whitespace-nowrap text-center">
+                                            <div class="text-gray-500 mb-4">{{ __('No staff members found.') }}</div>
+                                            
+                                            @if(!$adminIsStaff)
+                                            <div class="flex flex-col items-center justify-center space-y-4">
+                                                <p class="text-sm text-gray-600">{{ __('Would you like to add yourself as a staff member?') }}</p>
+                                                <a href="{{ route('admin.staff.add-admin') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                                                    {{ __('Add Yourself as Staff') }}
+                                                </a>
+                                            </div>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforelse

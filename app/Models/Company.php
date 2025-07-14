@@ -15,7 +15,6 @@ class Company extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'user_id',
         'theme_id',
         'name',
         'address',
@@ -44,14 +43,39 @@ class Company extends Model
     ];
 
     /**
-     * Get the user that owns the company.
+     * Get all users associated with the company.
      */
+    public function users()
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('is_primary', 'role')
+            ->withTimestamps();
+    }
+    
     /**
-     * Get the user that owns the company.
+     * Get the primary admin user that owns the company.
+     */
+    public function owner()
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('is_primary', 'role')
+            ->wherePivot('is_primary', true)
+            ->wherePivot('role', 'admin')
+            ->first();
+    }
+    
+    /**
+     * Legacy method for backward compatibility.
+     * @deprecated Use owner() instead
      */
     public function user()
     {
-        return $this->belongsTo(User::class);
+        // For backward compatibility, we'll keep this method
+        // Must return a relationship instance, not the result of a method call
+        return $this->belongsToMany(User::class)
+            ->withPivot('is_primary', 'role')
+            ->wherePivot('role', 'admin')
+            ->withTimestamps();
     }
 
     /**

@@ -105,6 +105,14 @@ class Staff extends Model
     ];
 
     /**
+     * Get the company this staff member belongs to.
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
      * Get the user account associated with the staff member.
      */
     public function user(): BelongsTo

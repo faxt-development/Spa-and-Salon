@@ -22,6 +22,16 @@
 
                     <form action="{{ route('admin.staff.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
+                        
+                        @if(isset($prefill) && $prefill)
+                            <input type="hidden" name="user_id" value="{{ $prefill['user_id'] }}">
+                            <input type="hidden" name="is_admin" value="{{ $prefill['is_admin'] }}">
+                            
+                            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4" role="alert">
+                                <p class="font-bold">{{ __('Adding yourself as a staff member') }}</p>
+                                <p>{{ __('You are adding yourself as a staff member. Your account information has been pre-filled.') }}</p>
+                            </div>
+                        @endif
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Personal Information -->
@@ -30,28 +40,28 @@
 
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <x-input-label for="first_name" :value="__('First Name')" />
-                                        <x-text-input id="first_name" name="first_name" type="text" class="mt-1 block w-full" :value="old('first_name')" required autofocus />
+                                        <x-input-label for="first_name" :value="__('First Name')" :required="true" />
+                                        <x-text-input id="first_name" name="first_name" type="text" class="mt-1 block w-full" :value="old('first_name') ?? (isset($prefill) ? $prefill['first_name'] : '')" required autofocus />
                                     </div>
 
                                     <div>
-                                        <x-input-label for="last_name" :value="__('Last Name')" />
-                                        <x-text-input id="last_name" name="last_name" type="text" class="mt-1 block w-full" :value="old('last_name')" required />
+                                        <x-input-label for="last_name" :value="__('Last Name')" :required="true" />
+                                        <x-text-input id="last_name" name="last_name" type="text" class="mt-1 block w-full" :value="old('last_name') ?? (isset($prefill) ? $prefill['last_name'] : '')" required />
                                     </div>
                                 </div>
 
                                 <div class="mt-4">
-                                    <x-input-label for="email" :value="__('Email')" />
-                                    <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email')" required />
+                                    <x-input-label for="email" :value="__('Email')" :required="true" />
+                                    <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email') ?? (isset($prefill) ? $prefill['email'] : '')" required />
                                 </div>
 
                                 <div class="mt-4">
-                                    <x-input-label for="phone" :value="__('Phone')" />
+                                    <x-input-label for="phone" :value="__('Phone')" :required="true" />
                                     <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone')" required />
                                 </div>
 
                                 <div class="mt-4">
-                                    <x-input-label for="position" :value="__('Position')" />
+                                    <x-input-label for="position" :value="__('Position')" :required="true" />
                                     <x-text-input id="position" name="position" type="text" class="mt-1 block w-full" :value="old('position')" required />
                                 </div>
 
@@ -70,26 +80,38 @@
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Account Information') }}</h3>
 
+                                @if(!isset($prefill) || !$prefill)
                                 <div class="mt-4">
-                                    <x-input-label for="password" :value="__('Password')" />
+                                    <x-input-label for="password" :value="__('Password')" :required="true" />
                                     <x-text-input id="password" name="password" type="password" class="mt-1 block w-full" required />
                                 </div>
 
                                 <div class="mt-4">
-                                    <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+                                    <x-input-label for="password_confirmation" :value="__('Confirm Password')" :required="true" />
                                     <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" required />
                                 </div>
+                                @else
+                                <div class="mt-4 bg-gray-100 p-3 rounded">
+                                    <p class="text-sm text-gray-600">{{ __('Your existing account password will be used.') }}</p>
+                                </div>
+                                @endif
 
                                 <div class="mt-4">
-                                    <x-input-label for="role" :value="__('Role')" />
+                                    <x-input-label for="role" :value="__('Role')" :required="true" />
                                     <select id="role" name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                                         <option value="">{{ __('Select Role') }}</option>
                                         @foreach ($roles as $role)
-                                            <option value="{{ $role->id }}" {{ old('role') == $role->id ? 'selected' : '' }}>
+                                            <option value="{{ $role->id }}" 
+                                                {{ old('role') == $role->id ? 'selected' : '' }}
+                                                {{ (isset($prefill) && $prefill['is_admin'] && $role->name == 'admin') ? 'selected' : '' }}
+                                                {{ (isset($prefill) && $prefill['is_admin'] && !old('role') && $role->name == 'staff') ? 'selected' : '' }}>
                                                 {{ $role->display_name ?? $role->name }}
                                             </option>
                                         @endforeach
                                     </select>
+                                    @if(isset($prefill) && $prefill['is_admin'])
+                                        <p class="mt-1 text-sm text-gray-600">{{ __('As an admin, you can choose to be added as staff or admin role.') }}</p>
+                                    @endif
                                 </div>
 
                                 <div class="mt-4">
@@ -149,7 +171,7 @@
                                     <h4 class="text-md font-medium text-gray-900 mb-2">{{ __('Employee Information') }}</h4>
                                     
                                     <div class="mt-2">
-                                        <x-input-label for="hourly_rate" :value="__('Hourly Rate')" />
+                                        <x-input-label for="hourly_rate" :value="__('Hourly Rate')" :required="true" />
                                         <div class="mt-1 relative rounded-md shadow-sm">
                                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                 <span class="text-gray-500 sm:text-sm">$</span>

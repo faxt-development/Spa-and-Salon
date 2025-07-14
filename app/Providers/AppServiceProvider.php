@@ -31,8 +31,11 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view) {
             $companyName = config('app.name');
 
-            if (Auth::check() && Auth::user()->company) {
-                $companyName = Auth::user()->company->name ?: config('app.name');
+            if (Auth::check()) {
+                $primaryCompany = Auth::user()->primaryCompany();
+                if ($primaryCompany) {
+                    $companyName = $primaryCompany->name ?: config('app.name');
+                }
             }
 
             $view->with('companyName', $companyName);
