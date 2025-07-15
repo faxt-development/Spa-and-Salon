@@ -163,13 +163,20 @@
                                 <div id="employee-section" class="mt-4 p-4 bg-blue-50 rounded-lg" style="display: {{ $staff->employee ? 'block' : 'none' }}">
                                     <h4 class="text-md font-medium text-gray-900 mb-2">{{ __('Employee Information') }}</h4>
                                     
-                                    <div class="mt-2">
-                                        <x-input-label for="hourly_rate" :value="__('Hourly Rate')" />
-                                        <div class="mt-1 relative rounded-md shadow-sm">
-                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <span class="text-gray-500 sm:text-sm">$</span>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                        <div>
+                                            <x-input-label for="hire_date" :value="__('Hire Date')" :required="true" />
+                                            <x-text-input id="hire_date" name="employee[hire_date]" type="date" class="mt-1 block w-full" :value="old('employee.hire_date', $staff->employee && $staff->employee->hire_date ? $staff->employee->hire_date->format('Y-m-d') : date('Y-m-d'))" required />
+                                        </div>
+                                        
+                                        <div>
+                                            <x-input-label for="hourly_rate" :value="__('Hourly Rate')" />
+                                            <div class="mt-1 relative rounded-md shadow-sm">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                                </div>
+                                                <x-text-input id="hourly_rate" name="employee[hourly_rate]" type="number" step="0.01" min="0" class="pl-7 block w-full" :value="old('employee.hourly_rate', $staff->employee ? $staff->employee->hourly_rate : null)" />
                                             </div>
-                                            <x-text-input id="hourly_rate" name="employee[hourly_rate]" type="number" step="0.01" min="0" class="pl-7 block w-full" :value="old('employee.hourly_rate', $staff->employee ? $staff->employee->hourly_rate : null)" />
                                         </div>
                                     </div>
                                 </div>
@@ -181,31 +188,7 @@
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Qualifications & Notes') }}</h3>
-
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <x-input-label for="specialties" :value="__('Specialties')" />
-                                    <textarea id="specialties" name="specialties" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows="3" placeholder="Enter specialties, one per line">{{ old('specialties', is_array($staff->specialties) ? implode("\n", $staff->specialties) : $staff->specialties) }}</textarea>
-                                </div>
-
-                                <div>
-                                    <x-input-label for="certifications" :value="__('Certifications')" />
-                                    <textarea id="certifications" name="certifications" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows="3" placeholder="Enter certifications, one per line">{{ old('certifications', is_array($staff->certifications) ? implode("\n", $staff->certifications) : $staff->certifications) }}</textarea>
-                                </div>
-
-                                <div>
-                                    <x-input-label for="languages" :value="__('Languages')" />
-                                    <textarea id="languages" name="languages" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows="3" placeholder="Enter languages, one per line">{{ old('languages', is_array($staff->languages) ? implode("\n", $staff->languages) : $staff->languages) }}</textarea>
-                                </div>
-                            </div>
-
-                            <div class="mt-4">
-                                <x-input-label for="notes" :value="__('Notes')" />
-                                <textarea id="notes" name="notes" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows="3">{{ old('notes', $staff->notes) }}</textarea>
-                            </div>
-                        </div>
+                        <!-- Removed Qualifications & Notes section as these fields don't exist in the database -->
 
                         <div class="flex items-center justify-end">
                             <a href="{{ route('admin.staff.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-800 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150 mr-3">

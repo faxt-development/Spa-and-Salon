@@ -93,7 +93,7 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            @if ($member->is_active)
+                                            @if ($member->active)
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                                     {{ __('Active') }}
                                                 </span>
@@ -125,7 +125,7 @@
                                     <tr>
                                         <td colspan="7" class="px-6 py-4 whitespace-nowrap text-center">
                                             <div class="text-gray-500 mb-4">{{ __('No staff members found.') }}</div>
-                                            
+
                                             @if(!$adminIsStaff)
                                             <div class="flex flex-col items-center justify-center space-y-4">
                                                 <p class="text-sm text-gray-600">{{ __('Would you like to add yourself as a staff member?') }}</p>

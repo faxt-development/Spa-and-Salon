@@ -24,22 +24,22 @@ class StaffController extends Controller
         // Get the current admin's primary company
         $user = auth()->user();
         $company = $user->primaryCompany();
-        
+
         if (!$company) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'You need to set up your company before managing staff members.');
         }
-        
+
         // Get staff members belonging to the current company via user-company pivot
         $userIds = $company->users()->pluck('users.id');
         $staff = Staff::whereIn('user_id', $userIds)->with('user.roles')->get();
-        
+
         // Check if the current admin is already a staff member
         $adminIsStaff = Staff::where('user_id', $user->id)->exists();
-        
+
         // Check if there are no staff members yet
         $noStaff = $staff->isEmpty();
-        
+
         return view('admin.staff.index', compact('staff', 'noStaff', 'adminIsStaff', 'user'));
     }
 
@@ -53,15 +53,15 @@ class StaffController extends Controller
         // Get the current admin's primary company
         $user = auth()->user();
         $company = $user->primaryCompany();
-        
+
         if (!$company) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'You need to set up your company before adding staff members.');
         }
-        
+
         $roles = Role::all();
         $prefill = null; // Default to no pre-filled data
-        
+
         return view('admin.staff.create', compact('roles', 'company', 'prefill'));
     }
 
@@ -74,18 +74,18 @@ class StaffController extends Controller
     public function store(Request $request)
     {
         \Illuminate\Support\Facades\Log::info('Staff store method called', ['request' => $request->all()]);
-        
+
         // Get the current admin's primary company
         $adminUser = auth()->user();
         $company = $adminUser->primaryCompany();
         \Illuminate\Support\Facades\Log::info('Current company', ['company_id' => $company ? $company->id : null]);
-        
+
         if (!$company) {
             \Illuminate\Support\Facades\Log::warning('No company found for user');
             return redirect()->route('admin.dashboard')
                 ->with('error', 'You need to set up your company before adding staff members.');
         }
-        
+
         // Prepare validation rules
         $validationRules = [
             'first_name' => 'required|string|max:255',
@@ -100,7 +100,7 @@ class StaffController extends Controller
             'commission_rate' => 'nullable|numeric|min:0|max:100',
             'employee.hourly_rate' => 'nullable|numeric|min:0|required_if:is_employee,on',
         ];
-        
+
         // Only validate email uniqueness if we're not using an existing user
         if ($request->has('user_id')) {
             \Illuminate\Support\Facades\Log::info('Using existing user', ['user_id' => $request->user_id]);
@@ -116,9 +116,9 @@ class StaffController extends Controller
             $validationRules['email'] = 'required|string|email|max:255|unique:users,email';
             $validationRules['password'] = 'required|string|min:8|confirmed';
         }
-        
+
         \Illuminate\Support\Facades\Log::info('Validation rules', ['rules' => $validationRules]);
-        
+
         try {
             $validated = $request->validate($validationRules);
             \Illuminate\Support\Facades\Log::info('Validation passed');
@@ -142,10 +142,10 @@ class StaffController extends Controller
                     'user_name' => $user->name,
                     'user_company_id' => $user->company_id
                 ]);
-                
+
                 // Check if the user is already associated with this company
                 $existingRelationship = $user->companies()->where('company_id', $company->id)->exists();
-                
+
                 if (!$existingRelationship && $request->has('is_admin')) {
                     // If this is an admin adding themselves to a new company
                     \Illuminate\Support\Facades\Log::info('Adding user to company', [
@@ -153,7 +153,7 @@ class StaffController extends Controller
                         'company_id' => $company->id,
                         'as_admin' => true
                     ]);
-                    
+
                     // Associate the user with the company
                     $user->companies()->attach($company->id, [
                         'is_primary' => false, // Not making it primary by default
@@ -170,7 +170,7 @@ class StaffController extends Controller
                         ->withInput()
                         ->with('error', 'User does not belong to your company.');
                 }
-                
+
                 // Update role if specified
                 if ($request->has('role')) {
                     \Illuminate\Support\Facades\Log::info('Updating user role', ['role_id' => $request->role]);
@@ -187,19 +187,19 @@ class StaffController extends Controller
                     // No longer setting company_id directly
                 ]);
                 \Illuminate\Support\Facades\Log::info('User created', ['user_id' => $user->id]);
-                
+
                 // Associate the user with the company using the pivot table
                 $user->companies()->attach($company->id, [
                     'is_primary' => true, // Make this the primary company for new users
                     'role' => 'staff'
                 ]);
-                
+
                 \Illuminate\Support\Facades\Log::info('Associated new user with company', [
                     'user_id' => $user->id,
                     'company_id' => $company->id,
                     'is_primary' => true
                 ]);
-                
+
                 // Assign role
                 $role = Role::findById($request->role);
                 $user->assignRole($role);
@@ -219,7 +219,7 @@ class StaffController extends Controller
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name
             ]);
-            
+
             // Check if a staff record already exists for this user
             $existingStaff = Staff::where('user_id', $user->id)->first();
             if ($existingStaff) {
@@ -227,7 +227,7 @@ class StaffController extends Controller
                 return redirect()->route('admin.staff.index')
                     ->with('info', 'This user is already registered as a staff member.');
             }
-            
+
             $staffData = [
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -248,9 +248,9 @@ class StaffController extends Controller
                 'languages' => $request->languages,
                 'notes' => $request->notes,
             ];
-            
+
             \Illuminate\Support\Facades\Log::info('Staff data prepared', ['data' => $staffData]);
-            
+
             try {
                 $staff = Staff::create($staffData);
                 \Illuminate\Support\Facades\Log::info('Staff record created', ['staff_id' => $staff->id]);
@@ -261,9 +261,10 @@ class StaffController extends Controller
                 ]);
                 throw $e;
             }
-            
+
             // Create employee record if is_employee is checked
             if ($request->has('is_employee')) {
+                $employeeData = $request->input('employee');
                 $staff->employee()->create([
                     'user_id' => $user->id,
                     'first_name' => $request->first_name,
@@ -271,7 +272,8 @@ class StaffController extends Controller
                     'email' => $request->email,
                     'phone' => $request->phone,
                     'position' => $request->position,
-                    'hourly_rate' => $request->input('employee.hourly_rate'),
+                    'hourly_rate' => $employeeData['hourly_rate'] ?? null,
+                    'hire_date' => $employeeData['hire_date'] ?? date('Y-m-d'),
                     'is_active' => $request->has('active'),
                 ]);
             }
@@ -288,7 +290,7 @@ class StaffController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
             DB::rollBack();
-            
+
             // Provide a more user-friendly error message
             $errorMessage = 'Failed to create staff member';
             if (app()->environment('local', 'development', 'testing')) {
@@ -296,7 +298,7 @@ class StaffController extends Controller
             } else {
                 $errorMessage .= '. Please try again or contact support.';
             }
-            
+
             return back()
                 ->withInput()
                 ->with('error', $errorMessage);
@@ -311,19 +313,29 @@ class StaffController extends Controller
      */
     public function show($id)
     {
-        // Get the current admin's company
-        $company = auth()->user()->company;
-        
+        // Get the current admin's primary company
+        $user = auth()->user();
+        $company = $user->primaryCompany();
+
         if (!$company) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'You need to set up your company before viewing staff members.');
         }
+
+        // Get staff member
+        $staff = Staff::with(['user.roles', 'user.permissions', 'services', 'appointments'])->findOrFail($id);
         
-        // Get staff member and check if they belong to the admin's company
-        $staff = Staff::with(['user.roles', 'user.permissions', 'services', 'appointments'])
+        // Check if this staff member's user is associated with the current company
+        // First get the user IDs associated with this company
+        $userIds = DB::table('company_user')
             ->where('company_id', $company->id)
-            ->findOrFail($id);
+            ->pluck('user_id');
             
+        if (!$userIds->contains($staff->user_id)) {
+            return redirect()->route('admin.staff.index')
+                ->with('error', 'You do not have permission to view this staff member.');
+        }
+
         return view('admin.staff.show', compact('staff'));
     }
 
@@ -338,26 +350,26 @@ class StaffController extends Controller
         // Get the current admin's primary company
         $user = auth()->user();
         $company = $user->primaryCompany();
-        
+
         if (!$company) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'You need to set up your company before editing staff members.');
         }
-        
+
         // Get staff member
         $staff = Staff::with('user.roles')->findOrFail($id);
-        
+
         // Check if this staff member's user is associated with the current company
         // First get the user IDs associated with this company
         $userIds = DB::table('company_user')
             ->where('company_id', $company->id)
             ->pluck('user_id');
-            
+
         if (!$userIds->contains($staff->user_id)) {
             return redirect()->route('admin.staff.index')
                 ->with('error', 'You do not have permission to edit this staff member.');
         }
-            
+
         $roles = Role::all();
         return view('admin.staff.edit', compact('staff', 'roles'));
     }
@@ -374,21 +386,21 @@ class StaffController extends Controller
         // Get the current admin's primary company
         $user = auth()->user();
         $company = $user->primaryCompany();
-        
+
         if (!$company) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'You need to set up your company before updating staff members.');
         }
-        
+        info($request->all());
         // Get staff member
         $staff = Staff::findOrFail($id);
-        
+
         // Check if this staff member's user is associated with the current company
         // First get the user IDs associated with this company
         $userIds = DB::table('company_user')
             ->where('company_id', $company->id)
             ->pluck('user_id');
-            
+
         if (!$userIds->contains($staff->user_id)) {
             return redirect()->route('admin.staff.index')
                 ->with('error', 'You do not have permission to update this staff member.');
@@ -463,18 +475,28 @@ class StaffController extends Controller
                 'languages' => $request->languages,
                 'notes' => $request->notes,
             ]);
+
+            // Debug employee data
+            info('Employee data from request:', [
+                'employee_data' => $request->input('employee'),
+                'hire_date' => $request->input('employee.hire_date'),
+                'hire_date_array' => $request->input('employee')['hire_date'] ?? null,
+            ]);
             
             // Handle employee record based on is_employee checkbox
             if ($request->has('is_employee')) {
                 // Create or update employee record
                 if ($staff->employee) {
                     // Update existing employee record
+                    $employeeData = $request->input('employee');
                     $staff->employee->update([
-                        'hourly_rate' => $request->input('employee.hourly_rate'),
+                        'hourly_rate' => $employeeData['hourly_rate'] ?? null,
+                        'hire_date' => $employeeData['hire_date'] ?? date('Y-m-d'),
                         'is_active' => $request->has('active'),
                     ]);
                 } else {
                     // Create new employee record
+                    $employeeData = $request->input('employee');
                     $staff->employee()->create([
                         'user_id' => $user->id,
                         'first_name' => $request->first_name,
@@ -482,7 +504,8 @@ class StaffController extends Controller
                         'email' => $request->email,
                         'phone' => $request->phone,
                         'position' => $request->position,
-                        'hourly_rate' => $request->input('employee.hourly_rate'),
+                        'hourly_rate' => $employeeData['hourly_rate'] ?? null,
+                        'hire_date' => $employeeData['hire_date'] ?? date('Y-m-d'),
                         'is_active' => $request->has('active'),
                     ]);
                 }
@@ -509,25 +532,25 @@ class StaffController extends Controller
         // Get the current admin's primary company
         $currentUser = auth()->user();
         $company = $currentUser->primaryCompany();
-        
+
         if (!$company) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'You need to set up your company before adding yourself as staff.');
         }
-        
+
         // Check if the admin is already a staff member
         $existingStaff = Staff::where('user_id', $currentUser->id)->first();
-        
+
         if ($existingStaff) {
             return redirect()->route('admin.staff.edit', $existingStaff->id)
                 ->with('info', 'You are already registered as a staff member. You can edit your details here.');
         }
-        
+
         // Pre-fill the form with admin's information
         $nameParts = explode(' ', $currentUser->name, 2);
         $firstName = $nameParts[0];
         $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
-        
+
         return view('admin.staff.create', [
             'roles' => Role::all(),
             'prefill' => [
@@ -551,21 +574,21 @@ class StaffController extends Controller
         // Get the current admin's primary company
         $user = auth()->user();
         $company = $user->primaryCompany();
-        
+
         if (!$company) {
             return redirect()->route('admin.dashboard')
                 ->with('error', 'You need to set up your company before deleting staff members.');
         }
-        
+
         // Get staff member
         $staff = Staff::findOrFail($id);
-        
+
         // Check if this staff member's user is associated with the current company
         // First get the user IDs associated with this company
         $userIds = DB::table('company_user')
             ->where('company_id', $company->id)
             ->pluck('user_id');
-            
+
         if (!$userIds->contains($staff->user_id)) {
             return redirect()->route('admin.staff.index')
                 ->with('error', 'You do not have permission to delete this staff member.');

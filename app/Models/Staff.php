@@ -44,21 +44,6 @@ class Staff extends Model
         'work_end_time',
         'work_days',
         'user_id',
-        'termination_date',
-        'emergency_contact_name',
-        'emergency_contact_phone',
-        'address',
-        'city',
-        'state',
-        'postal_code',
-        'country',
-        'salary',
-        'commission_rate',
-        'commission_structure_id',
-        'specialties',
-        'certifications',
-        'languages',
-        'notes',
         'commission_rate',
         'commission_structure_id',
     ];
@@ -73,14 +58,8 @@ class Staff extends Model
         'work_start_time' => 'datetime',
         'work_end_time' => 'datetime',
         'work_days' => 'array',
-        'termination_date' => 'date',
-        'salary' => 'decimal:2',
         'commission_rate' => 'decimal:2',
         'commission_structure_id' => 'integer',
-        'specialties' => 'array',
-        'certifications' => 'array',
-        'languages' => 'array',
-        'commission_rate' => 'decimal:2',
     ];
 
     /**
@@ -89,7 +68,6 @@ class Staff extends Model
      * @var array
      */
     protected $dates = [
-        'termination_date',
         'created_at',
         'updated_at',
         'deleted_at',
