@@ -217,6 +217,31 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Admin routes
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Company Settings Routes
+        Route::get('/company/edit', [App\Http\Controllers\Admin\CompanyController::class, 'edit'])->name('company.edit');
+        Route::put('/company/update', [App\Http\Controllers\Admin\CompanyController::class, 'update'])->name('company.update');
+
+        // Service Categories Management
+        Route::resource('services/categories', 'App\Http\Controllers\Admin\ServiceCategoryController')->names([
+            'index' => 'services.categories',
+            'create' => 'services.categories.create',
+            'store' => 'services.categories.store',
+            'edit' => 'services.categories.edit',
+            'update' => 'services.categories.update',
+            'destroy' => 'services.categories.destroy',
+        ]);
+        Route::post('/services/categories/reorder', [App\Http\Controllers\Admin\ServiceCategoryController::class, 'reorder'])->name('services.categories.reorder');
+
+        // Services Management
+        Route::resource('services', 'App\Http\Controllers\Admin\ServiceController')->names([
+            'index' => 'services',
+            'create' => 'services.create',
+            'store' => 'services.store',
+            'edit' => 'services.edit',
+            'update' => 'services.update',
+            'destroy' => 'services.destroy',
+        ]);
+
         Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
 
         // Staff Management Routes, important order here
@@ -276,6 +301,16 @@ Route::middleware(['auth:web'])->group(function () {
             Route::get('/preferences/{token}', [EmailTrackingController::class, 'preferences'])->name('preferences');
             Route::post('/preferences/{token}/update', [EmailTrackingController::class, 'updatePreferences'])->name('preferences.update');
         });
+    });
+
+    // Services Routes
+    Route::prefix('services')->name('services.')->group(function () {
+        Route::get('/', [App\Http\Controllers\Admin\ServiceController::class, 'index'])->name('index');
+        Route::get('/create', [App\Http\Controllers\Admin\ServiceController::class, 'create'])->name('create');
+        Route::post('/', [App\Http\Controllers\Admin\ServiceController::class, 'store'])->name('store');
+        Route::get('/{service}/edit', [App\Http\Controllers\Admin\ServiceController::class, 'edit'])->name('edit');
+        Route::put('/{service}', [App\Http\Controllers\Admin\ServiceController::class, 'update'])->name('update');
+        Route::delete('/{service}', [App\Http\Controllers\Admin\ServiceController::class, 'destroy'])->name('destroy');
     });
 
     // POS Routes

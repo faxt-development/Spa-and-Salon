@@ -43,6 +43,14 @@ class Company extends Model
     ];
 
     /**
+     * The services that belong to this company.
+     */
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'company_service');
+    }
+
+    /**
      * Get all users associated with the company.
      */
     public function users()

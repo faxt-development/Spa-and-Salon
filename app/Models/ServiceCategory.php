@@ -21,7 +21,7 @@ class ServiceCategory extends Model
         'description',
         'parent_id',
         'display_order',
-        'is_active',
+        'active',
         'image_url',
         'color',
         'slug',
@@ -36,7 +36,7 @@ class ServiceCategory extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active' => 'boolean',
+        'active' => 'boolean',
         'display_order' => 'integer',
         'parent_id' => 'integer',
     ];
@@ -82,11 +82,11 @@ class ServiceCategory extends Model
     public function getAllDescendants()
     {
         $descendants = $this->children;
-        
+
         foreach ($this->children as $child) {
             $descendants = $descendants->merge($child->getAllDescendants());
         }
-        
+
         return $descendants;
     }
 
@@ -120,7 +120,7 @@ class ServiceCategory extends Model
      */
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('active', true);
     }
 
     /**
@@ -133,12 +133,12 @@ class ServiceCategory extends Model
     {
         $path = [];
         $category = $this;
-        
+
         while ($category) {
             array_unshift($path, $category->name);
             $category = $category->parent;
         }
-        
+
         return implode($separator, $path);
     }
 
@@ -151,7 +151,7 @@ class ServiceCategory extends Model
     {
         $breadcrumbs = collect([]);
         $category = $this;
-        
+
         while ($category) {
             $breadcrumbs->prepend([
                 'id' => $category->id,
@@ -160,7 +160,7 @@ class ServiceCategory extends Model
             ]);
             $category = $category->parent;
         }
-        
+
         return $breadcrumbs;
     }
 }

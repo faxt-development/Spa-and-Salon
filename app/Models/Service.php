@@ -126,6 +126,15 @@ class Service extends Model
     }
 
     /**
+     * The companies that offer this service.
+     */
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'company_service')
+            ->withTimestamps();
+    }
+
+    /**
      * Get the service's formatted price.
      *
      * @return string
