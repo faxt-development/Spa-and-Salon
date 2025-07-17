@@ -311,6 +311,9 @@ Route::middleware(['auth:web'])->group(function () {
         Route::get('/{service}/edit', [App\Http\Controllers\Admin\ServiceController::class, 'edit'])->name('edit');
         Route::put('/{service}', [App\Http\Controllers\Admin\ServiceController::class, 'update'])->name('update');
         Route::delete('/{service}', [App\Http\Controllers\Admin\ServiceController::class, 'destroy'])->name('destroy');
+        Route::post('/add-to-company', [App\Http\Controllers\Admin\ServiceController::class, 'addToCompany'])->name('add-to-company');
+        Route::delete('/{service}/remove-from-company', [App\Http\Controllers\Admin\ServiceController::class, 'removeFromCompany'])->name('remove-from-company');
+        Route::post('/companies/{company}/services/{service}/copy', [App\Http\Controllers\Admin\ServiceController::class, 'copyTemplateService'])->name('copy-template');
     });
 
     // POS Routes

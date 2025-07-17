@@ -21,33 +21,6 @@
             })->with('categories')->get();
         @endphp
 
-        <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Add Service</label>
-            <div class="flex space-x-4">
-                <button type="button" onclick="showExistingServices()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">Use Existing Service</button>
-                <button type="button" onclick="showNewServiceForm()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">Create New Service</button>
-            </div>
-        </div>
-
-        <div id="existingServices" class="mb-6 hidden">
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Select Existing Service</label>
-                <select name="existing_service_id" id="selected_service_id" class="form-select w-full rounded-md shadow-sm">
-                    <option value="">Select a service...</option>
-                    @foreach($availableServices as $service)
-                        <option value="{{ $service->id }}" data-categories="{{ json_encode($service->categories->pluck('id')->toArray()) }}">
-                            {{ $service->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-            <div id="existingServiceCategories" class="mb-4 hidden">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Categories</label>
-                <div id="selectedServiceCategories">
-                    <!-- Categories will be populated dynamically -->
-                </div>
-            </div>
-        </div>
 
         <div id="newServiceForm" class="mb-6">
             <form action="{{ route('admin.services.store') }}" method="POST" id="newServiceForm">
