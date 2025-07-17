@@ -198,6 +198,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
         Route::get('/{appointment}/edit', [\App\Http\Controllers\AppointmentController::class, 'edit'])->name('edit');
         Route::put('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'update'])->name('update');
         Route::delete('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'destroy'])->name('destroy');
+
+        // Appointment Settings routes
+        Route::get('/appointments/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'index'])->name('settings');
+        Route::get('/appointments/settings/create', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'create'])->name('settings.create');
+        Route::post('/appointments/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'store'])->name('settings.store');
+        Route::get('/appointments/settings/{appointmentSetting}/edit', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'edit'])->name('settings.edit');
+        Route::put('/appointments/settings/{appointmentSetting}', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'update'])->name('settings.update');
+        Route::delete('/appointments/settings/{appointmentSetting}', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'destroy'])->name('settings.destroy');
     });
 });
 
@@ -274,6 +282,9 @@ Route::middleware(['auth:web'])->group(function () {
         });
 
         Route::get('/reports/sales', [\App\Http\Controllers\Admin\ReportController::class, 'sales'])->name('reports.sales');
+
+        // Location Management Routes
+        Route::resource('locations', \App\Http\Controllers\Admin\LocationController::class);
         Route::get('/reports/payment-methods', [\App\Http\Controllers\Admin\ReportController::class, 'paymentMethods'])->name('reports.payment-methods');
 
         // Email Campaign Routes

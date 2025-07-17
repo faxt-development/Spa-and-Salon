@@ -143,6 +143,12 @@
                                     <x-dropdown-link :href="route('admin.services.categories')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Service Categories') }}
                                     </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.locations.index')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                        {{ __('Locations') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('admin.appointments.settings')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                        {{ __('Appointment Settings') }}
+                                    </x-dropdown-link>
                                 </div>
                             </div>
                         </div>
@@ -198,36 +204,6 @@
                         </div>
 
                         <!-- Business Management Dropdown -->
-                        <div class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150" x-data="{ open: false }" @keydown.escape="open = false" @click.away="open = false">
-                            <x-nav-link href="/gift-cards/history" @click.prevent="open = !open"
-                                    @keydown.enter.prevent="open = !open"
-                                    @keydown.space.prevent="open = !open"
-                                    :active="request()->routeIs('admin.business.*')">
-                                <div class="inline-flex items-center">
-                                    {{ __('old Business') }}
-                                    <svg class="ml-1 h-4 w-4" :class="{ 'transform rotate-180': open }" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                            </x-nav-link>
-
-                            <div x-show="open"
-                                 x-transition:enter="transition ease-out duration-100"
-                                 x-transition:enter-start="transform opacity-0 scale-95"
-                                 x-transition:enter-end="transform opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-75"
-                                 x-transition:leave-start="transform opacity-100 scale-100"
-                                 x-transition:leave-end="transform opacity-0 scale-95"
-                                 class="origin-top-right absolute left-0 mt-36 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                                 role="menu"
-                                 aria-orientation="vertical"
-                                 aria-labelledby="business-menu"
-                                 tabindex="-1"
-                                 x-cloak>
-                                <div class="py-1" role="none">
-                                                                 </div>
-                            </div>
-                        </div>
 
                         <!-- Email Marketing Dropdown -->
                         <div class="relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition ease-in-out duration-150" x-data="{ open: false }" @keydown.escape="open = false" @click.away="open = false">
