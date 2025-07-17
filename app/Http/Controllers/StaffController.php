@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Staff;
 use App\Models\Role;
 use App\Models\Permission;
+use App\Models\Service;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -702,6 +703,198 @@ class StaffController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withInput()->withErrors(['error' => 'Failed to update role: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Display the staff availability management page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function availability()
+    {
+        // Get the current admin's primary company
+        $user = auth()->user();
+        $company = $user->primaryCompany();
+
+        if (!$company) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'You need to set up your company before managing staff availability.');
+        }
+
+        // Get staff members belonging to the current company via user-company pivot
+        $userIds = $company->users()->pluck('users.id');
+        $staff = Staff::whereIn('user_id', $userIds)->with('user.roles')->active()->get();
+
+        // Get the next 7 days for the availability calendar
+        $startDate = now()->startOfDay();
+        $endDate = now()->addDays(6)->endOfDay();
+        $dateRange = [];
+        
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startDate->copy()->addDays($i);
+            $dateRange[] = [
+                'date' => $date->format('Y-m-d'),
+                'day' => $date->format('D'),
+                'full_day' => $date->format('l')
+            ];
+        }
+
+        return view('admin.staff.availability', compact('staff', 'dateRange', 'startDate', 'endDate'));
+    }
+
+    /**
+     * Update staff availability settings.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateAvailability(Request $request)
+    {
+        $request->validate([
+            'staff_id' => 'required|exists:staff,id',
+            'work_days' => 'nullable|array',
+            'work_days.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'work_start_time' => 'required|date_format:H:i',
+            'work_end_time' => 'required|date_format:H:i|after:work_start_time',
+        ]);
+
+        $staff = Staff::findOrFail($request->staff_id);
+
+        // Check if user has permission to edit this staff member
+        $user = auth()->user();
+        $company = $user->primaryCompany();
+        $staffUserIds = $company->users()->pluck('users.id');
+        
+        if (!$staffUserIds->contains($staff->user_id)) {
+            return back()->with('error', 'You do not have permission to edit this staff member.');
+        }
+
+        // Update staff availability
+        $staff->work_days = $request->work_days ?: [];
+        $staff->work_start_time = $request->work_start_time;
+        $staff->work_end_time = $request->work_end_time;
+        $staff->save();
+
+        return back()->with('success', 'Staff availability updated successfully.');
+    }
+    
+    /**
+     * Display the staff services assignment page.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function services()
+    {
+        // Get the current admin's primary company
+        $user = auth()->user();
+        $company = $user->primaryCompany();
+
+        if (!$company) {
+            return redirect()->route('admin.dashboard')
+                ->with('error', 'You need to set up your company before managing staff services.');
+        }
+
+        // Get staff members belonging to the current company via user-company pivot
+        $userIds = $company->users()->pluck('users.id');
+        $staff = Staff::whereIn('user_id', $userIds)->with('user.roles')->active()->get();
+        
+        // Get all services for the company
+        $services = Service::whereHas('companies', function($query) use ($company) {
+            $query->where('companies.id', $company->id);
+        })->with('categories')->get();
+        
+        // Group services by category for easier display
+        $servicesByCategory = [];
+        foreach ($services as $service) {
+            $categories = $service->categories;
+            if ($categories->isEmpty()) {
+                if (!isset($servicesByCategory['Uncategorized'])) {
+                    $servicesByCategory['Uncategorized'] = [];
+                }
+                $servicesByCategory['Uncategorized'][] = $service;
+            } else {
+                foreach ($categories as $category) {
+                    if (!isset($servicesByCategory[$category->name])) {
+                        $servicesByCategory[$category->name] = [];
+                    }
+                    $servicesByCategory[$category->name][] = $service;
+                }
+            }
+        }
+        
+        // Get existing staff-service assignments
+        $staffServiceAssignments = [];
+        foreach ($staff as $staffMember) {
+            $staffServiceAssignments[$staffMember->id] = $staffMember->services()->pluck('services.id')->toArray();
+        }
+
+        return view('admin.staff.services', compact('staff', 'services', 'servicesByCategory', 'staffServiceAssignments'));
+    }
+
+    /**
+     * Update staff service assignments.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateServices(Request $request)
+    {
+        $request->validate([
+            'staff_id' => 'required|exists:staff,id',
+            'service_ids' => 'nullable|array',
+            'service_ids.*' => 'exists:services,id',
+            'price_overrides' => 'nullable|array',
+            'duration_overrides' => 'nullable|array',
+        ]);
+
+        $staff = Staff::findOrFail($request->staff_id);
+
+        // Check if user has permission to edit this staff member
+        $user = auth()->user();
+        $company = $user->primaryCompany();
+        $staffUserIds = $company->users()->pluck('users.id');
+        
+        if (!$staffUserIds->contains($staff->user_id)) {
+            return back()->with('error', 'You do not have permission to edit this staff member.');
+        }
+
+        DB::beginTransaction();
+        
+        try {
+            // Clear existing service assignments for this staff member
+            $staff->services()->detach();
+            
+            // Add new service assignments
+            if ($request->has('service_ids') && is_array($request->service_ids)) {
+                $serviceData = [];
+                
+                foreach ($request->service_ids as $serviceId) {
+                    $pivotData = [
+                        'is_primary' => true, // Default to primary provider
+                    ];
+                    
+                    // Add price override if provided
+                    if (isset($request->price_overrides[$serviceId]) && $request->price_overrides[$serviceId] !== '') {
+                        $pivotData['price_override'] = $request->price_overrides[$serviceId];
+                    }
+                    
+                    // Add duration override if provided
+                    if (isset($request->duration_overrides[$serviceId]) && $request->duration_overrides[$serviceId] !== '') {
+                        $pivotData['duration_override'] = $request->duration_overrides[$serviceId];
+                    }
+                    
+                    $serviceData[$serviceId] = $pivotData;
+                }
+                
+                $staff->services()->attach($serviceData);
+            }
+            
+            DB::commit();
+            return back()->with('success', 'Staff service assignments updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Failed to update staff service assignments: ' . $e->getMessage());
         }
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\OnboardingChecklistController;
+use App\Http\Controllers\Admin\EmailController;
 use App\Http\Controllers\Inventory\CategoryController;
 use App\Http\Controllers\Inventory\ProductController;
 use App\Http\Controllers\ContactController;
@@ -170,6 +171,15 @@ Route::middleware(['auth:web'])->get('/debug-auth', function () {
 // Dashboard routes
 // Admin routes
 Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->group(function () {
+    // Email Management Routes
+    Route::prefix('email')->name('email.')->group(function () {
+        Route::get('/welcome', [EmailController::class, 'welcome'])->name('welcome');
+        Route::post('/welcome', [EmailController::class, 'storeWelcome'])->name('welcome.store');
+        Route::get('/reminders', [EmailController::class, 'reminders'])->name('reminders');
+        Route::post('/reminders', [EmailController::class, 'storeReminder'])->name('reminders.store');
+        Route::post('/reminders/settings', [EmailController::class, 'updateReminderSettings'])->name('reminders.settings');
+        Route::get('/campaigns', [EmailController::class, 'campaigns'])->name('campaigns');
+    });
     // Report routes
     Route::prefix('reports')->name('reports.')->group(function () {
         // Service Category Reports
@@ -191,21 +201,35 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
     // Onboarding checklist route
     Route::get('/onboarding-checklist', [OnboardingChecklistController::class, 'show'])->name('onboarding-checklist');
 
+    // Payment Configuration Routes
+    Route::prefix('payments')->name('payments.')->group(function () {
+        Route::get('/methods', [\App\Http\Controllers\Admin\PaymentController::class, 'methods'])->name('methods');
+        Route::get('/pricing', [\App\Http\Controllers\Admin\PaymentController::class, 'pricing'])->name('pricing');
+        Route::put('/pricing', [\App\Http\Controllers\Admin\PaymentController::class, 'updatePricing'])->name('pricing.update');
+        Route::get('/tax', [\App\Http\Controllers\Admin\PaymentController::class, 'tax'])->name('tax');
+        Route::put('/tax', [\App\Http\Controllers\Admin\PaymentController::class, 'updateTax'])->name('tax.update');
+    });
+
     // Appointments routes - using consolidated AppointmentController
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('/', [\App\Http\Controllers\AppointmentController::class, 'index'])->name('index');
+        Route::get('/learn', [\App\Http\Controllers\Admin\AppointmentTutorialController::class, 'index'])->name('learn');
+        Route::get('/reminders', [\App\Http\Controllers\Admin\AppointmentReminderController::class, 'index'])->name('reminders');
+        Route::put('/reminders', [\App\Http\Controllers\Admin\AppointmentReminderController::class, 'update'])->name('reminders.update');
+        Route::get('/policies', [\App\Http\Controllers\Admin\AppointmentPolicyController::class, 'index'])->name('policies');
+        Route::put('/policies', [\App\Http\Controllers\Admin\AppointmentPolicyController::class, 'update'])->name('policies.update');
         Route::get('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'show'])->name('show');
         Route::get('/{appointment}/edit', [\App\Http\Controllers\AppointmentController::class, 'edit'])->name('edit');
         Route::put('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'update'])->name('update');
         Route::delete('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'destroy'])->name('destroy');
 
         // Appointment Settings routes
-        Route::get('/appointments/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'index'])->name('settings');
-        Route::get('/appointments/settings/create', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'create'])->name('settings.create');
-        Route::post('/appointments/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'store'])->name('settings.store');
-        Route::get('/appointments/settings/{appointmentSetting}/edit', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'edit'])->name('settings.edit');
-        Route::put('/appointments/settings/{appointmentSetting}', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'update'])->name('settings.update');
-        Route::delete('/appointments/settings/{appointmentSetting}', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'destroy'])->name('settings.destroy');
+        Route::get('/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'index'])->name('settings');
+        Route::get('/settings/create', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'create'])->name('settings.create');
+        Route::post('/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'store'])->name('settings.store');
+        Route::get('/settings/{appointmentSetting}/edit', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'edit'])->name('settings.edit');
+        Route::put('/settings/{appointmentSetting}', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'update'])->name('settings.update');
+        Route::delete('/settings/{appointmentSetting}', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'destroy'])->name('settings.destroy');
     });
 });
 
@@ -249,11 +273,25 @@ Route::middleware(['auth:web'])->group(function () {
             'update' => 'services.update',
             'destroy' => 'services.destroy',
         ]);
+        
+        // Service Packages Management
+        Route::prefix('services')->name('services.')->group(function () {
+            Route::get('/packages', [App\Http\Controllers\Admin\ServicePackageController::class, 'index'])->name('packages');
+            Route::get('/packages/create', [App\Http\Controllers\Admin\ServicePackageController::class, 'create'])->name('packages.create');
+            Route::post('/packages', [App\Http\Controllers\Admin\ServicePackageController::class, 'store'])->name('packages.store');
+            Route::get('/packages/{package}/edit', [App\Http\Controllers\Admin\ServicePackageController::class, 'edit'])->name('packages.edit');
+            Route::put('/packages/{package}', [App\Http\Controllers\Admin\ServicePackageController::class, 'update'])->name('packages.update');
+            Route::delete('/packages/{package}', [App\Http\Controllers\Admin\ServicePackageController::class, 'destroy'])->name('packages.destroy');
+        });
 
         Route::resource('clients', 'App\Http\Controllers\Admin\ClientController');
 
         // Staff Management Routes, important order here
         Route::get('/staff/add-admin-as-staff', [App\Http\Controllers\StaffController::class, 'addAdminAsStaff'])->name('staff.add-admin');
+        Route::get('/staff/availability', [App\Http\Controllers\StaffController::class, 'availability'])->name('staff.availability');
+        Route::post('/staff/availability/update', [App\Http\Controllers\StaffController::class, 'updateAvailability'])->name('staff.update-availability');
+        Route::get('/staff/services', [App\Http\Controllers\StaffController::class, 'services'])->name('staff.services');
+        Route::post('/staff/services/update', [App\Http\Controllers\StaffController::class, 'updateServices'])->name('staff.update-services');
         Route::resource('staff', 'App\Http\Controllers\StaffController');
         Route::get('/roles-permissions', [App\Http\Controllers\StaffController::class, 'rolesAndPermissions'])->name('staff.roles');
         Route::post('/roles', [App\Http\Controllers\StaffController::class, 'storeRole'])->name('staff.roles.store');

@@ -71,17 +71,17 @@
             <div class="border-l-4 border-blue-500 pl-4">
                 <h2 class="text-xl font-semibold mb-2">4. Services Setup</h2>
                 <ul class="space-y-2 text-gray-600">
-                    <li class="flex items-center">
-                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('admin.services.packages') }}" class="hover:text-blue-500 hover:underline">Create service packages</a>
-                    </li>
-                    <li class="flex items-center">
+                <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
                         <a href="{{ route('admin.services') }}" class="hover:text-blue-500 hover:underline">Set pricing and durations</a>
                     </li>
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
                         <a href="{{ route('admin.services.categories') }}" class="hover:text-blue-500 hover:underline">Configure service categories</a>
+                    </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
+                        <a href="{{ route('admin.services.packages') }}" class="hover:text-blue-500 hover:underline">Create service packages</a>
                     </li>
                 </ul>
             </div>
@@ -92,7 +92,7 @@
                 <ul class="space-y-2 text-gray-600">
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('admin.appointments') }}" class="hover:text-blue-500 hover:underline">Learn to schedule appointments</a>
+                        <a href="{{ route('admin.appointments.learn') }}" class="hover:text-blue-500 hover:underline">Learn to schedule appointments</a>
                     </li>
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
