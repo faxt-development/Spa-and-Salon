@@ -30,6 +30,7 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timezone</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hours</th>
                     <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
@@ -69,6 +70,14 @@
                                 </span>
                             @endif
                         </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <a href="{{ route('admin.locations.hours', $location) }}" class="text-green-600 hover:text-green-900 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Edit Hours
+                            </a>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <a href="{{ route('admin.locations.show', $location) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
                             <a href="{{ route('admin.locations.edit', $location) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
@@ -86,7 +95,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">
                             No locations found. <a href="{{ route('admin.locations.create') }}" class="text-blue-600 hover:underline">Add your first location</a>.
                         </td>
                     </tr>

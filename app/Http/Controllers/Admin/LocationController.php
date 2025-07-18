@@ -223,4 +223,53 @@ class LocationController extends Controller
             'JPY' => 'Japanese Yen (JPY)',
         ];
     }
+    
+    /**
+     * Show the form for editing location hours.
+     *
+     * @param  \App\Models\Location  $location
+     * @return \Illuminate\View\View
+     */
+    public function hours(Location $location)
+    {
+        return view('admin.locations.hours', compact('location'));
+    }
+    
+    /**
+     * Update the location hours.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Location  $location
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updateHours(Request $request, Location $location)
+    {
+        $businessHours = [];
+        
+        foreach ($request->input('business_hours', []) as $day => $data) {
+            if (isset($data['is_open']) && $data['is_open']) {
+                // Handle multiple time slots per day
+                if (isset($data['slots']) && is_array($data['slots'])) {
+                    $businessHours[$day] = [];
+                    
+                    // Process each time slot
+                    foreach ($data['slots'] as $slot) {
+                        if (isset($slot['open']) && isset($slot['close'])) {
+                            $businessHours[$day][] = [
+                                'open' => $slot['open'],
+                                'close' => $slot['close']
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+        
+        $location->update([
+            'business_hours' => $businessHours
+        ]);
+        
+        return redirect()->route('admin.locations.hours', $location)
+            ->with('success', 'Business hours updated successfully.');
+    }
 }

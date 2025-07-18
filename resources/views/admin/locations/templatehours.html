@@ -1,0 +1,243 @@
+import React, { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Clock, Plus, Trash2, Save } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface TimeSlot {
+  start: string;
+  end: string;
+}
+
+interface DayHours {
+  isOpen: boolean;
+  timeSlots: TimeSlot[];
+}
+
+interface BusinessHours {
+  [key: string]: DayHours;
+}
+
+const DAYS_OF_WEEK = [
+  { key: 'monday', label: 'Monday' },
+  { key: 'tuesday', label: 'Tuesday' },
+  { key: 'wednesday', label: 'Wednesday' },
+  { key: 'thursday', label: 'Thursday' },
+  { key: 'friday', label: 'Friday' },
+  { key: 'saturday', label: 'Saturday' },
+  { key: 'sunday', label: 'Sunday' },
+];
+
+export const BusinessHoursEditor = () => {
+  const { toast } = useToast();
+
+  const [businessHours, setBusinessHours] = useState<BusinessHours>({
+    monday: { isOpen: true, timeSlots: [{ start: '09:00', end: '17:00' }] },
+    tuesday: { isOpen: true, timeSlots: [{ start: '09:00', end: '17:00' }] },
+    wednesday: { isOpen: true, timeSlots: [{ start: '09:00', end: '17:00' }] },
+    thursday: { isOpen: true, timeSlots: [{ start: '09:00', end: '17:00' }] },
+    friday: { isOpen: true, timeSlots: [{ start: '09:00', end: '17:00' }] },
+    saturday: { isOpen: true, timeSlots: [{ start: '10:00', end: '16:00' }] },
+    sunday: { isOpen: false, timeSlots: [{ start: '10:00', end: '16:00' }] },
+  });
+
+  const toggleDayOpen = (day: string) => {
+    setBusinessHours(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        isOpen: !prev[day].isOpen
+      }
+    }));
+  };
+
+  const updateTimeSlot = (day: string, slotIndex: number, field: 'start' | 'end', value: string) => {
+    setBusinessHours(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        timeSlots: prev[day].timeSlots.map((slot, index) =>
+          index === slotIndex ? { ...slot, [field]: value } : slot
+        )
+      }
+    }));
+  };
+
+  const addTimeSlot = (day: string) => {
+    setBusinessHours(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        timeSlots: [...prev[day].timeSlots, { start: '09:00', end: '17:00' }]
+      }
+    }));
+  };
+
+  const removeTimeSlot = (day: string, slotIndex: number) => {
+    setBusinessHours(prev => ({
+      ...prev,
+      [day]: {
+        ...prev[day],
+        timeSlots: prev[day].timeSlots.filter((_, index) => index !== slotIndex)
+      }
+    }));
+  };
+
+  const copyHours = (sourceDay: string, targetDay: string) => {
+    setBusinessHours(prev => ({
+      ...prev,
+      [targetDay]: {
+        isOpen: prev[sourceDay].isOpen,
+        timeSlots: [...prev[sourceDay].timeSlots]
+      }
+    }));
+  };
+
+  const handleSave = () => {
+    // Here you would typically save to your backend
+    toast({
+      title: "Business hours saved",
+      description: "Your business hours have been successfully updated.",
+    });
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-2">Business Hours</h1>
+        <p className="text-muted-foreground">Set your location's operating hours for each day of the week</p>
+      </div>
+
+      <Card className="shadow-lg border-0 bg-gradient-to-br from-card to-spa-mint-light/10">
+        <CardHeader className="pb-6">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Clock className="h-5 w-5 text-primary" />
+            Weekly Schedule
+          </CardTitle>
+          <CardDescription>
+            Configure when your spa is open. You can add multiple time slots for days with breaks.
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          {DAYS_OF_WEEK.map((day) => {
+            const dayHours = businessHours[day.key];
+
+            return (
+              <div key={day.key} className="group">
+                <Card className="transition-all duration-200 hover:shadow-md border border-border/50 hover:border-primary/20">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-4">
+                        <Label htmlFor={`${day.key}-toggle`} className="text-lg font-semibold min-w-[100px]">
+                          {day.label}
+                        </Label>
+                        <div className="flex items-center gap-2">
+                          <Switch
+                            id={`${day.key}-toggle`}
+                            checked={dayHours.isOpen}
+                            onCheckedChange={() => toggleDayOpen(day.key)}
+                            className="data-[state=checked]:bg-primary"
+                          />
+                          <span className="text-sm text-muted-foreground">
+                            {dayHours.isOpen ? 'Open' : 'Closed'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {dayHours.isOpen && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => addTimeSlot(day.key)}
+                          className="flex items-center gap-1 text-xs"
+                        >
+                          <Plus className="h-3 w-3" />
+                          Add Hours
+                        </Button>
+                      )}
+                    </div>
+
+                    {dayHours.isOpen && (
+                      <div className="space-y-3">
+                        {dayHours.timeSlots.map((slot, slotIndex) => (
+                          <div key={slotIndex} className="flex items-center gap-3 p-3 bg-muted/30 rounded-lg">
+                            <div className="flex items-center gap-2 flex-1">
+                              <Label className="text-sm text-muted-foreground min-w-[40px]">From</Label>
+                              <Input
+                                type="time"
+                                value={slot.start}
+                                onChange={(e) => updateTimeSlot(day.key, slotIndex, 'start', e.target.value)}
+                                className="w-32"
+                              />
+                              <Label className="text-sm text-muted-foreground">To</Label>
+                              <Input
+                                type="time"
+                                value={slot.end}
+                                onChange={(e) => updateTimeSlot(day.key, slotIndex, 'end', e.target.value)}
+                                className="w-32"
+                              />
+                            </div>
+
+                            {dayHours.timeSlots.length > 1 && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeTimeSlot(day.key, slotIndex)}
+                                className="text-destructive hover:text-destructive h-8 w-8 p-0"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+
+                        <div className="flex gap-2 pt-2">
+                          <select
+                            className="text-xs px-2 py-1 border rounded bg-background"
+                            onChange={(e) => {
+                              if (e.target.value && e.target.value !== day.key) {
+                                copyHours(e.target.value, day.key);
+                                e.target.value = '';
+                              }
+                            }}
+                          >
+                            <option value="">Copy from...</option>
+                            {DAYS_OF_WEEK.filter(d => d.key !== day.key && businessHours[d.key].isOpen)
+                              .map(d => (
+                                <option key={d.key} value={d.key}>{d.label}</option>
+                              ))}
+                          </select>
+                        </div>
+                      </div>
+                    )}
+
+                    {!dayHours.isOpen && (
+                      <div className="text-center py-4 text-muted-foreground">
+                        <p className="text-sm">Closed all day</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-center pt-6">
+        <Button
+          onClick={handleSave}
+          size="lg"
+          className="px-8 shadow-lg bg-primary hover:bg-primary/90"
+        >
+          <Save className="h-4 w-4 mr-2" />
+          Save Business Hours
+        </Button>
+      </div>
+    </div>
+  );
+};

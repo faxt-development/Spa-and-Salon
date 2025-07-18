@@ -20,7 +20,7 @@
                     </li>
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('profile.edit') }}" class="hover:text-blue-500 hover:underline">Configure notification preferences</a>
+                        <a href="{{ route('profile.edit') }}#notification-preferences" class="hover:text-blue-500 hover:underline">Configure notification preferences</a>
                     </li>
                 </ul>
             </div>
@@ -149,15 +149,27 @@
                 <ul class="space-y-2 text-gray-600">
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('admin.reports.custom') }}" class="hover:text-blue-500 hover:underline">Set up custom reports</a>
+                        <a href="{{ route('admin.reports.sales') }}" class="hover:text-blue-500 hover:underline">Review sales reports</a>
                     </li>
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('admin.analytics') }}" class="hover:text-blue-500 hover:underline">Configure analytics dashboard</a>
+                        <a href="{{ route('reports.clients.index') }}" class="hover:text-blue-500 hover:underline">Analyze client spending</a>
                     </li>
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('admin.reports.metrics') }}" class="hover:text-blue-500 hover:underline">Set up performance metrics</a>
+                        <a href="{{ route('admin.reports.service.categories') }}" class="hover:text-blue-500 hover:underline">Review service category performance</a>
+                    </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
+                        <a href="{{ route('admin.reports.payment-methods') }}" class="hover:text-blue-500 hover:underline">Check payment method reports</a>
+                    </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
+                        <a href="{{ route('admin.reports.tax') }}" class="hover:text-blue-500 hover:underline">Review tax reports</a>
+                    </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
+                        <a href="{{ route('admin.payroll.reports.index') }}" class="hover:text-blue-500 hover:underline">Set up payroll reports</a>
                     </li>
                 </ul>
             </div>
@@ -168,15 +180,23 @@
                 <ul class="space-y-2 text-gray-600">
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('admin.security.roles') }}" class="hover:text-blue-500 hover:underline">Configure user roles</a>
+                        <a href="{{ route('admin.staff.roles') }}" class="hover:text-blue-500 hover:underline">Configure user roles & permissions</a>
                     </li>
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('admin.security.access') }}" class="hover:text-blue-500 hover:underline">Set up access controls</a>
+                        <a href="{{ route('profile.edit') }}" class="hover:text-blue-500 hover:underline">Update password & security settings</a>
                     </li>
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
-                        <a href="{{ route('admin.security.audit') }}" class="hover:text-blue-500 hover:underline">Configure audit logging</a>
+                        <a href="{{ route('admin.company.edit') }}" class="hover:text-blue-500 hover:underline">Review company access settings</a>
+                    </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
+                        <a href="{{ route('admin.staff.index') }}" class="hover:text-blue-500 hover:underline">Manage staff access levels</a>
+                    </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500">
+                        <a href="{{ route('gdpr') }}" class="hover:text-blue-500 hover:underline">Review GDPR compliance settings</a>
                     </li>
                 </ul>
             </div>

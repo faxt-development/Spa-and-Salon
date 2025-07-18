@@ -238,6 +238,9 @@
                                  tabindex="-1"
                                  x-cloak>
                                 <div class="py-1" role="none">
+                                    <x-dropdown-link href="{{ route('admin.reports.sales') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
+                                        {{ __('Sales Reports') }}
+                                    </x-dropdown-link>
                                     <x-dropdown-link href="{{ route('reports.clients.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem" tabindex="-1">
                                         {{ __('Client Spend Analytics') }}
                                     </x-dropdown-link>

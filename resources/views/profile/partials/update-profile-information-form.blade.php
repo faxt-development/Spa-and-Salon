@@ -110,7 +110,7 @@
             <x-input-error class="mt-2" :messages="$errors->get('zip_code')" />
         </div>
 
-        <h3 class="text-lg font-medium text-gray-900 mt-8">{{ __('Notification Preferences') }}</h3>
+        <h3 id="notification-preferences" class="text-lg font-medium text-gray-900 mt-8">{{ __('Notification Preferences') }}</h3>
 
         <!-- SMS Notifications -->
         <div class="flex items-center">

@@ -208,6 +208,54 @@
                     <textarea name="notes" id="notes" rows="3"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">{{ old('notes', $location->notes) }}</textarea>
                 </div>
+                
+                <!-- Business Hours Section -->
+                <div class="col-span-2" id="business-hours">
+                    <h2 class="text-xl font-semibold mb-4 border-b pb-2 mt-6">Business Hours</h2>
+                </div>
+                
+                <div class="col-span-2 space-y-4">
+                    @php
+                        $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+                        $businessHours = old('business_hours', $location->business_hours) ?? [];
+                    @endphp
+                    
+                    @foreach($days as $day)
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                            <div class="font-medium capitalize">{{ $day }}</div>
+                            <div class="flex items-center space-x-2">
+                                <div class="flex items-center">
+                                    <input type="checkbox" 
+                                        id="{{ $day }}_open" 
+                                        name="business_hours[{{ $day }}][is_open]" 
+                                        value="1" 
+                                        class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                        {{ isset($businessHours[$day]) && isset($businessHours[$day]['open']) ? 'checked' : '' }}
+                                        onchange="toggleHoursFields('{{ $day }}')">
+                                    <label for="{{ $day }}_open" class="ml-2 block text-sm text-gray-900">Open</label>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2" id="{{ $day }}_hours_container">
+                                <div>
+                                    <label for="{{ $day }}_open_time" class="block text-xs text-gray-700">Open Time</label>
+                                    <input type="time" 
+                                        id="{{ $day }}_open_time" 
+                                        name="business_hours[{{ $day }}][open]" 
+                                        value="{{ $businessHours[$day]['open'] ?? '09:00' }}" 
+                                        class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="{{ $day }}_close_time" class="block text-xs text-gray-700">Close Time</label>
+                                    <input type="time" 
+                                        id="{{ $day }}_close_time" 
+                                        name="business_hours[{{ $day }}][close]" 
+                                        value="{{ $businessHours[$day]['close'] ?? '17:00' }}" 
+                                        class="border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
 
             <div class="mt-6 flex justify-end">

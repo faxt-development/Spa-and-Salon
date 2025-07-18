@@ -249,6 +249,14 @@ Route::middleware(['auth:web'])->group(function () {
 
     // Admin routes
     Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Support & Resources Routes
+        Route::prefix('support')->name('support.')->group(function () {
+            Route::get('/docs', [App\Http\Controllers\Admin\SupportController::class, 'docs'])->name('docs');
+            Route::get('/contacts', [App\Http\Controllers\Admin\SupportController::class, 'contacts'])->name('contacts');
+            Route::post('/contacts', [App\Http\Controllers\Admin\SupportController::class, 'updateContacts'])->name('contacts.update');
+            Route::get('/backup', [App\Http\Controllers\Admin\SupportController::class, 'backup'])->name('backup');
+        });
+        
         // Company Settings Routes
         Route::get('/company/edit', [App\Http\Controllers\Admin\CompanyController::class, 'edit'])->name('company.edit');
         Route::put('/company/update', [App\Http\Controllers\Admin\CompanyController::class, 'update'])->name('company.update');
@@ -323,6 +331,8 @@ Route::middleware(['auth:web'])->group(function () {
 
         // Location Management Routes
         Route::resource('locations', \App\Http\Controllers\Admin\LocationController::class);
+        Route::get('/locations/{location}/hours', [\App\Http\Controllers\Admin\LocationController::class, 'hours'])->name('locations.hours');
+        Route::put('/locations/{location}/hours', [\App\Http\Controllers\Admin\LocationController::class, 'updateHours'])->name('locations.hours.update');
         Route::get('/reports/payment-methods', [\App\Http\Controllers\Admin\ReportController::class, 'paymentMethods'])->name('reports.payment-methods');
 
         // Email Campaign Routes
