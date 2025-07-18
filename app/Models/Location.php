@@ -35,9 +35,10 @@ class Location extends Model
         'is_primary',
         'settings',
         'notes',
+        'company_id',
     ];
 
-    /**
+   /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
@@ -48,6 +49,14 @@ class Location extends Model
         'is_active' => 'boolean',
         'is_primary' => 'boolean',
     ];
+
+    /**
+     * Get the company that owns the location.
+     */
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * Get the staff members associated with this location.
@@ -89,17 +98,17 @@ class Location extends Model
     public function getFormattedAddressAttribute(): string
     {
         $address = $this->address_line_1;
-        
+
         if ($this->address_line_2) {
             $address .= ', ' . $this->address_line_2;
         }
-        
+
         $address .= ', ' . $this->city . ', ' . $this->state . ' ' . $this->postal_code;
-        
+
         if ($this->country && $this->country !== 'US') {
             $address .= ', ' . $this->country;
         }
-        
+
         return $address;
     }
 

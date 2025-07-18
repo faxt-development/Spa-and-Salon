@@ -218,16 +218,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
         Route::put('/reminders', [\App\Http\Controllers\Admin\AppointmentReminderController::class, 'update'])->name('reminders.update');
         Route::get('/policies', [\App\Http\Controllers\Admin\AppointmentPolicyController::class, 'index'])->name('policies');
         Route::put('/policies', [\App\Http\Controllers\Admin\AppointmentPolicyController::class, 'update'])->name('policies.update');
-        Route::get('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'show'])->name('show');
-        Route::get('/{appointment}/edit', [\App\Http\Controllers\AppointmentController::class, 'edit'])->name('edit');
-        Route::put('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'update'])->name('update');
-        Route::delete('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'destroy'])->name('destroy');
-
-        // Appointment Settings routes
+        
+        // Appointment Settings routes - placed before wildcard routes to prevent conflicts
         Route::get('/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'index'])->name('settings');
         Route::get('/settings/create', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'create'])->name('settings.create');
         Route::post('/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'store'])->name('settings.store');
         Route::get('/settings/{appointmentSetting}/edit', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'edit'])->name('settings.edit');
+        
+        // Appointment wildcard routes - placed after specific routes to avoid conflicts
+        Route::get('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'show'])->name('show');
+        Route::get('/{appointment}/edit', [\App\Http\Controllers\AppointmentController::class, 'edit'])->name('edit');
+        Route::put('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'update'])->name('update');
+        Route::delete('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'destroy'])->name('destroy');
         Route::put('/settings/{appointmentSetting}', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'update'])->name('settings.update');
         Route::delete('/settings/{appointmentSetting}', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'destroy'])->name('settings.destroy');
     });

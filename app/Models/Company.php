@@ -30,7 +30,7 @@ class Company extends Model
         'logo',
         'description',
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
@@ -41,7 +41,13 @@ class Company extends Model
         'homepage_content' => 'json',
         'theme_settings' => 'json',
     ];
-
+    /**
+     * Get the locations for the company.
+     */
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
     /**
      * The services that belong to this company.
      */
@@ -59,7 +65,7 @@ class Company extends Model
             ->withPivot('is_primary', 'role')
             ->withTimestamps();
     }
-    
+
     /**
      * Get the primary admin user that owns the company.
      */
@@ -71,7 +77,7 @@ class Company extends Model
             ->wherePivot('role', 'admin')
             ->first();
     }
-    
+
     /**
      * Legacy method for backward compatibility.
      * @deprecated Use owner() instead
