@@ -41,6 +41,7 @@ class Company extends Model
         'homepage_content' => 'json',
         'theme_settings' => 'json',
     ];
+
     /**
      * Get the locations for the company.
      */
@@ -48,6 +49,7 @@ class Company extends Model
     {
         return $this->hasMany(Location::class);
     }
+
     /**
      * The services that belong to this company.
      */
@@ -61,7 +63,8 @@ class Company extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class)
+        return $this
+            ->belongsToMany(User::class)
             ->withPivot('is_primary', 'role')
             ->withTimestamps();
     }
@@ -71,7 +74,8 @@ class Company extends Model
      */
     public function owner()
     {
-        return $this->belongsToMany(User::class)
+        return $this
+            ->belongsToMany(User::class)
             ->withPivot('is_primary', 'role')
             ->wherePivot('is_primary', true)
             ->wherePivot('role', 'admin')
@@ -86,7 +90,8 @@ class Company extends Model
     {
         // For backward compatibility, we'll keep this method
         // Must return a relationship instance, not the result of a method call
-        return $this->belongsToMany(User::class)
+        return $this
+            ->belongsToMany(User::class)
             ->withPivot('is_primary', 'role')
             ->wherePivot('role', 'admin')
             ->withTimestamps();
@@ -98,5 +103,13 @@ class Company extends Model
     public function theme()
     {
         return $this->belongsTo(Theme::class);
+    }
+
+    /**
+     * Get the company-wide business hours.
+     */
+    public function businessHours()
+    {
+        return $this->hasMany(BusinessHour::class);
     }
 }

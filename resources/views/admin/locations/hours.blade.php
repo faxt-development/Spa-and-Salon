@@ -40,32 +40,35 @@
 
             <div class="space-y-6">
                 @php
-                    $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-                    $businessHours = $location->business_hours ?? [];
+                    $dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
                 @endphp
 
-                @foreach($days as $day)
+                @foreach($dayNames as $index => $dayName)
+                    @php
+                        $businessHour = $businessHours[$index] ?? null;
+                        $isOpen = $businessHour ? !$businessHour->is_closed : false;
+                    @endphp
                     <div class="group mb-6">
                         <div class="transition-all duration-200 hover:shadow-sm border border-gray-200 hover:border-gray-300 rounded-lg">
                             <div class="p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center gap-4">
-                                        <label for="{{ $day }}_open" class="text-xl font-medium min-w-[100px] capitalize text-gray-800">
-                                            {{ $day }}
+                                        <label for="{{ $dayName }}_open" class="text-xl font-medium min-w-[100px] capitalize text-gray-800">
+                                            {{ $dayName }}
                                         </label>
                                         <x-toggle-switch
-                                            id="{{ $day }}_open"
-                                            name="business_hours[{{ $day }}][is_open]"
-                                            :checked="isset($businessHours[$day]) && isset($businessHours[$day]['open']) !== false"
+                                            id="{{ $dayName }}_open"
+                                            name="business_hours[{{ $dayName }}][is_open]"
+                                            :checked="$isOpen"
                                             show-status
                                         />
-                                        <span class="text-sm text-gray-500" id="{{ $day }}_status">
-                                            {{ isset($businessHours[$day]) && isset($businessHours[$day]['open']) === false ? 'Closed' : 'Open' }}
+                                        <span class="text-sm text-gray-500" id="{{ $dayName }}_status">
+                                            {{ $isOpen ? 'Open' : 'Closed' }}
                                         </span>
                                     </div>
 
-                                    <div class="{{ isset($businessHours[$day]) && isset($businessHours[$day]['open']) === false ? 'hidden' : '' }}">
-                                        <button type="button" class="text-sm border border-gray-300 rounded px-3 py-1 flex items-center gap-1 hover:bg-gray-50" onclick="addTimeSlot('{{ $day }}')">
+                                    <div class="{{ !$isOpen ? 'hidden' : '' }}">
+                                        <button type="button" class="text-sm border border-gray-300 rounded px-3 py-1 flex items-center gap-1 hover:bg-gray-50" onclick="addTimeSlot('{{ $dayName }}')">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                             </svg>
@@ -74,12 +77,12 @@
                                     </div>
                                 </div>
 
-                                <div id="{{ $day }}_hours_container" class="flex flex-col gap-4 {{ isset($businessHours[$day]) && isset($businessHours[$day]['open']) === false ? 'opacity-50 pointer-events-none' : '' }}">
-                                    <div id="{{ $day }}_closed_message" class="text-gray-500 {{ isset($businessHours[$day]) && isset($businessHours[$day]['open']) === false ? '' : 'hidden' }}">
+                                <div id="{{ $dayName }}_hours_container" class="flex flex-col gap-4 {{ !$isOpen ? 'opacity-50 pointer-events-none' : '' }}">
+                                    <div id="{{ $dayName }}_closed_message" class="text-gray-500 {{ !$isOpen ? '' : 'hidden' }}">
                                         Closed all day
                                     </div>
 
-                                    <div id="{{ $day }}_time_slots" class="space-y-4">
+                                    <div id="{{ $dayName }}_time_slots" class="space-y-4">
                                         <!-- Default time slot -->
                                         <div class="time-slot bg-gray-50 rounded-lg p-3">
                                             <div class="flex items-center gap-4">
@@ -87,17 +90,17 @@
                                                     <div>
                                                         <label class="text-sm text-gray-500 block mb-1">From</label>
                                                         <input type="time"
-                                                            id="{{ $day }}_open_time"
-                                                            name="business_hours[{{ $day }}][slots][0][open]"
-                                                            value="{{ $businessHours[$day]['open'] ?? '09:00' }}"
+                                                            id="{{ $dayName }}_open_time"
+                                                            name="business_hours[{{ $dayName }}][slots][0][open]"
+                                                            value="{{ $businessHour && !$businessHour->is_closed ? substr($businessHour->open_time, 0, 5) : '09:00' }}"
                                                             class="border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
                                                     </div>
                                                     <div>
                                                         <label class="text-sm text-gray-500 block mb-1">To</label>
                                                         <input type="time"
-                                                            id="{{ $day }}_close_time"
-                                                            name="business_hours[{{ $day }}][slots][0][close]"
-                                                            value="{{ $businessHours[$day]['close'] ?? '17:00' }}"
+                                                            id="{{ $dayName }}_close_time"
+                                                            name="business_hours[{{ $dayName }}][slots][0][close]"
+                                                            value="{{ $businessHour && !$businessHour->is_closed ? substr($businessHour->close_time, 0, 5) : '17:00' }}"
                                                             class="border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500">
                                                     </div>
                                                 </div>
@@ -111,11 +114,11 @@
                                     </div>
 
                                     <div class="flex gap-2 pt-3">
-                                        <select class="text-xs px-2 py-1 border rounded bg-white text-gray-500" id="{{ $day }}_copy_from">
+                                        <select class="text-xs px-2 py-1 border rounded bg-white text-gray-500" id="{{ $dayName }}_copy_from">
                                             <option value="">Copy from...</option>
-                                            @foreach($days as $sourceDay)
-                                                @if($sourceDay != $day)
-                                                    <option value="{{ $sourceDay }}">{{ ucfirst($sourceDay) }}</option>
+                                            @foreach($dayNames as $sourceDayIndex => $sourceDayName)
+                                                @if($sourceDayName != $dayName)
+                                                    <option value="{{ $sourceDayName }}">{{ ucfirst($sourceDayName) }}</option>
                                                 @endif
                                             @endforeach
                                         </select>

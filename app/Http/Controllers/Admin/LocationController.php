@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BusinessHour;
 use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -232,7 +233,30 @@ class LocationController extends Controller
      */
     public function hours(Location $location)
     {
-        return view('admin.locations.hours', compact('location'));
+        // Get business hours for this location
+        $businessHours = BusinessHour::where('location_id', $location->id)
+            ->orderBy('day_of_week')
+            ->get()
+            ->keyBy('day_of_week');
+            
+        // Ensure we have entries for all 7 days of the week
+        $daysOfWeek = [0, 1, 2, 3, 4, 5, 6]; // 0 = Sunday, 1 = Monday, etc.
+        
+        foreach ($daysOfWeek as $day) {
+            if (!$businessHours->has($day)) {
+                // Create default hours for this day
+                $defaultHour = new BusinessHour([
+                    'day_of_week' => $day,
+                    'open_time' => '09:00:00',
+                    'close_time' => '17:00:00',
+                    'is_closed' => ($day === 0 || $day === 6), // Closed on weekends by default
+                ]);
+                
+                $businessHours->put($day, $defaultHour);
+            }
+        }
+        
+        return view('admin.locations.hours', compact('location', 'businessHours'));
     }
     
     /**
@@ -244,30 +268,66 @@ class LocationController extends Controller
      */
     public function updateHours(Request $request, Location $location)
     {
-        $businessHours = [];
+        $validated = $request->validate([
+            'business_hours' => 'required|array',
+            'business_hours.*.is_open' => 'boolean',
+            'business_hours.*.slots' => 'array',
+            'business_hours.*.slots.*.open' => 'required_with:business_hours.*.slots|string',
+            'business_hours.*.slots.*.close' => 'required_with:business_hours.*.slots|string',
+        ]);
         
-        foreach ($request->input('business_hours', []) as $day => $data) {
-            if (isset($data['is_open']) && $data['is_open']) {
-                // Handle multiple time slots per day
+        // Delete existing business hours for this location
+        BusinessHour::where('location_id', $location->id)->delete();
+        
+        // Map day names to day_of_week values (0 = Sunday, 1 = Monday, etc.)
+        $dayMapping = [
+            'sunday' => 0,
+            'monday' => 1,
+            'tuesday' => 2,
+            'wednesday' => 3,
+            'thursday' => 4,
+            'friday' => 5,
+            'saturday' => 6,
+        ];
+        
+        // Process and save new business hours
+        foreach ($request->input('business_hours', []) as $dayName => $data) {
+            // Skip if day name is not valid
+            if (!isset($dayMapping[$dayName])) {
+                continue;
+            }
+            
+            $dayOfWeek = $dayMapping[$dayName];
+            $isClosed = !isset($data['is_open']) || !$data['is_open'];
+            
+            if ($isClosed) {
+                // Create a closed day entry
+                BusinessHour::create([
+                    'location_id' => $location->id,
+                    'day_of_week' => $dayOfWeek,
+                    'open_time' => '00:00:00',
+                    'close_time' => '00:00:00',
+                    'is_closed' => true,
+                ]);
+            } else {
+                // Handle time slots
                 if (isset($data['slots']) && is_array($data['slots'])) {
-                    $businessHours[$day] = [];
+                    // For now, we'll just use the first slot as we're transitioning from JSON
+                    // In the future, we could support multiple slots per day
+                    $slot = $data['slots'][0] ?? null;
                     
-                    // Process each time slot
-                    foreach ($data['slots'] as $slot) {
-                        if (isset($slot['open']) && isset($slot['close'])) {
-                            $businessHours[$day][] = [
-                                'open' => $slot['open'],
-                                'close' => $slot['close']
-                            ];
-                        }
+                    if ($slot && isset($slot['open']) && isset($slot['close'])) {
+                        BusinessHour::create([
+                            'location_id' => $location->id,
+                            'day_of_week' => $dayOfWeek,
+                            'open_time' => $slot['open'] . ':00', // Add seconds for proper time format
+                            'close_time' => $slot['close'] . ':00',
+                            'is_closed' => false,
+                        ]);
                     }
                 }
             }
         }
-        
-        $location->update([
-            'business_hours' => $businessHours
-        ]);
         
         return redirect()->route('admin.locations.hours', $location)
             ->with('success', 'Business hours updated successfully.');

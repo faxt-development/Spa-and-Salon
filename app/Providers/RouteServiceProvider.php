@@ -111,7 +111,19 @@ class RouteServiceProvider extends ServiceProvider
             // Check if we have a cached version
             $cacheKey = "company_theme:{$host}";
             $company = Cache::remember($cacheKey, now()->addDay(), function () use ($host) {
-                return Company::with('theme')->where('domain', $host)->first();
+                // First try exact match
+                $exactMatch = Company::with('theme')->where('domain', $host)->first();
+                if ($exactMatch) {
+                    return $exactMatch;
+                }
+                
+                // If no exact match, look for domain in comma-separated list
+                return Company::with('theme')
+                    ->whereRaw("FIND_IN_SET(?, domain) > 0", [$host])
+                    ->orWhereRaw("? LIKE CONCAT('%,', domain, ',%')", [",{$host},"])
+                    ->orWhereRaw("? LIKE CONCAT(domain, ',%')", ["{$host},"])
+                    ->orWhereRaw("? LIKE CONCAT('%,', domain)", [",{$host}"])
+                    ->first();
             });
 
             if ($company) {

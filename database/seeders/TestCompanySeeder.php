@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Company;
+use App\Models\BusinessHour;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -38,7 +39,7 @@ class TestCompanySeeder extends Seeder
 
         // Create a test company with custom domain
         $company = Company::firstOrCreate(
-            ['domain' => 'test-spa.localhost'],
+            ['domain' => 'localhost,127.0.0.1'],
             [
                 'name' => 'Test Spa & Salon',
                 'address' => '123 Test Street',
@@ -94,8 +95,7 @@ class TestCompanySeeder extends Seeder
                             'content' => 'The massage was incredible and the atmosphere is so relaxing.',
                             'rating' => 4
                         ]
-                    ],
-                    'businessHours' => "Monday - Friday: 9:00 AM - 8:00 PM\nSaturday: 10:00 AM - 6:00 PM\nSunday: 11:00 AM - 5:00 PM"
+                    ]
                 ],
                 'theme_settings' => [
                     'primaryColor' => '#4f46e5',
@@ -114,8 +114,41 @@ class TestCompanySeeder extends Seeder
                 'updated_at' => now(),
             ]
         ]);
+        
+        // Create business hours for the company
+        // First delete any existing hours for this company
+        BusinessHour::where('company_id', $company->id)->delete();
+        
+        // Define business hours for each day
+        $businessHours = [
+            // Monday (1)
+            ['day_of_week' => 1, 'open_time' => '09:00:00', 'close_time' => '20:00:00', 'is_closed' => false],
+            // Tuesday (2)
+            ['day_of_week' => 2, 'open_time' => '09:00:00', 'close_time' => '20:00:00', 'is_closed' => false],
+            // Wednesday (3)
+            ['day_of_week' => 3, 'open_time' => '09:00:00', 'close_time' => '20:00:00', 'is_closed' => false],
+            // Thursday (4)
+            ['day_of_week' => 4, 'open_time' => '09:00:00', 'close_time' => '20:00:00', 'is_closed' => false],
+            // Friday (5)
+            ['day_of_week' => 5, 'open_time' => '09:00:00', 'close_time' => '20:00:00', 'is_closed' => false],
+            // Saturday (6)
+            ['day_of_week' => 6, 'open_time' => '10:00:00', 'close_time' => '18:00:00', 'is_closed' => false],
+            // Sunday (7)
+            ['day_of_week' => 7, 'open_time' => '11:00:00', 'close_time' => '17:00:00', 'is_closed' => false],
+        ];
+        
+        // Create business hours records
+        foreach ($businessHours as $hours) {
+            BusinessHour::create([
+                'company_id' => $company->id,
+                'day_of_week' => $hours['day_of_week'],
+                'open_time' => $hours['open_time'],
+                'close_time' => $hours['close_time'],
+                'is_closed' => $hours['is_closed'],
+            ]);
+        }
 
-        $this->command->info('Test company created with domain: test-spa.localhost');
-        $this->command->info('Admin login: testadmin@example.com / password');
+        $this->command->info('Test company created with domain: localhost,127.0.0.1');
+        $this->command->info('Admin login: admin@example.com / password');
     }
 }
