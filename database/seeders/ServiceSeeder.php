@@ -15,7 +15,7 @@ class ServiceSeeder extends Seeder
     {
         // Get all categories first
         $categories = ServiceCategory::all()->keyBy('name');
-        
+
         // Define services grouped by category
         $servicesByCategory = [
             'Hair Services' => [
@@ -25,6 +25,7 @@ class ServiceSeeder extends Seeder
                     'price' => 65.00,
                     'duration' => 60,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Men\'s Haircut',
@@ -32,6 +33,7 @@ class ServiceSeeder extends Seeder
                     'price' => 40.00,
                     'duration' => 30,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
             'Hair Color' => [
@@ -41,6 +43,7 @@ class ServiceSeeder extends Seeder
                     'price' => 75.00,
                     'duration' => 90,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Full Highlight',
@@ -48,6 +51,7 @@ class ServiceSeeder extends Seeder
                     'price' => 120.00,
                     'duration' => 150,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
             'Massage' => [
@@ -57,6 +61,7 @@ class ServiceSeeder extends Seeder
                     'price' => 90.00,
                     'duration' => 60,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Deep Tissue Massage',
@@ -64,6 +69,7 @@ class ServiceSeeder extends Seeder
                     'price' => 110.00,
                     'duration' => 60,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Hot Stone Massage',
@@ -71,6 +77,7 @@ class ServiceSeeder extends Seeder
                     'price' => 135.00,
                     'duration' => 90,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
             'Facials' => [
@@ -80,6 +87,7 @@ class ServiceSeeder extends Seeder
                     'price' => 85.00,
                     'duration' => 60,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Anti-Aging Facial',
@@ -87,6 +95,7 @@ class ServiceSeeder extends Seeder
                     'price' => 120.00,
                     'duration' => 75,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
             'Body Treatments' => [
@@ -96,6 +105,7 @@ class ServiceSeeder extends Seeder
                     'price' => 95.00,
                     'duration' => 60,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Detox Body Wrap',
@@ -103,6 +113,7 @@ class ServiceSeeder extends Seeder
                     'price' => 110.00,
                     'duration' => 75,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
             'Nails' => [
@@ -112,6 +123,7 @@ class ServiceSeeder extends Seeder
                     'price' => 35.00,
                     'duration' => 30,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Pedicure',
@@ -119,6 +131,7 @@ class ServiceSeeder extends Seeder
                     'price' => 45.00,
                     'duration' => 45,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Gel Manicure',
@@ -126,6 +139,7 @@ class ServiceSeeder extends Seeder
                     'price' => 50.00,
                     'duration' => 45,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
             'Waxing' => [
@@ -135,6 +149,7 @@ class ServiceSeeder extends Seeder
                     'price' => 20.00,
                     'duration' => 15,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Lip Wax',
@@ -142,6 +157,7 @@ class ServiceSeeder extends Seeder
                     'price' => 15.00,
                     'duration' => 10,
                     'active' => true,
+                    'template' => true,
                 ],
                 [
                     'name' => 'Full Leg Wax',
@@ -149,6 +165,7 @@ class ServiceSeeder extends Seeder
                     'price' => 65.00,
                     'duration' => 45,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
             'Makeup' => [
@@ -158,6 +175,7 @@ class ServiceSeeder extends Seeder
                     'price' => 85.00,
                     'duration' => 90,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
             'Specialty' => [
@@ -167,6 +185,7 @@ class ServiceSeeder extends Seeder
                     'price' => 350.00,
                     'duration' => 240,
                     'active' => true,
+                    'template' => true,
                 ],
             ],
         ];
@@ -175,16 +194,16 @@ class ServiceSeeder extends Seeder
         foreach ($servicesByCategory as $categoryName => $services) {
             // Find the category
             $category = $categories->get($categoryName);
-            
+
             if (!$category) {
                 continue; // Skip if category doesn't exist
             }
-            
+
             // Create each service in this category
             foreach ($services as $serviceData) {
                 // Create the service
                 $service = Service::create($serviceData);
-                
+
                 // Attach the category
                 $service->categories()->attach($category->id);
             }

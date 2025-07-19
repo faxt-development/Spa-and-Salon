@@ -182,16 +182,14 @@ public function copyTemplateService(Request $request, Company $company, Service 
 
 ### Frontend Protection
 
-Template services are visually distinguished in the UI with a purple border and a "Template" badge. Their checkboxes are disabled, and they cannot be removed from a company.
+Template services are visually distinguished in the UI with a purple border and a "Template" badge. They can be selected and added to a company like regular services, but they cannot be directly edited or removed from a company once added.
 
 ```javascript
-// Disable checkboxes for template services
+// Template services are visually distinguished but can be selected
 document.querySelectorAll('.service-card').forEach(card => {
     if (card.dataset.template === '1') {
-        const checkbox = card.querySelector('input[type="checkbox"]');
-        if (checkbox) {
-            checkbox.disabled = true;
-        }
+        // Template services have a purple border and badge
+        card.classList.add('border-l-4', 'border-purple-500');
     }
 });
 ```

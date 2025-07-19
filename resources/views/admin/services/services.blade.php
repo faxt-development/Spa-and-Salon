@@ -168,7 +168,6 @@
                                                     name="service_ids[]"
                                                     value="{{ $service->id }}"
                                                     class="service-checkbox rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500"
-                                                    {{ $service->template ? 'disabled' : '' }}
                                                     {{ $service->is_company_service ? 'checked' : '' }}
                                                 >
                                                 <label for="service-{{ $service->id }}" class="font-medium text-gray-900">
@@ -280,7 +279,7 @@
             const addMoreBtn = document.getElementById('add-more-btn');
             const servicesSearch = document.getElementById('services-search');
             const servicesForm = document.getElementById('services-form');
-            const servicesSection = document.querySelector('.lg\:col-span-2');
+            const servicesSection = document.querySelector('.lg\\:col-span-2');
 
             // Toggle services section visibility
             addMoreBtn.addEventListener('click', function() {
@@ -298,7 +297,7 @@
                 if (checkbox.checked) {
                     selectedServices.add(serviceId);
                     addServiceToSummary(serviceCard);
-                    
+
                     // Update the active services count
                     const activeServicesCount = document.querySelector('.bg-blue-100.text-blue-800.rounded-full');
                     if (activeServicesCount) {
@@ -323,7 +322,9 @@
             // Add service to the summary section
             function addServiceToSummary(serviceCard) {
                 const serviceId = serviceCard.querySelector('input[type="checkbox"]').value;
-                const serviceName = serviceCard.querySelector('h3').textContent.trim();
+                // Get service name without the Template badge text
+                const serviceNameLabel = serviceCard.querySelector('label').textContent.trim();
+                const serviceName = serviceNameLabel.replace(/Template$/g, '').trim();
                 const serviceCategory = serviceCard.querySelector('.service-category')?.textContent || 'Uncategorized';
                 const serviceDuration = serviceCard.querySelector('.service-duration')?.textContent || '0 min';
                 const servicePrice = serviceCard.querySelector('.service-price')?.textContent || '$0.00';
@@ -372,7 +373,7 @@
                             </button>
                         </div>`;
                 }
-                
+
                 // Close the div
                 serviceHtml += '</div>';
 
@@ -389,7 +390,7 @@
                 if (serviceElement) {
                     serviceElement.remove();
                 }
-                
+
                 // Update the active services count
                 const activeServicesCount = document.querySelector('.bg-blue-100.text-blue-800.rounded-full');
                 if (activeServicesCount) {
@@ -590,16 +591,17 @@
 
             // Initialize the page with selected services
             initializeSelectedServices();
+
         });
 
         // Template Service Copy Modal Functions
         function showCopyTemplateModal(serviceId) {
             const modal = document.getElementById('copy-template-modal');
             const confirmBtn = modal.querySelector('.confirm-copy-btn');
-            
+
             // Set service ID for the confirm button
             confirmBtn.dataset.serviceId = serviceId;
-            
+
             // Show the modal
             modal.classList.remove('hidden');
         }
