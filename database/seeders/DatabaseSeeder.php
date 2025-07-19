@@ -48,7 +48,7 @@ class DatabaseSeeder extends Seeder
         // which runs earlier in the seeding process to ensure proper order
 
         // Get the admin user created by TestCompanySeeder
-        $admin = User::where('email', 'testadmin@example.com')->first();
+        $admin = User::where('email', 'admin@example.com')->first();
         if (!$admin) {
             $this->command->warn('Admin user not found. Skipping subscription creation.');
             return;

@@ -148,7 +148,49 @@ class TestCompanySeeder extends Seeder
             ]);
         }
 
+        // Associate some template service categories with the company
+        $this->associateTemplateCategories($company);
+        
         $this->command->info('Test company created with domain: localhost,127.0.0.1');
         $this->command->info('Admin login: admin@example.com / password');
+    }
+    
+    /**
+     * Associate template service categories with the company
+     * 
+     * @param \App\Models\Company $company
+     * @return void
+     */
+    protected function associateTemplateCategories($company)
+    {
+        // Get template service categories
+        $templateCategories = \App\Models\ServiceCategory::where('template', true)
+            ->take(5) // Take first 5 template categories
+            ->get();
+            
+        if ($templateCategories->isEmpty()) {
+            $this->command->info('No template service categories found to associate with company.');
+            return;
+        }
+        
+        // Associate template categories with the company
+        $company->serviceCategories()->sync($templateCategories->pluck('id')->toArray());
+        
+        $this->command->info('Associated ' . $templateCategories->count() . ' template service categories with the company.');
+        
+        // Create a custom non-template category for the company
+        $customCategory = \App\Models\ServiceCategory::create([
+            'name' => 'Custom ' . $company->name . ' Services',
+            'description' => 'Custom services specific to ' . $company->name,
+            'slug' => 'custom-' . \Illuminate\Support\Str::slug($company->name) . '-services',
+            'active' => true,
+            'template' => false,
+            'display_order' => 100, // Put at the end
+        ]);
+        
+        // Associate the custom category with the company
+        $company->serviceCategories()->attach($customCategory->id);
+        
+        $this->command->info('Created and associated custom service category with the company.');
     }
 }

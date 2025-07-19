@@ -22,7 +22,7 @@ class StaffSeeder extends Seeder
         $services = Service::all();
 
         // Get the test company to associate staff with
-        $company = Company::where('domain', 'test-spa.localhost')->first();
+        $company = Company::where('id', 1)->first();
 
         if (!$company) {
          dd('no company found');   $this->command->warn('No test company found. Staff will not be associated with any company.');

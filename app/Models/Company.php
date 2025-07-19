@@ -57,6 +57,16 @@ class Company extends Model
     {
         return $this->belongsToMany(Service::class, 'company_service');
     }
+    
+    /**
+     * The service categories that belong to this company.
+     */
+    public function serviceCategories()
+    {
+        return $this->belongsToMany(ServiceCategory::class, 'company_service_category')
+            ->withTimestamps()
+            ->withPivot('deleted_at');
+    }
 
     /**
      * Get all users associated with the company.

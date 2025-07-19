@@ -20,6 +20,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'hair-services',
                 'active' => true,
                 'display_order' => 1,
+                'template' => true,
             ],
             [
                 'name' => 'Hair Color',
@@ -27,6 +28,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'hair-color',
                 'active' => true,
                 'display_order' => 2,
+                'template' => true,
             ],
             [
                 'name' => 'Hair Treatments',
@@ -34,6 +36,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'hair-treatments',
                 'active' => true,
                 'display_order' => 3,
+                'template' => true,
             ],
             [
                 'name' => 'Hair Extensions',
@@ -41,6 +44,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'hair-extensions',
                 'active' => true,
                 'display_order' => 4,
+                'template' => true,
             ],
             [
                 'name' => 'Makeup',
@@ -48,6 +52,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'makeup',
                 'active' => true,
                 'display_order' => 5,
+                'template' => true,
             ],
             [
                 'name' => 'Waxing',
@@ -55,6 +60,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'waxing',
                 'active' => true,
                 'display_order' => 6,
+                'template' => true,
             ],
             [
                 'name' => 'Nails',
@@ -62,6 +68,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'nails',
                 'active' => true,
                 'display_order' => 7,
+                'template' => true,
             ],
             [
                 'name' => 'Massage',
@@ -69,6 +76,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'massage',
                 'active' => true,
                 'display_order' => 8,
+                'template' => true,
             ],
             [
                 'name' => 'Facials',
@@ -76,6 +84,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'facials',
                 'active' => true,
                 'display_order' => 9,
+                'template' => true,
             ],
             [
                 'name' => 'Body Treatments',
@@ -83,6 +92,7 @@ class ServiceCategorySeeder extends Seeder
                 'slug' => 'body-treatments',
                 'active' => true,
                 'display_order' => 10,
+                'template' => true,
             ],
         ];
 

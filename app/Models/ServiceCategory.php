@@ -28,6 +28,7 @@ class ServiceCategory extends Model
         'meta_title',
         'meta_description',
         'meta_keywords',
+        'template',
     ];
 
     /**
@@ -39,6 +40,7 @@ class ServiceCategory extends Model
         'active' => 'boolean',
         'display_order' => 'integer',
         'parent_id' => 'integer',
+        'template' => 'boolean',
     ];
 
     /**
@@ -72,6 +74,17 @@ class ServiceCategory extends Model
     public function services(): BelongsToMany
     {
         return $this->belongsToMany(Service::class, 'service_service_category')->orderBy('name');
+    }
+
+    /**
+     * The companies that use this service category.
+     */
+    public function companies(): BelongsToMany
+    {
+        return $this->belongsToMany(Company::class, 'company_service_category')
+            ->withTimestamps()
+            ->withPivot('deleted_at')
+            ->whereNull('company_service_category.deleted_at');
     }
 
     /**
@@ -121,6 +134,28 @@ class ServiceCategory extends Model
     public function scopeActive($query)
     {
         return $query->where('active', true);
+    }
+    
+    /**
+     * Scope a query to only include template categories.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeTemplate($query)
+    {
+        return $query->where('template', true);
+    }
+    
+    /**
+     * Scope a query to only include non-template categories.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeNonTemplate($query)
+    {
+        return $query->where('template', false);
     }
 
     /**

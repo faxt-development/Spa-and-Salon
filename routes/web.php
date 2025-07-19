@@ -273,6 +273,9 @@ Route::middleware(['auth:web'])->group(function () {
             'destroy' => 'services.categories.destroy',
         ]);
         Route::post('/services/categories/reorder', [App\Http\Controllers\Admin\ServiceCategoryController::class, 'reorder'])->name('services.categories.reorder');
+        Route::post('/services/categories/add-to-company', [App\Http\Controllers\Admin\ServiceCategoryController::class, 'addToCompany'])->name('services.categories.add-to-company');
+        Route::post('/services/categories/remove-from-company/{category}', [App\Http\Controllers\Admin\ServiceCategoryController::class, 'removeFromCompany'])->name('services.categories.remove-from-company');
+        Route::post('/services/categories/{company}/copy-template/{category}', [App\Http\Controllers\Admin\ServiceCategoryController::class, 'copyTemplateCategory'])->name('services.categories.copy-template');
 
         // Services Management
         Route::resource('services', 'App\Http\Controllers\Admin\ServiceController')->names([
