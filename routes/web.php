@@ -198,8 +198,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
     Route::get('/dashboard/alerts', [\App\Http\Controllers\Admin\DashboardController::class, 'getAlerts'])->name('dashboard.alerts');
     });
 
-    // Onboarding checklist route
+    // Onboarding checklist routes
     Route::get('/onboarding-checklist', [OnboardingChecklistController::class, 'show'])->name('onboarding-checklist');
+    Route::post('/onboarding-checklist/toggle', [OnboardingChecklistController::class, 'toggleItem'])->name('admin.onboarding-checklist.toggle');
 
     // Payment Configuration Routes
     Route::prefix('payments')->name('payments.')->group(function () {

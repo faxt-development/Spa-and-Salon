@@ -116,6 +116,56 @@ class Company extends Model
     }
 
     /**
+     * Get the staff members associated with the company through locations.
+     */
+    public function locationStaff()
+    {
+        return $this->hasManyThrough(Staff::class, Location::class);
+    }
+
+    /**
+     * Get the staff members associated with the company through user roles.
+     */
+    public function userStaff()
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('is_primary', 'role')
+            ->wherePivot('role', 'staff')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get all staff members associated with the company through the company_user pivot table.
+     * 
+     * This method finds users with the 'staff' role in the company_user pivot table
+     * and then returns staff records that are linked to those users.
+     * 
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function staff()
+    {
+        // Get user IDs with 'staff' role for this company
+        $staffUserIds = $this->belongsToMany(User::class)
+            ->wherePivot('role', 'staff')
+            ->pluck('users.id');
+            
+        // Return staff records linked to these users
+        return Staff::whereIn('user_id', $staffUserIds);
+    }
+    
+    /**
+     * Get the payment methods available for this company.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function paymentMethods()
+    {
+        return $this->belongsToMany(PaymentMethod::class, 'company_payment_method')
+            ->withPivot('is_active')
+            ->withTimestamps();
+    }
+
+    /**
      * Get the company-wide business hours.
      */
     public function businessHours()

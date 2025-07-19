@@ -76,6 +76,7 @@ class User extends Authenticatable
             'receive_special_offers' => 'boolean',
             'receive_product_updates' => 'boolean',
             'onboarding_completed' => 'boolean',
+            'onboarding_checklist_items' => 'array',
         ];
     }
 
