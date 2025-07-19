@@ -170,7 +170,7 @@ Route::middleware(['auth:web'])->get('/debug-auth', function () {
 
 // Dashboard routes
 // Admin routes
-Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin', \App\Http\Middleware\CheckAdmin::class])->group(function () {
     // Email Management Routes
     Route::prefix('email')->name('email.')->group(function () {
         Route::get('/welcome', [EmailController::class, 'welcome'])->name('welcome');
@@ -199,8 +199,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
     });
 
     // Onboarding checklist routes
+    Route::middleware([ \App\Http\Middleware\CheckOnboardingStatus::class])->group(function () {
     Route::get('/onboarding-checklist', [OnboardingChecklistController::class, 'show'])->name('onboarding-checklist');
-    Route::post('/onboarding-checklist/toggle', [OnboardingChecklistController::class, 'toggleItem'])->name('admin.onboarding-checklist.toggle');
+    });
+    Route::post('/onboarding-checklist/toggle', [OnboardingChecklistController::class, 'toggleItem'])->name('onboarding-checklist.toggle');
 
     // Payment Configuration Routes
     Route::prefix('payments')->name('payments.')->group(function () {
@@ -219,13 +221,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin'])->
         Route::put('/reminders', [\App\Http\Controllers\Admin\AppointmentReminderController::class, 'update'])->name('reminders.update');
         Route::get('/policies', [\App\Http\Controllers\Admin\AppointmentPolicyController::class, 'index'])->name('policies');
         Route::put('/policies', [\App\Http\Controllers\Admin\AppointmentPolicyController::class, 'update'])->name('policies.update');
-        
+
         // Appointment Settings routes - placed before wildcard routes to prevent conflicts
         Route::get('/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'index'])->name('settings');
         Route::get('/settings/create', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'create'])->name('settings.create');
         Route::post('/settings', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'store'])->name('settings.store');
         Route::get('/settings/{appointmentSetting}/edit', [\App\Http\Controllers\Admin\AppointmentSettingController::class, 'edit'])->name('settings.edit');
-        
+
         // Appointment wildcard routes - placed after specific routes to avoid conflicts
         Route::get('/{appointment}', [\App\Http\Controllers\AppointmentController::class, 'show'])->name('show');
         Route::get('/{appointment}/edit', [\App\Http\Controllers\AppointmentController::class, 'edit'])->name('edit');
@@ -251,7 +253,7 @@ Route::middleware(['auth:web'])->group(function () {
         ->name('gift-cards.history-user');
 
     // Admin routes
-    Route::middleware(['auth:web', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['auth:web', 'role:admin', \App\Http\Middleware\CheckAdmin::class])->prefix('admin')->name('admin.')->group(function () {
         // Support & Resources Routes
         Route::prefix('support')->name('support.')->group(function () {
             Route::get('/docs', [App\Http\Controllers\Admin\SupportController::class, 'docs'])->name('docs');
@@ -259,7 +261,7 @@ Route::middleware(['auth:web'])->group(function () {
             Route::post('/contacts', [App\Http\Controllers\Admin\SupportController::class, 'updateContacts'])->name('contacts.update');
             Route::get('/backup', [App\Http\Controllers\Admin\SupportController::class, 'backup'])->name('backup');
         });
-        
+
         // Company Settings Routes
         Route::get('/company/edit', [App\Http\Controllers\Admin\CompanyController::class, 'edit'])->name('company.edit');
         Route::put('/company/update', [App\Http\Controllers\Admin\CompanyController::class, 'update'])->name('company.update');
@@ -287,7 +289,7 @@ Route::middleware(['auth:web'])->group(function () {
             'update' => 'services.update',
             'destroy' => 'services.destroy',
         ]);
-        
+
         // Service Packages Management
         Route::prefix('services')->name('services.')->group(function () {
             Route::get('/packages', [App\Http\Controllers\Admin\ServicePackageController::class, 'index'])->name('packages');
@@ -433,7 +435,7 @@ Route::middleware(['auth:web'])->group(function () {
         Route::resource('appointments', 'App\Http\Controllers\AppointmentController');
     });
 
-    Route::middleware(['auth:web', 'role:admin'])->group(function () {
+    Route::middleware(['auth:web', 'role:admin', \App\Http\Middleware\CheckAdmin::class])->group(function () {
         // Client Reports
         Route::prefix('reports/clients')->name('reports.clients.')->group(function () {
             Route::get('/', [\App\Http\Controllers\Admin\ClientReportController::class, 'index'])->name('index');
