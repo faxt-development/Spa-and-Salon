@@ -171,6 +171,23 @@ Route::middleware(['auth:web'])->get('/debug-auth', function () {
 // Dashboard routes
 // Admin routes
 Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin', \App\Http\Middleware\CheckAdmin::class])->group(function () {
+   //test pgvector
+
+// PGVector test routes
+    Route::get('/pgvector-test', [\App\Http\Controllers\PgvectorTestController::class, 'show']);
+    Route::prefix('api')->group(function () {
+        Route::get('/test-pgvector', [\App\Http\Controllers\PgvectorTestController::class, 'test']);
+        Route::get('/test-pgvector/syntax', [\App\Http\Controllers\PgvectorTestController::class, 'testSyntax']);
+        Route::get('/test-pgvector/search-path', [\App\Http\Controllers\PgvectorTestController::class, 'checkSearchPath']);
+        Route::get('/test-pgvector/embedding', [\App\Http\Controllers\PgvectorTestController::class, 'viewEmbedding']);
+        Route::get('/test-pgvector/schema-id', [\App\Http\Controllers\PgvectorTestController::class, 'testSchemaId']);
+        Route::get('/test-pgvector/check-extension', [\App\Http\Controllers\PgvectorTestController::class, 'checkExtension']);
+        Route::get('/test-pgvector/raw-sql', [\App\Http\Controllers\PgvectorTestController::class, 'testRawSql']);
+        Route::get('/test-pgvector/rpc', [\App\Http\Controllers\PgvectorTestController::class, 'testRpcApproach']);
+    });
+
+
+
     // Email Management Routes
     Route::prefix('email')->name('email.')->group(function () {
         Route::get('/welcome', [EmailController::class, 'welcome'])->name('welcome');
@@ -487,6 +504,11 @@ Route::middleware(['auth:web'])->group(function () {
 // Subscription required page
 Route::get('/subscription-required', [\App\Http\Controllers\SubscriptionController::class, 'showRequired'])
     ->name('subscription.required');
+
+// Assistant routes
+Route::post('/assistant/search', [\App\Http\Controllers\AssistantController::class, 'search'])
+    ->middleware(['auth:web'])
+    ->name('assistant.search');
 
 // Auth Routes
 Route::namespace('App\Http\Controllers\Auth')->group(function () {

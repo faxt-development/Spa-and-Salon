@@ -40,8 +40,6 @@ class CheckAdmin
 
         $user = auth()->user();
         $currentRoute = $request->route()->getName();
-        info('current route ');
-      info($currentRoute);
         // Map of route names to onboarding checklist item keys
         $routeToChecklistMap = [
             'profile.edit' => 'profile_setup.complete_profile',

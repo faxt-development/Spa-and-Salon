@@ -137,6 +137,9 @@
 
         </div>
 
+        <!-- Assistant Component -->
+        <x-assistant />
+
         @stack('modals')
         @stack('scripts')
     </body>

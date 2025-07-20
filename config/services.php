@@ -60,4 +60,12 @@ return [
         'default_validity_days' => env('GIFT_CARD_DEFAULT_VALIDITY_DAYS', 365), // Default validity period in days
     ],
 
+    'aws' => [
+        'key' => env('AWS_ACCESS_KEY_ID'),
+        'secret' => env('AWS_SECRET_ACCESS_KEY'),
+        'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
+        'bedrock' => [
+            'embedding_model_id' => env('AWS_BEDROCK_EMBEDDING_MODEL_ID', 'amazon.titan-embed-text-v2:0'),
+        ],
+    ],
 ];

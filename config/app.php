@@ -67,6 +67,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\TaxServiceProvider::class,
         App\Providers\LoyaltyServiceProvider::class,
+        App\Providers\PgvectorServiceProvider::class,
     ],
     
     /*
