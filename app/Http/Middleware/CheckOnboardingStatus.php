@@ -153,6 +153,32 @@ class CheckOnboardingStatus
     }
 
     /**
+     * Set a value in a nested array using an array of keys
+     *
+     * @param array &$array  The array to modify
+     * @param array $keys    The keys that specify the nested location
+     * @param mixed $value   The value to set
+     * @return void
+     */
+    protected function setNestedArrayValue(array &$array, array $keys, $value): void
+    {
+        $current = &$array;
+
+        foreach ($keys as $key) {
+            if (!isset($current[$key]) || !is_array($current[$key])) {
+                $current[$key] = [];
+            }
+
+            if (next($keys) === false) {
+                $current[$key] = $value;
+                return;
+            }
+
+            $current = &$current[$key];
+        }
+    }
+
+    /**
      * Check if an item is already completed in the JSON field
      *
      * @param array $array The array to check
