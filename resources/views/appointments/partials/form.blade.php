@@ -5,15 +5,16 @@
     'clientEmail' => $client->email ?? auth()->user()->email,
     'clientPhone' => $client->phone ?? old('client_phone'),
     'selectedServices' => old('service_ids', $selectedServices ?? []),
-    'startTime' => old('start_time', $appointment->start_time->format('H:i') ?? '09:00'),
-    'endTime' => old('end_time', $appointment->end_time->format('H:i') ?? '10:00')
+    'startTime' => old('start_time', isset($appointment) ? $appointment->start_time?->format('H:i') : '09:00'),
+    'endTime' => old('end_time', isset($appointment) ? $appointment->end_time?->format('H:i') : '10:00')
 ]) }})">
     @csrf
     @if(isset($appointment) && $appointment->id)
         @method('PUT')
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 {{ ($isAdmin ?? false) || ($isNewClient ?? false) ? 'md:grid-cols-2' : 'md:grid-cols-1' }} gap-6">
+        @if(($isAdmin ?? false) || ($isNewClient ?? false))
         <!-- Client Information -->
         <div class="space-y-4">
             <h4 class="text-md font-medium">Client Information</h4>
@@ -78,7 +79,7 @@
                     :required="!isAdmin || isNewClient">
             </div>
         </div>
-
+        @endif
 
         <!-- Appointment Details -->
         <div class="space-y-4">
@@ -99,7 +100,7 @@
 
             <div>
                 <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
-                <input type="date" name="date" id="date" value="{{ old('date', $appointment->start_time->format('Y-m-d') ?? request('date', date('Y-m-d'))) }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md datepicker">
+                <input type="date" name="date" id="date" value="{{ old('date', isset($appointment) ? $appointment->start_time?->format('Y-m-d') : request('date', date('Y-m-d'))) }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border border-gray-300 rounded-md datepicker">
             </div>
 
             <div class="grid grid-cols-2 gap-4">
