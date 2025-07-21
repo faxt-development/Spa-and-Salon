@@ -115,7 +115,7 @@ The following features mentioned in this document need to be implemented or enha
 ### Authentication & Registration
 - **Two-Factor Authentication (2FA)**: Implement 2FA support for enhanced security
 - **Free Trial Registration Flow**: Ensure the subscription-based registration with free trial is fully implemented
-- **Post-Purchase Onboarding Email**: Implement automated email with onboarding link after subscription purchase
+- **Post-Purchase Onboarding Email**: ✅ Implemented in Stripe webhook - automated email with onboarding link after subscription purchase
 - **Staff Registration & Invitation**: Implement staff invitation system and registration workflow
 - **Client Self-Registration**: Add client self-registration functionality on booking page
 
