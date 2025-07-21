@@ -14,11 +14,15 @@ class IngestHelpEmbeddings extends Command
     {
         $clearAll = $this->option('clear-all');
         $type = $this->option('type');
-        
+        if(!$type){
+            $this->error('--type , Type parameter is required');
+            return;
+        }
+
         $this->info("Processing {$type} documents" . ($clearAll ? ' (clearing all existing embeddings first)' : ''));
-        
+
         $service->run($clearAll, $type);
-        
+
         $this->info("{$type} embeddings inserted successfully.");
     }
 }

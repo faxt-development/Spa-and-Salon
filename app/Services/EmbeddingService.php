@@ -77,7 +77,37 @@ class EmbeddingService
         }
     }
 
-    public function run($clearExisting = false, $sourceType = 'help_document')
+    /**
+     * Find all markdown files recursively in a directory
+     *
+     * @param string $dir Directory to search in
+     * @return array Array of file paths
+     */
+    protected function findMarkdownFiles(string $dir): array
+    {
+        $result = [];
+        $files = scandir($dir);
+
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') {
+                continue;
+            }
+
+            $path = $dir . '/' . $file;
+
+            if (is_dir($path)) {
+                // Recursively search subdirectories
+                $result = array_merge($result, $this->findMarkdownFiles($path));
+            } elseif (pathinfo($path, PATHINFO_EXTENSION) === 'md') {
+                // Add markdown files to result
+                $result[] = $path;
+            }
+        }
+
+        return $result;
+    }
+
+    public function run($clearExisting = true, $sourceType = 'help_document')
     {
         if (!$this->isPgsqlDriverAvailable()) {
             Log::error('PostgreSQL driver not found. Please install the pdo_pgsql PHP extension.');
@@ -86,7 +116,11 @@ class EmbeddingService
             return;
         }
 
-        $files = glob(base_path($this->docsPath . '/*.md'));
+        // Get all markdown files recursively from the docs directory
+        $docsBasePath = base_path($this->docsPath);
+        $files = $this->findMarkdownFiles($docsBasePath);
+
+        Log::info("Found " . count($files) . " markdown files in {$this->docsPath} and its subdirectories");
 
         if ($clearExisting) {
             // Option to clear all existing embeddings before processing
@@ -142,26 +176,48 @@ class EmbeddingService
      * 4.7 characters, 8,192 tokens equates to ~38,500 characters
      * (though AWS notes you can go up to ~50,000 characters total)
      */
-    protected function chunkContent(string $text, int $length = 35000): array
+    /**
+     * Chunk content into segments of approximately 200 words or 1000 characters, whichever comes first
+     *
+     * @param string $text The text to chunk
+     * @param int $wordCount The target number of words per chunk
+     * @param int $charCount The maximum number of characters per chunk
+     * @return array The chunked content
+     */
+    protected function chunkContent(string $text, int $wordCount = 200, int $charCount = 1000): array
     {
+        $paragraphs = explode("\n\n", $text);
+        $chunks = [];
+        $buffer = '';
+        $currentWordCount = 0;
 
-    $paragraphs = explode("\n\n", $text);
-    $chunks = [];
-    $buffer = '';
-
-    foreach ($paragraphs as $para) {
-        $buffer .= $para . "\n\n";
-        if (Str::length($buffer) > 1000) { // Rough token equivalent
-            $chunks[] = trim($buffer);
-            $buffer = '';
+        foreach ($paragraphs as $para) {
+            // Count words and characters in this paragraph
+            $paraWordCount = str_word_count($para);
+            $paraCharCount = Str::length($para) + 2; // +2 for the newlines
+            
+            // Check if adding this paragraph would exceed either limit
+            $exceedsWordLimit = ($currentWordCount + $paraWordCount > $wordCount) && ($currentWordCount > 0);
+            $exceedsCharLimit = (Str::length($buffer) + $paraCharCount > $charCount) && (!empty($buffer));
+            
+            if ($exceedsWordLimit || $exceedsCharLimit) {
+                // Save the current buffer as a chunk
+                $chunks[] = trim($buffer);
+                $buffer = $para . "\n\n";
+                $currentWordCount = $paraWordCount;
+            } else {
+                // Add this paragraph to the buffer
+                $buffer .= $para . "\n\n";
+                $currentWordCount += $paraWordCount;
+            }
         }
-    }
 
-    if (!empty(trim($buffer))) {
-        $chunks[] = trim($buffer);
-    }
+        // Don't forget the last chunk if there's anything left in the buffer
+        if (!empty(trim($buffer))) {
+            $chunks[] = trim($buffer);
+        }
 
-    return $chunks;
+        return $chunks;
     }
 
     protected function getEmbedding(string $text): array
@@ -178,9 +234,9 @@ class EmbeddingService
             ]);
 
             // Log the request details
-            Log::info('Making Bedrock embedding API call with the following parameters:');
-            Log::info('Model ID: ' . $this->embeddingModelId);
-            Log::info('Text length: ' . strlen($text));
+           // Log::info('Making Bedrock embedding API call with the following parameters:');
+           // Log::info('Model ID: ' . $this->embeddingModelId);
+           // Log::info('Text length: ' . strlen($text));
 
             // Call the Bedrock API
             $response = $this->client->invokeModel([

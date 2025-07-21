@@ -92,14 +92,14 @@ class AssistantController extends Controller
         }
 
         try {
-            // Check if we have any embeddings at all
+   /*         // Check if we have any embeddings at all
             $embeddingCount = DB::connection('pgsql')->select("SELECT COUNT(*) as count FROM embeddings");
             Log::info('Total embeddings in database: ' . $embeddingCount[0]->count);
 
             // List available document sources
             $sources = DB::connection('pgsql')->select("SELECT DISTINCT metadata->>'source' as source FROM embeddings");
             Log::info('Available document sources: ' . json_encode(array_column($sources, 'source')));
-
+*/
             // Generate embedding for the query
             Log::info('Generating embedding for query: ' . $query);
             $embedding = $this->getEmbedding($query);
@@ -115,13 +115,13 @@ class AssistantController extends Controller
 
             // Now that we've added the extensions schema to the search path,
             // we can use direct vector casting without schema qualification
-            
+
             // Convert embedding array to string format for the query
             $embeddingStr = '[' . implode(',', $embedding) . ']';
             $vectorSql = "'$embeddingStr'::vector";
-            
+
             Log::info('Using direct vector casting with updated search path');
-            
+
             // Search for similar content in the database
             // First try with a higher similarity threshold
             $sqlQuery = "
@@ -141,26 +141,55 @@ class AssistantController extends Controller
                 ORDER BY embedding <=> $vectorSql ASC
                 LIMIT 5
             ";
+
+            // Define an RPC query as a last resort
+            $rpcQuery = $sqlQuery; // Same query but will be executed differently if needed
             
-            // Execute the query
+            // Try standard SQL query first
+            Log::info('Searching for similar content using standard SQL query');
+            $results = [];
             $runFallback = false;
+            $runRpc = false;
+            
             try {
-                Log::info('Searching for similar content in database using RPC approach');
                 $results = DB::connection('pgsql')->select($sqlQuery);
-                Log::info('Query returned ' . count($results) . ' results');
+                Log::info('Standard SQL query returned ' . count($results) . ' results');
+                
+                // If no results with high threshold, try the fallback query
+                if (empty($results)) {
+                    $runFallback = true;
+                }
             } catch (\Throwable $th) {
-                Log::error('Error executing high-threshold SQL query with RPC: ' . $th->getMessage());
+                Log::error('Error executing standard SQL query: ' . $th->getMessage());
                 $runFallback = true;
             }
-            // If no results with high threshold, try the fallback query
+            
+            // Try fallback query if needed
             if ($runFallback) {
                 try {
-                    Log::info('Using fallback query');
+                    Log::info('Using fallback query without threshold');
                     $results = DB::connection('pgsql')->select($fallbackQuery);
                     Log::info('Fallback query returned ' . count($results) . ' results');
+                    
+                    // If still no results, try RPC approach
+                    if (empty($results)) {
+                        $runRpc = true;
+                    }
                 } catch (\Throwable $th) {
                     Log::error('Error executing fallback query: ' . $th->getMessage());
-                    // Query failed, return empty results
+                    $runRpc = true;
+                }
+            }
+            
+            // Try RPC approach as last resort
+            if ($runRpc) {
+                try {
+                    Log::info('Using RPC approach as last resort');
+                    $results = DB::connection('pgsql')->select($rpcQuery);
+                    Log::info('RPC query returned ' . count($results) . ' results');
+                } catch (\Throwable $th) {
+                    Log::error('Error executing RPC query: ' . $th->getMessage());
+                    // All queries failed, return empty results
                     $results = [];
                 }
             }
