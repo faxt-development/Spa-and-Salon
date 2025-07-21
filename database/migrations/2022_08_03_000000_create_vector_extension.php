@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up()
     {
-        DB::connection('pgsql')->statement('CREATE EXTENSION IF NOT EXISTS vector');
+       // DB::connection('pgsql')->statement('CREATE EXTENSION IF NOT EXISTS vector');
     }
 
     /**
