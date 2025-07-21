@@ -230,3 +230,92 @@ Track financial performance:
 - Train staff on all service protocols to ensure consistent delivery
 - Use clear, descriptive names for services that clients will understand
 - Include preparation and aftercare instructions in service descriptions
+
+## Implementation Roadmap
+
+### Implemented Features
+
+1. **Basic Service Management**
+   - Create, read, update, and delete services
+   - Service categorization with hierarchical support
+   - Service visibility controls
+   - Basic service attributes (name, description, price, duration)
+   - Service images
+
+2. **Service Packages**
+   - Basic package creation with multiple services
+   - Package pricing with discount calculation
+   - Package categories
+   - Package activation/deactivation
+
+3. **Service Categories**
+   - Hierarchical category structure
+   - Category assignment to services
+   - Category display ordering
+
+4. **Staff Assignment**
+   - Assign staff to services
+   - Staff-specific pricing and duration overrides
+   - Primary staff designation
+
+### Missing Features
+
+1. **Service Add-ons**
+   - No implementation for optional service add-ons
+   - Missing add-on pricing and duration configuration
+   - No support for required vs. optional add-ons
+   - Missing maximum add-ons per service setting
+
+2. **Advanced Service Configuration**
+   - Buffer time before/after service not implemented
+   - Resource/equipment requirements partially implemented (schema exists but UI missing)
+   - Online booking availability controls missing
+   - No support for service combinations/recommendations
+
+3. **Service Availability**
+   - No custom service hours by day of week
+   - Missing seasonal availability settings
+   - No time slot restrictions
+
+4. **Pricing Options**
+   - No support for price variations by staff level
+   - Missing duration-based pricing options
+   - No special pricing for packages
+
+5. **Service Performance Tracking**
+   - Basic analytics not implemented
+   - Missing booking frequency tracking
+   - No revenue analysis by service
+   - Staff performance metrics missing
+
+6. **Service Requirements & Instructions**
+   - Pre-requisites field exists but no UI/UX
+   - Aftercare instructions field exists but no UI/UX
+   - No support for service-specific forms or waivers
+
+### Recommended Implementation Order
+
+1. **Phase 1: Core Service Management**
+   - Implement buffer time configuration
+   - Add online booking controls
+   - Complete resource/equipment management UI
+
+2. **Phase 2: Advanced Pricing & Add-ons**
+   - Implement service add-ons
+   - Add staff-level pricing variations
+   - Complete package pricing options
+
+3. **Phase 3: Availability & Scheduling**
+   - Implement custom service hours
+   - Add seasonal availability
+   - Create time slot restrictions
+
+4. **Phase 4: Analytics & Reporting**
+   - Implement service performance tracking
+   - Add revenue analysis
+   - Create staff performance metrics
+
+5. **Phase 5: Client Experience**
+   - Implement service combinations/recommendations
+   - Add service requirements and instructions
+   - Create service-specific forms/waivers

@@ -159,3 +159,104 @@ Generate reports on queue performance:
 - Use priority levels sparingly and consistently
 - Regularly clean up the queue by removing completed or cancelled entries
 - Consider offering incentives for walk-in clients to book future appointments
+
+## Implementation Roadmap
+
+### Current Implementation Status
+✅ **Basic Walk-in Model**
+- Walk-in creation with client details
+- Basic status tracking (waiting, in_service, completed, cancelled)
+- Party size tracking
+- Basic wait time estimation
+- Service and staff assignment
+- Check-in and service timing
+
+✅ **API Endpoints**
+- Basic queue statistics endpoint
+- Wait time calculation
+
+### Missing Features & Implementation Priority
+
+#### High Priority
+1. **Walk-in Queue Management UI**
+   - Queue display with sortable/filterable list
+   - Status update controls
+   - Service start/complete flows
+   - Priority management interface
+
+2. **Client Management**
+   - Client lookup/creation from walk-in form
+   - Anonymous client handling
+   - Client history view
+
+3. **Service Assignment**
+   - Multiple service support
+   - Service duration-based wait time calculation
+   - Staff availability integration
+
+#### Medium Priority
+4. **Wait Time Estimation**
+   - Dynamic calculation based on:
+     - Number of clients ahead
+     - Service durations
+     - Staff availability
+   - Historical service time data
+
+5. **Queue Status Board**
+   - Public display view
+   - Configurable display options
+   - Kiosk mode for client self-check-in
+
+6. **SMS Notifications**
+   - Client opt-in/out
+   - Wait time updates
+   - Ready notifications
+   - Missed opportunity alerts
+
+#### Lower Priority
+7. **Analytics & Reporting**
+   - Real-time queue metrics
+   - Historical reporting
+   - Service demand analysis
+   - Staff performance metrics
+
+8. **Advanced Features**
+   - Mobile check-in
+   - Digital consent forms
+   - Pre-service forms
+   - Payment integration
+
+### Technical Implementation Notes
+
+1. **Database Changes Needed**
+   - Add priority levels (normal, high, urgent)
+   - Track notification preferences
+   - Add fields for SMS notification tracking
+   - Support for multiple services per walk-in
+
+2. **New Controllers Required**
+   - WalkInQueueController (web)
+   - WalkInNotificationController (API)
+   - QueueDisplayController (for public display)
+
+3. **Frontend Components**
+   - Queue management interface
+   - Client lookup component
+   - Service selection modal
+   - Status update controls
+   - Public display view
+
+4. **Integration Points**
+   - SMS notification service (Twilio, etc.)
+   - Staff availability system
+   - Client management system
+   - Reporting dashboard
+
+### Next Steps
+1. Implement basic queue management UI
+2. Add client lookup/creation to walk-in form
+3. Enhance wait time calculation logic
+4. Implement priority queue management
+5. Add SMS notification system
+6. Develop public queue display
+7. Implement analytics and reporting
