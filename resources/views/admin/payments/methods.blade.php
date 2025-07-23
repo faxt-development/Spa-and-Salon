@@ -14,7 +14,7 @@
 
     <div class="bg-white shadow-md rounded-lg p-6 mb-6">
         <h2 class="text-xl font-semibold mb-4">Stripe Integration</h2>
-        
+
         @if ($stripeEnabled)
             <div class="flex items-center mb-4">
                 <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3">
@@ -24,7 +24,7 @@
                 </div>
                 <span class="text-green-700">Stripe API keys configured</span>
             </div>
-            
+
             @if ($stripeConnected)
                 <div class="flex items-center mb-4">
                     <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3">
@@ -44,11 +44,11 @@
                     <span class="text-red-700">Not connected to Stripe account. Please check your API keys.</span>
                 </div>
             @endif
-            
+
             <div class="mt-6">
                 <h3 class="font-medium mb-2">Stripe Settings</h3>
                 <p class="text-gray-600 mb-4">Your Stripe API keys are configured in your environment file. To update them, edit your .env file or contact your administrator.</p>
-                
+
                 <div class="bg-gray-50 p-4 rounded border border-gray-200">
                     <p class="text-sm text-gray-600 mb-2"><strong>Environment Variables:</strong></p>
                     <ul class="list-disc list-inside text-sm text-gray-600">
@@ -67,10 +67,10 @@
                 </div>
                 <span class="text-red-700">Stripe API keys not configured</span>
             </div>
-            
+
             <div class="mt-4">
                 <p class="text-gray-600 mb-4">To enable Stripe payments, you need to add your API keys to your environment file.</p>
-                
+
                 <div class="bg-gray-50 p-4 rounded border border-gray-200">
                     <p class="text-sm text-gray-600 mb-2"><strong>Add these to your .env file:</strong></p>
                     <pre class="text-sm bg-gray-100 p-2 rounded">
@@ -78,15 +78,15 @@ STRIPE_KEY=your_publishable_key
 STRIPE_SECRET=your_secret_key
 STRIPE_WEBHOOK_SECRET=your_webhook_secret</pre>
                 </div>
-                
+
                 <p class="text-gray-600 mt-4">Don't have a Stripe account? <a href="https://dashboard.stripe.com/register" target="_blank" class="text-blue-600 hover:underline">Sign up for free</a>.</p>
             </div>
         @endif
     </div>
-    
+
     <div class="bg-white shadow-md rounded-lg p-6 mb-6">
         <h2 class="text-xl font-semibold mb-4">Accepted Payment Methods</h2>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="border rounded-lg p-4">
                 <div class="flex items-center justify-between mb-4">
@@ -102,12 +102,12 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret</pre>
                     </div>
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="checkbox" class="sr-only peer" checked>
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
                     </label>
                 </div>
                 <p class="text-gray-600 text-sm">Accept all major credit and debit cards including Visa, Mastercard, American Express, and Discover.</p>
             </div>
-            
+
             <div class="border rounded-lg p-4">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center">
@@ -120,17 +120,17 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret</pre>
                     </div>
                     <label class="inline-flex items-center cursor-pointer">
                         <input type="checkbox" class="sr-only peer" checked>
-                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
                     </label>
                 </div>
                 <p class="text-gray-600 text-sm">Accept payments via Apple Pay, Google Pay, and other digital wallets for faster checkout.</p>
             </div>
         </div>
     </div>
-    
+
     <div class="bg-white shadow-md rounded-lg p-6">
         <h2 class="text-xl font-semibold mb-4">Payment Processing Settings</h2>
-        
+
         <form>
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="currency">
@@ -144,7 +144,7 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret</pre>
                     <option value="aud">AUD - Australian Dollar</option>
                 </select>
             </div>
-            
+
             <div class="mb-4">
                 <label class="flex items-center">
                     <input type="checkbox" class="form-checkbox h-5 w-5 text-blue-600" checked>
@@ -152,9 +152,9 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret</pre>
                 </label>
                 <p class="text-gray-500 text-sm mt-1 ml-7">If unchecked, payments will be authorized but not captured until manually approved.</p>
             </div>
-            
+
             <div class="flex items-center justify-end">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                <button type="submit" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Save Settings
                 </button>
             </div>

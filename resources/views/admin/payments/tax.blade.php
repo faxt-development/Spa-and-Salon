@@ -18,7 +18,7 @@
 
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">General Tax Settings</h2>
-            
+
             <div class="mb-6">
                 <label class="flex items-center">
                     <input type="checkbox" name="tax_enabled" class="form-checkbox h-5 w-5 text-blue-600" id="enable-tax" checked>
@@ -26,7 +26,7 @@
                 </label>
                 <p class="text-gray-500 text-sm mt-1 ml-7">When enabled, tax will be calculated and added to applicable transactions.</p>
             </div>
-            
+
             <div id="tax-settings">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
@@ -36,7 +36,7 @@
                         <input id="tax-name" name="tax_name" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Sales Tax" value="Sales Tax">
                         <p class="text-gray-500 text-xs mt-1">This name will appear on receipts and invoices.</p>
                     </div>
-                    
+
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="tax-rate">
                             Default Tax Rate (%)
@@ -50,7 +50,7 @@
                         <p class="text-gray-500 text-xs mt-1">This rate will be applied to all taxable items.</p>
                     </div>
                 </div>
-                
+
                 <div class="mb-6">
                     <label class="flex items-center">
                         <input type="checkbox" name="tax_included_in_prices" class="form-checkbox h-5 w-5 text-blue-600">
@@ -60,10 +60,10 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Location-Based Tax Rates</h2>
-            
+
             <div class="mb-6">
                 <label class="flex items-center">
                     <input type="checkbox" name="enable_location_tax" class="form-checkbox h-5 w-5 text-blue-600" id="enable-location-tax">
@@ -71,11 +71,11 @@
                 </label>
                 <p class="text-gray-500 text-sm mt-1 ml-7">When enabled, tax rates will be determined by the customer's location.</p>
             </div>
-            
+
             <div id="location-tax-settings" class="hidden">
                 <div class="mb-4 border-b pb-4">
                     <h3 class="text-lg font-medium mb-3">Location Tax Rules</h3>
-                    
+
                     <div id="tax-rules-container">
                         <div class="border rounded-lg p-4 mb-4">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -85,7 +85,7 @@
                                     </label>
                                     <input id="tax-location-1" name="tax_rules[0][location]" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="New York">
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-gray-700 text-sm font-bold mb-2" for="tax-rate-1">
                                         Tax Rate (%)
@@ -97,7 +97,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <label class="block text-gray-700 text-sm font-bold mb-2" for="tax-name-1">
                                         Tax Name (Optional)
@@ -105,7 +105,7 @@
                                     <input id="tax-name-1" name="tax_rules[0][name]" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="NY Sales Tax">
                                 </div>
                             </div>
-                            
+
                             <div class="flex justify-end">
                                 <button type="button" class="text-red-600 hover:text-red-800">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -115,7 +115,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <button type="button" id="add-tax-rule" class="flex items-center text-blue-600 hover:text-blue-800">
                         <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -125,16 +125,16 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Tax Exemptions</h2>
-            
+
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
                     Tax-Exempt Categories
                 </label>
                 <p class="text-gray-500 text-sm mb-3">Select service or product categories that should be exempt from tax.</p>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <label class="flex items-center">
                         <input type="checkbox" name="tax_exempt_categories[]" value="gift_cards" class="form-checkbox h-5 w-5 text-blue-600" checked>
@@ -150,7 +150,7 @@
                     </label>
                 </div>
             </div>
-            
+
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
                     Tax Exemption Handling
@@ -164,10 +164,10 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Tax Reporting</h2>
-            
+
             <div class="mb-6">
                 <label class="block text-gray-700 text-sm font-bold mb-2">
                     Tax Identification Number (Optional)
@@ -175,15 +175,15 @@
                 <input name="tax_id" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your business tax ID">
                 <p class="text-gray-500 text-xs mt-1">This will appear on tax reports and may be required for tax filing.</p>
             </div>
-            
+
             <div class="mb-6">
                 <p class="text-gray-700 mb-2">Tax reports are available in the reporting section:</p>
                 <a href="{{ route('admin.reports.tax') }}" class="text-blue-600 hover:underline">View Tax Reports</a>
             </div>
         </div>
-        
+
         <div class="flex justify-end">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            <button type="submit" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                 Save Tax Settings
             </button>
         </div>
@@ -196,15 +196,15 @@
         // Toggle tax settings visibility
         const enableTaxCheckbox = document.getElementById('enable-tax');
         const taxSettings = document.getElementById('tax-settings');
-        
+
         enableTaxCheckbox.addEventListener('change', function() {
             taxSettings.classList.toggle('hidden', !this.checked);
         });
-        
+
         // Toggle location-based tax settings visibility
         const enableLocationTaxCheckbox = document.getElementById('enable-location-tax');
         const locationTaxSettings = document.getElementById('location-tax-settings');
-        
+
         enableLocationTaxCheckbox.addEventListener('change', function() {
             locationTaxSettings.classList.toggle('hidden', !this.checked);
         });

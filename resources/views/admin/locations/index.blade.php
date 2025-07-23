@@ -4,7 +4,7 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Locations</h1>
-        <a href="{{ route('admin.locations.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+        <a href="{{ route('admin.locations.create') }}" class="bg-primary-500 hover:bg-primary-600 text-white font-bold py-2 px-4 rounded">
             Add New Location
         </a>
     </div>
@@ -42,7 +42,7 @@
                                 <div class="text-sm font-medium text-gray-900">
                                     {{ $location->name }}
                                     @if($location->is_primary)
-                                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-blue-800">
                                             Primary
                                         </span>
                                     @endif
@@ -81,7 +81,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <a href="{{ route('admin.locations.show', $location) }}" class="text-blue-600 hover:text-blue-900 mr-3">View</a>
                             <a href="{{ route('admin.locations.edit', $location) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                            
+
                             @if(!$location->is_primary)
                                 <form action="{{ route('admin.locations.destroy', $location) }}" method="POST" class="inline-block">
                                     @csrf

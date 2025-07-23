@@ -219,21 +219,39 @@ class AppointmentController extends Controller
      * Display a listing of the appointments.
      * Shows different views based on user role.
      */
-    public function index()
-    {
-        // For admin users, show the admin appointments list
-        if (auth()->check() && auth()->user()->hasRole('admin')) {
-            $appointments = Appointment::with(['client', 'staff', 'services'])
-                ->latest()
-                ->paginate(15);
+    public function index(Request $request)
+{
+    $date = $request->input('date') ? Carbon::parse($request->input('date')) : now();
 
-            return view('admin.appointments.index', compact('appointments'));
-        }
+    // For admin users, show the admin appointments list with tabs
+    if (auth()->check() && auth()->user()->hasRole('admin')) {
+        // Get booked appointments for the selected date with pagination
+        $appointments = Appointment::with(['client', 'staff', 'services'])
+            ->whereDate('start_time', $date->toDateString())
+            ->orderBy('start_time')
+            ->paginate(15); // Changed from get() to paginate()
 
-        // For non-admin users, show the appointment booking form
-        $staff = Staff::all();
-        return view('appointments.index', compact('staff'));
+        // Get available time slots for the selected date
+        $availableSlots = $this->appointmentService->getAvailableTimeSlots(
+            $date,
+            $date->copy()->endOfDay()
+        );
+
+        // Get all staff for the staff filter
+        $staff = Staff::orderBy('first_name')->get();
+
+        return view('admin.appointments.index', [
+            'appointments' => $appointments,
+            'availableSlots' => $availableSlots,
+            'selectedDate' => $date,
+            'staff' => $staff
+        ]);
     }
+
+    // For non-admin users, show the appointment booking form
+    $staff = Staff::all();
+    return view('appointments.index', compact('staff'));
+}
 
     /**
      * Show the form for creating a new appointment.
@@ -242,16 +260,27 @@ class AppointmentController extends Controller
     {
         $clients = Client::orderBy('last_name')->get();
         $staff = Staff::orderBy('last_name')->get();
-        $services = Service::orderBy('name')->get();
         
+        // Get selected staff member from query string if available
+        $selectedStaffId = $request->query('staff_id');
+        $selectedStaff = $selectedStaffId ? Staff::find($selectedStaffId) : null;
+        
+        // Get services - filter by staff member if selected
+        if ($selectedStaff) {
+            $services = $selectedStaff->services()->orderBy('name')->get();
+        } else {
+            $services = Service::orderBy('name')->get();
+        }
+        
+        // Get start time from query string if available
+        $startTime = $request->query('start_time');
+
         // Log staff data for debugging
-        \Log::info('Staff data in create method:', [
-            'count' => $staff->count(),
-            'staff' => $staff->map(fn($s) => [
-                'id' => $s->id,
-                'name' => $s->full_name,
-                'email' => $s->email
-            ])->toArray()
+        \Log::info('Appointment create data:', [
+            'selected_staff_id' => $selectedStaffId,
+            'start_time' => $startTime,
+            'staff_count' => $staff->count(),
+            'services_count' => $services->count()
         ]);
 
         // Check if the user is a client
@@ -259,17 +288,16 @@ class AppointmentController extends Controller
         if (Auth::check()) {
             $user = Auth::user();
             $isClient = $user->hasRole('client');
-            
-            // Log user and role info
-            \Log::info('User info in create method:', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'is_client' => $isClient,
-                'roles' => $user->getRoleNames()->toArray()
-            ]);
         }
 
-        return view('appointments.create', compact('clients', 'staff', 'services', 'isClient'));
+        return view('appointments.create', [
+            'clients' => $clients,
+            'staff' => $staff,
+            'services' => $services,
+            'isClient' => $isClient,
+            'selectedStaffId' => $selectedStaffId,
+            'startTime' => $startTime
+        ]);
     }
 
 

@@ -67,7 +67,7 @@
                                         <!-- Cancellation Notice -->
                                         <div class="bg-white p-4 rounded border border-gray-200">
                                             <h4 class="font-medium text-gray-800 mb-3">Cancellation Notice</h4>
-                                            
+
                                             <div class="mb-4">
                                                 <label for="cancellation_notice_{{ $index }}" class="block text-sm font-medium text-gray-700">Required notice for cancellation (hours)</label>
                                                 <select id="cancellation_notice_{{ $index }}" name="settings[{{ $index }}][cancellation_notice]" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
@@ -78,7 +78,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            
+
                                             <p class="text-sm text-gray-500 mt-2">
                                                 Clients must cancel at least this many hours before their appointment to avoid penalties.
                                             </p>
@@ -87,14 +87,14 @@
                                         <!-- Cancellation Fee -->
                                         <div class="bg-white p-4 rounded border border-gray-200">
                                             <h4 class="font-medium text-gray-800 mb-3">Cancellation Fee</h4>
-                                            
+
                                             <div class="mb-4">
                                                 <label class="inline-flex items-center">
                                                     <input type="checkbox" name="settings[{{ $index }}][enforce_cancellation_fee]" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" {{ $setting->enforce_cancellation_fee ? 'checked' : '' }}>
                                                     <span class="ml-2">Enforce cancellation fee for late cancellations</span>
                                                 </label>
                                             </div>
-                                            
+
                                             <div class="mb-4">
                                                 <label for="cancellation_fee_{{ $index }}" class="block text-sm font-medium text-gray-700">Fee amount ($)</label>
                                                 <div class="mt-1 relative rounded-md shadow-sm">
@@ -104,7 +104,7 @@
                                                     <input type="number" step="0.01" min="0" name="settings[{{ $index }}][cancellation_fee]" id="cancellation_fee_{{ $index }}" class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md" placeholder="0.00" value="{{ $setting->cancellation_fee ?? '0.00' }}">
                                                 </div>
                                             </div>
-                                            
+
                                             <p class="text-sm text-gray-500 mt-2">
                                                 This fee will be charged for late cancellations or no-shows.
                                             </p>
@@ -114,7 +114,7 @@
                             @endforeach
 
                             <div class="flex justify-end mt-6">
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <button type="submit" class="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     Save Cancellation Policies
                                 </button>
                             </div>
@@ -124,13 +124,13 @@
 
                 <div class="mt-10 border-t border-gray-200 pt-6">
                     <h2 class="text-lg font-medium text-gray-900 mb-4">About Cancellation Policies</h2>
-                    
+
                     <div class="prose max-w-none text-gray-600">
                         <p>
                             Effective cancellation policies help protect your business from revenue loss due to last-minute cancellations and no-shows.
                             Here are some best practices for implementing cancellation policies:
                         </p>
-                        
+
                         <ul class="list-disc pl-5 mt-2 space-y-1">
                             <li>Be transparent about your cancellation policy during the booking process</li>
                             <li>Consider the nature of your services when setting the cancellation notice period</li>
@@ -139,7 +139,7 @@
                             <li>Train staff on how to communicate and enforce cancellation policies</li>
                             <li>Consider offering alternatives like rescheduling within a certain timeframe</li>
                         </ul>
-                        
+
                         <p class="mt-4">
                             Remember that while cancellation policies are important for your business, they should be balanced with good customer service.
                             Consider making exceptions for first-time offenders or in cases of genuine emergencies.

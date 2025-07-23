@@ -14,7 +14,7 @@
         <div class="p-6">
             <div class="flex items-center gap-2 mb-4">
                 <h2 class="text-lg font-semibold">Your Company Services</h2>
-                <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">{{ $companyServices->count() }} Active</span>
+                <span class="text-xs px-2 py-0.5 bg-primary-100 text-blue-800 rounded-full">{{ $companyServices->count() }} Active</span>
             </div>
             <link href="https://cdn.jsdelivr.net/npm/tippy.js@6.3.1/dist/tippy.css" rel="stylesheet">
             <style>
@@ -52,7 +52,7 @@
                                         <span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded-full" title="Template service">Template</span>
                                     @endif
                                     @if($primaryCategory)
-                                        <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">
+                                        <span class="text-xs px-2 py-0.5 bg-primary-100 text-blue-800 rounded-full">
                                             {{ $primaryCategory->name }}
                                         </span>
                                     @endif
@@ -299,7 +299,7 @@
                     addServiceToSummary(serviceCard);
 
                     // Update the active services count
-                    const activeServicesCount = document.querySelector('.bg-blue-100.text-blue-800.rounded-full');
+                    const activeServicesCount = document.querySelector('.bg-primary-100.text-blue-800.rounded-full');
                     if (activeServicesCount) {
                         const currentCount = parseInt(activeServicesCount.textContent.match(/\d+/)[0]) + 1;
                         activeServicesCount.textContent = `${currentCount} Active`;
@@ -350,7 +350,7 @@
                                     <h3 class="font-medium">${serviceName}</h3>
                                 </span>
                                 ${serviceIsTemplate ? '<span class="text-xs px-2 py-0.5 bg-purple-100 text-purple-800 rounded-full" title="Template service">Template</span>' : ''}
-                                <span class="text-xs px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full">${serviceCategory}</span>
+                                <span class="text-xs px-2 py-0.5 bg-primary-100 text-blue-800 rounded-full">${serviceCategory}</span>
                             </div>
                             <p class="text-sm text-gray-600 mb-2">${serviceDescription}</p>
                             <div class="flex items-center gap-4 text-sm text-gray-500">
@@ -392,7 +392,7 @@
                 }
 
                 // Update the active services count
-                const activeServicesCount = document.querySelector('.bg-blue-100.text-blue-800.rounded-full');
+                const activeServicesCount = document.querySelector('.bg-primary-100.text-blue-800.rounded-full');
                 if (activeServicesCount) {
                     const currentCount = parseInt(activeServicesCount.textContent.match(/\d+/)[0]) - 1;
                     activeServicesCount.textContent = `${currentCount} Active`;
@@ -461,7 +461,7 @@
                 const colors = {
                     success: 'bg-green-100 border-green-500 text-green-700',
                     error: 'bg-red-100 border-red-500 text-red-700',
-                    info: 'bg-blue-100 border-blue-500 text-blue-700'
+                    info: 'bg-primary-100 border-blue-500 text-blue-700'
                 };
 
                 toast.className = `fixed top-4 right-4 border-l-4 p-4 rounded shadow-lg ${colors[type] || colors.info} transition-all duration-300 transform translate-x-0`;

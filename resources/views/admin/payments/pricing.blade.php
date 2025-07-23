@@ -18,14 +18,14 @@
 
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Discount Rules</h2>
-            
+
             <div class="mb-6">
                 <label class="flex items-center">
                     <input type="checkbox" name="enable_discounts" class="form-checkbox h-5 w-5 text-blue-600" id="enable-discounts" checked>
                     <span class="ml-2 text-gray-700">Enable discount rules</span>
                 </label>
             </div>
-            
+
             <div id="discount-rules-container">
                 <div class="border-b pb-4 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -38,7 +38,7 @@
                                 <option value="fixed">Fixed Amount</option>
                             </select>
                         </div>
-                        
+
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="discount-value-1">
                                 Value
@@ -50,7 +50,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="discount-code-1">
                                 Discount Code (Optional)
@@ -58,7 +58,7 @@
                             <input id="discount-code-1" name="pricing_rules[discounts][0][code]" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="WELCOME10">
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="discount-min-amount-1">
@@ -71,7 +71,7 @@
                                 <input id="discount-min-amount-1" name="pricing_rules[discounts][0][min_amount]" type="number" min="0" step="0.01" class="shadow appearance-none border rounded w-full py-2 pl-8 pr-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="50.00">
                             </div>
                         </div>
-                        
+
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="discount-expiry-1">
                                 Expiry Date (Optional)
@@ -79,7 +79,7 @@
                             <input id="discount-expiry-1" name="pricing_rules[discounts][0][expiry]" type="date" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-end">
                         <button type="button" class="text-red-600 hover:text-red-800">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -88,7 +88,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <button type="button" id="add-discount-rule" class="flex items-center text-blue-600 hover:text-blue-800">
                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -97,10 +97,10 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Package Deals</h2>
-            
+
             <div class="mb-6">
                 <label class="flex items-center">
                     <input type="checkbox" name="enable_packages" class="form-checkbox h-5 w-5 text-blue-600" id="enable-packages" checked>
@@ -108,7 +108,7 @@
                 </label>
                 <p class="text-gray-500 text-sm mt-1 ml-7">Package deals allow customers to save when booking multiple services together.</p>
             </div>
-            
+
             <div id="package-deals-container">
                 <div class="border-b pb-4 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -118,7 +118,7 @@
                             </label>
                             <input id="package-name-1" name="pricing_rules[packages][0][name]" type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Spa Day Package">
                         </div>
-                        
+
                         <div>
                             <label class="block text-gray-700 text-sm font-bold mb-2" for="package-discount-1">
                                 Discount Percentage
@@ -131,7 +131,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2">
                             Required Services (minimum 2)
@@ -153,7 +153,7 @@
                                     </svg>
                                 </button>
                             </div>
-                            <button type="button" class="flex items-center bg-blue-100 text-blue-700 rounded px-3 py-1 hover:bg-blue-200">
+                            <button type="button" class="flex items-center bg-primary-100 text-blue-700 rounded px-3 py-1 hover:bg-primary-200">
                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                                 </svg>
@@ -161,7 +161,7 @@
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="flex justify-end">
                         <button type="button" class="text-red-600 hover:text-red-800">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -170,7 +170,7 @@
                         </button>
                     </div>
                 </div>
-                
+
                 <button type="button" id="add-package-deal" class="flex items-center text-blue-600 hover:text-blue-800">
                     <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -179,10 +179,10 @@
                 </button>
             </div>
         </div>
-        
+
         <div class="bg-white shadow-md rounded-lg p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Loyalty Program</h2>
-            
+
             <div class="mb-6">
                 <label class="flex items-center">
                     <input type="checkbox" name="enable_loyalty" class="form-checkbox h-5 w-5 text-blue-600" id="enable-loyalty">
@@ -190,7 +190,7 @@
                 </label>
                 <p class="text-gray-500 text-sm mt-1 ml-7">Reward your regular customers with points for each purchase.</p>
             </div>
-            
+
             <div id="loyalty-settings" class="hidden">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -199,7 +199,7 @@
                         </label>
                         <input id="points-per-dollar" name="pricing_rules[loyalty][points_per_dollar]" type="number" min="0" step="0.1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" value="1">
                     </div>
-                    
+
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="points-redemption-value">
                             Points Redemption Value ($ per 100 points)
@@ -214,9 +214,9 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="flex justify-end">
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            <button type="submit" class="bg-primary-500 hover:bg-primary-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                 Save Pricing Rules
             </button>
         </div>
@@ -229,15 +229,15 @@
         // Toggle loyalty settings visibility
         const enableLoyaltyCheckbox = document.getElementById('enable-loyalty');
         const loyaltySettings = document.getElementById('loyalty-settings');
-        
+
         enableLoyaltyCheckbox.addEventListener('change', function() {
             loyaltySettings.classList.toggle('hidden', !this.checked);
         });
-        
+
         // Toggle discount symbol based on discount type
         const discountType = document.getElementById('discount-type-1');
         const discountSymbol = document.getElementById('discount-symbol-1');
-        
+
         discountType.addEventListener('change', function() {
             discountSymbol.textContent = this.value === 'percentage' ? '%' : '$';
         });

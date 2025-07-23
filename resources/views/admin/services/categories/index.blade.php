@@ -13,9 +13,9 @@
             </a>
         </div>
     </div>
-    
+
     <!-- User guidance panel -->
-    <div class="bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
+    <div class="bg-primary-50 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
         <h3 class="font-bold text-lg">How Service Categories Work</h3>
         <p class="mb-2">There are two types of service categories:</p>
         <ul class="list-disc ml-6 mb-2">
@@ -54,12 +54,12 @@
                         </a>
                     @endif
                 </div>
-                
+
                 <div class="flex items-center space-x-4">
                     <span class="text-sm font-medium text-gray-700">Show:</span>
                     <div class="flex space-x-4">
                         <label class="inline-flex items-center">
-                            <input type="radio" name="show_associated" value="all" {{ ($showAssociated ?? 'all') == 'all' ? 'checked' : '' }} 
+                            <input type="radio" name="show_associated" value="all" {{ ($showAssociated ?? 'all') == 'all' ? 'checked' : '' }}
                                 class="form-radio h-4 w-4 text-primary-600" onchange="this.form.submit()">
                             <span class="ml-2 text-sm text-gray-700">All Categories</span>
                         </label>
@@ -127,7 +127,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($category->template)
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-100 text-blue-800">
                                     Template
                                 </span>
                             @else
@@ -139,9 +139,9 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             @if($category->template)
                                 <!-- Template categories can be copied but not edited/deleted -->
-                                <button 
-                                    class="copy-template-btn bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-1 px-3 rounded-md flex items-center" 
-                                    data-category-id="{{ $category->id }}" 
+                                <button
+                                    class="copy-template-btn bg-primary-100 hover:bg-primary-200 text-blue-800 font-medium py-1 px-3 rounded-md flex items-center"
+                                    data-category-id="{{ $category->id }}"
                                     data-company-id="{{ $company ? $company->id : '' }}"
                                     {{ !$company ? 'disabled' : '' }}
                                     title="Create an editable copy of this template category for your business"
@@ -179,7 +179,7 @@
     <div class="mt-4">
         {{ $categories->links() }}
     </div>
-    
+
     <!-- Template Categories Modal -->
     <div id="template-categories-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
         <div class="relative top-20 mx-auto p-5 border w-3/4 shadow-lg rounded-md bg-white">
@@ -207,7 +207,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <form id="add-template-categories-form" action="{{ route('admin.services.categories.add-to-company') }}" method="POST">
                         @csrf
                         <div class="max-h-96 overflow-y-auto">
@@ -229,10 +229,10 @@
                                     @foreach($categories as $category)
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <input 
-                                                    type="checkbox" 
-                                                    name="category_ids[]" 
-                                                    value="{{ $category->id }}" 
+                                                <input
+                                                    type="checkbox"
+                                                    name="category_ids[]"
+                                                    value="{{ $category->id }}"
                                                     {{ $category->is_company_category ? 'checked disabled' : '' }}
                                                     {{ in_array($category->id, $selectedCategories ?? []) ? 'checked' : '' }}
                                                     class="h-5 w-5 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
@@ -253,7 +253,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         <div class="mt-6 flex justify-between items-center border-t pt-4">
                             <div>
                                 <button type="button" id="select-all-categories" class="text-primary-600 hover:text-primary-800 text-sm font-medium">
@@ -293,19 +293,19 @@
         const closeModalXBtn = document.getElementById('close-modal-x');
         const selectAllBtn = document.getElementById('select-all-categories');
         const deselectAllBtn = document.getElementById('deselect-all-categories');
-        
+
         openModalBtn.addEventListener('click', function() {
             modal.classList.remove('hidden');
         });
-        
+
         closeModalBtn.addEventListener('click', function() {
             modal.classList.add('hidden');
         });
-        
+
         closeModalXBtn.addEventListener('click', function() {
             modal.classList.add('hidden');
         });
-        
+
         // Select/deselect all categories functionality
         selectAllBtn.addEventListener('click', function() {
             document.querySelectorAll('input[name="category_ids[]"]').forEach(checkbox => {
@@ -314,7 +314,7 @@
                 }
             });
         });
-        
+
         deselectAllBtn.addEventListener('click', function() {
             document.querySelectorAll('input[name="category_ids[]"]').forEach(checkbox => {
                 if (!checkbox.disabled) {
@@ -322,18 +322,18 @@
                 }
             });
         });
-        
+
         // Copy template category functionality
         document.querySelectorAll('.copy-template-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const categoryId = this.getAttribute('data-category-id');
                 const companyId = this.getAttribute('data-company-id');
-                
+
                 if (!companyId) {
                     alert('No company associated with this user.');
                     return;
                 }
-                
+
                 // Send AJAX request to copy the template
                 fetch(`/admin/services/categories/${companyId}/copy-template/${categoryId}`, {
                     method: 'POST',
@@ -357,12 +357,12 @@
                 });
             });
         });
-        
+
         // Remove category from company functionality
         document.querySelectorAll('.remove-category-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const categoryId = this.getAttribute('data-category-id');
-                
+
                 if (confirm('Are you sure you want to remove this category from your company?')) {
                     // Send AJAX request to remove the category
                     fetch(`/admin/services/categories/remove-from-company/${categoryId}`, {

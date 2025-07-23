@@ -97,7 +97,7 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time</label>
-                                    <input type="time" name="start_time" id="start_time" value="{{ old('start_time') }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md timepicker">
+                                    <input type="time" name="start_time" id="start_time" value="{{ old('start_time', $startTime ?? '') }}" class="mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md timepicker">
                                 </div>
 
                                 <div>
@@ -108,10 +108,10 @@
 
                             <div>
                                 <label for="staff_id" class="block text-sm font-medium text-gray-700">Staff Member</label>
-                                <select id="staff_id" name="staff_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <select id="staff_id" name="staff_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md" @change="updateServices()">
                                     <option value="">-- Select Staff --</option>
                                     @foreach($staff ?? [] as $staffMember)
-                                        <option value="{{ $staffMember->id }}" {{ old('staff_id') == $staffMember->id ? 'selected' : '' }}>
+                                        <option value="{{ $staffMember->id }}" {{ (old('staff_id', $selectedStaffId ?? '') == $staffMember->id) ? 'selected' : '' }}>
                                             {{ $staffMember->full_name }}
                                         </option>
                                     @endforeach
@@ -128,6 +128,9 @@
                                     @endforeach
                                 </select>
                                 <p class="mt-1 text-sm text-gray-500">Hold Ctrl/Cmd to select multiple services</p>
+                                @if(isset($selectedStaffId) && $services->isEmpty())
+                                    <p class="mt-1 text-sm text-yellow-600">No services available for the selected staff member.</p>
+                                @endif
                             </div>
 
                             <div>
@@ -158,14 +161,14 @@
                     <div class="flex justify-center mt-4">
                         <button type="button"
                             @click="checkAvailability"
-                            :class="{'bg-blue-700': appointmentForm.loading, 'bg-blue-600': !appointmentForm.loading}"
+                            :class="{'bg-primary-700': appointmentForm.loading, 'bg-primary-600': !appointmentForm.loading}"
                             :disabled="loading"
-                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 active:bg-primary-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                             <span x-text="appointmentForm.loading ? 'Checking...' : 'Check Availability'"></span>
                         </button>
                     </div>
                     <div x-show="validationError" x-text="validationError" class="mt-2 text-red-600 text-sm"></div>
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 active:bg-primary-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                         Create Appointment
                     </button>
                 </form>
@@ -202,6 +205,37 @@
             loading: false,
             validationError: '',
 
+            // Update services when staff member changes
+            async updateServices() {
+                const staffId = document.getElementById('staff_id').value;
+                if (!staffId) return;
+
+                try {
+                    this.loading = true;
+                    const response = await fetch(`/api/staff/${staffId}/services`);
+                    const services = await response.json();
+
+                    const servicesSelect = document.getElementById('services');
+                    servicesSelect.innerHTML = ''; // Clear existing options
+
+                    services.forEach(service => {
+                        const option = document.createElement('option');
+                        option.value = service.id;
+                        option.textContent = `${service.name} - $${service.price.toFixed(2)} (${service.duration} min)`;
+                        option.dataset.duration = service.duration;
+                        option.dataset.price = service.price;
+                        servicesSelect.appendChild(option);
+                    });
+
+                    // Trigger change event to update totals
+                    $(servicesSelect).trigger('change');
+                } catch (error) {
+                    console.error('Error loading services:', error);
+                } finally {
+                    this.loading = false;
+                }
+            },
+
             checkAvailability() {
                 this.loading = true;
                 this.validationError = '';
@@ -231,7 +265,7 @@
 
                 // Create a status message element to show network activity
                 const statusMessage = document.createElement('div');
-                statusMessage.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg';
+                statusMessage.className = 'fixed bottom-4 right-4 bg-primary-500 text-white px-4 py-2 rounded shadow-lg';
                 statusMessage.textContent = 'Checking availability...';
                 document.body.appendChild(statusMessage);
 
@@ -267,7 +301,7 @@
 
                         data.available_slots.forEach(slot => {
                             html += `
-                                <button type="button" class="time-slot-btn p-2 border rounded text-center hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                <button type="button" class="time-slot-btn p-2 border rounded text-center hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     data-time="${slot.time}" data-end-time="${slot.end_time}">
                                     ${slot.formatted_time}
                                 </button>

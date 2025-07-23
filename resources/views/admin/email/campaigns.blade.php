@@ -22,11 +22,11 @@
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold">Your Campaigns</h2>
-                    <a href="{{ route('email-campaigns.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                    <a href="{{ route('email-campaigns.create') }}" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded">
                         Create New Campaign
                     </a>
                 </div>
-                
+
                 @if($campaigns->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -44,9 +44,9 @@
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $campaign->name }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                {{ $campaign->status === 'sent' ? 'bg-green-100 text-green-800' : 
-                                                   ($campaign->status === 'scheduled' ? 'bg-blue-100 text-blue-800' : 
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                                                {{ $campaign->status === 'sent' ? 'bg-green-100 text-green-800' :
+                                                   ($campaign->status === 'scheduled' ? 'bg-primary-100 text-blue-800' :
                                                    'bg-gray-100 text-gray-800') }}">
                                                 {{ ucfirst($campaign->status) }}
                                             </span>
@@ -87,7 +87,7 @@
                 @endif
             </div>
         </div>
-        
+
         <div class="lg:col-span-1">
             <div class="bg-white shadow-md rounded-lg p-6">
                 <h2 class="text-xl font-semibold mb-4">Campaign Performance</h2>
@@ -111,13 +111,13 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white shadow-md rounded-lg p-6 mt-6">
                 <h2 class="text-xl font-semibold mb-4">Available Segments</h2>
                 <ul class="space-y-2">
                     @foreach($segments as $segment)
                         <li class="flex items-center">
-                            <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                            <span class="w-3 h-3 bg-primary-500 rounded-full mr-2"></span>
                             <span>{{ $segment['name'] }}</span>
                         </li>
                     @endforeach
@@ -130,7 +130,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="bg-white shadow-md rounded-lg p-6">
         <h2 class="text-xl font-semibold mb-4">Email Marketing Best Practices</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

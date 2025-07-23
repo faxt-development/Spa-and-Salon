@@ -325,13 +325,13 @@ class StaffController extends Controller
 
         // Get staff member
         $staff = Staff::with(['user.roles', 'user.permissions', 'services', 'appointments'])->findOrFail($id);
-        
+
         // Check if this staff member's user is associated with the current company
         // First get the user IDs associated with this company
         $userIds = DB::table('company_user')
             ->where('company_id', $company->id)
             ->pluck('user_id');
-            
+
         if (!$userIds->contains($staff->user_id)) {
             return redirect()->route('admin.staff.index')
                 ->with('error', 'You do not have permission to view this staff member.');
@@ -483,7 +483,7 @@ class StaffController extends Controller
                 'hire_date' => $request->input('employee.hire_date'),
                 'hire_date_array' => $request->input('employee')['hire_date'] ?? null,
             ]);
-            
+
             // Handle employee record based on is_employee checkbox
             if ($request->has('is_employee')) {
                 // Create or update employee record
@@ -730,7 +730,7 @@ class StaffController extends Controller
         $startDate = now()->startOfDay();
         $endDate = now()->addDays(6)->endOfDay();
         $dateRange = [];
-        
+
         for ($i = 0; $i < 7; $i++) {
             $date = $startDate->copy()->addDays($i);
             $dateRange[] = [
@@ -750,35 +750,74 @@ class StaffController extends Controller
      * @return \Illuminate\Http\RedirectResponse
      */
     public function updateAvailability(Request $request)
-    {
-        $request->validate([
-            'staff_id' => 'required|exists:staff,id',
-            'work_days' => 'nullable|array',
-            'work_days.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
-            'work_start_time' => 'required|date_format:H:i',
-            'work_end_time' => 'required|date_format:H:i|after:work_start_time',
+{
+    \Log::info('Update availability request:', $request->all());
+    
+    $validated = $request->validate([
+        'staff_id' => 'required|exists:staff,id',
+        'work_days' => 'nullable|array',
+        'work_days.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+        'work_start_time' => 'required|date_format:H:i',
+        'work_end_time' => 'required|date_format:H:i|after:work_start_time',
+    ]);
+
+    \Log::info('Validated data:', $validated);
+
+    $staff = Staff::findOrFail($request->staff_id);
+    \Log::info('Found staff:', ['staff_id' => $staff->id, 'user_id' => $staff->user_id]);
+
+    // Check if user has permission to edit this staff member
+    $user = auth()->user();
+    $company = $user->primaryCompany();
+    $staffUserIds = $company->users()->pluck('users.id');
+
+    \Log::info('Company users:', $staffUserIds->toArray());
+
+    if (!$staffUserIds->contains($staff->user_id)) {
+        \Log::error('Permission denied: User does not have permission to edit this staff member', [
+            'current_user_id' => $user->id,
+            'staff_user_id' => $staff->user_id,
+            'company_id' => $company->id
         ]);
-
-        $staff = Staff::findOrFail($request->staff_id);
-
-        // Check if user has permission to edit this staff member
-        $user = auth()->user();
-        $company = $user->primaryCompany();
-        $staffUserIds = $company->users()->pluck('users.id');
         
-        if (!$staffUserIds->contains($staff->user_id)) {
-            return back()->with('error', 'You do not have permission to edit this staff member.');
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You do not have permission to edit this staff member.'
+            ], 403);
         }
+        
+        return back()->with('error', 'You do not have permission to edit this staff member.');
+    }
 
-        // Update staff availability
-        $staff->work_days = $request->work_days ?: [];
-        $staff->work_start_time = $request->work_start_time;
-        $staff->work_end_time = $request->work_end_time;
-        $staff->save();
+    // Update staff availability
+    $staff->work_days = $request->work_days ?: [];
+    $staff->work_start_time = $request->work_start_time . ':00';
+    $staff->work_end_time = $request->work_end_time . ':00';
 
-        return back()->with('success', 'Staff availability updated successfully.');
+    \Log::info('Updating staff availability:', [
+        'work_days' => $staff->work_days,
+        'work_start_time' => $staff->work_start_time,
+        'work_end_time' => $staff->work_end_time
+    ]);
+
+    $staff->save();
+
+    \Log::info('Staff availability updated successfully');
+    
+    if ($request->ajax()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Staff availability updated successfully.',
+            'work_days' => $staff->work_days,
+            'work_start_time' => $staff->work_start_time,
+            'work_end_time' => $staff->work_end_time
+        ]);
     }
     
+    return back()->with('success', 'Staff availability updated successfully.');
+}
+
     /**
      * Display the staff services assignment page.
      *
@@ -798,12 +837,12 @@ class StaffController extends Controller
         // Get staff members belonging to the current company via user-company pivot
         $userIds = $company->users()->pluck('users.id');
         $staff = Staff::whereIn('user_id', $userIds)->with('user.roles')->active()->get();
-        
+
         // Get all services for the company
         $services = Service::whereHas('companies', function($query) use ($company) {
             $query->where('companies.id', $company->id);
         })->with('categories')->get();
-        
+
         // Group services by category for easier display
         $servicesByCategory = [];
         foreach ($services as $service) {
@@ -822,7 +861,7 @@ class StaffController extends Controller
                 }
             }
         }
-        
+
         // Get existing staff-service assignments
         $staffServiceAssignments = [];
         foreach ($staff as $staffMember) {
@@ -854,42 +893,42 @@ class StaffController extends Controller
         $user = auth()->user();
         $company = $user->primaryCompany();
         $staffUserIds = $company->users()->pluck('users.id');
-        
+
         if (!$staffUserIds->contains($staff->user_id)) {
             return back()->with('error', 'You do not have permission to edit this staff member.');
         }
 
         DB::beginTransaction();
-        
+
         try {
             // Clear existing service assignments for this staff member
             $staff->services()->detach();
-            
+
             // Add new service assignments
             if ($request->has('service_ids') && is_array($request->service_ids)) {
                 $serviceData = [];
-                
+
                 foreach ($request->service_ids as $serviceId) {
                     $pivotData = [
                         'is_primary' => true, // Default to primary provider
                     ];
-                    
+
                     // Add price override if provided
                     if (isset($request->price_overrides[$serviceId]) && $request->price_overrides[$serviceId] !== '') {
                         $pivotData['price_override'] = $request->price_overrides[$serviceId];
                     }
-                    
+
                     // Add duration override if provided
                     if (isset($request->duration_overrides[$serviceId]) && $request->duration_overrides[$serviceId] !== '') {
                         $pivotData['duration_override'] = $request->duration_overrides[$serviceId];
                     }
-                    
+
                     $serviceData[$serviceId] = $pivotData;
                 }
-                
+
                 $staff->services()->attach($serviceData);
             }
-            
+
             DB::commit();
             return back()->with('success', 'Staff service assignments updated successfully.');
         } catch (\Exception $e) {

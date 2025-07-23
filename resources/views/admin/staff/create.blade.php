@@ -22,12 +22,12 @@
 
                     <form action="{{ route('admin.staff.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                         @csrf
-                        
+
                         @if(isset($prefill) && $prefill)
                             <input type="hidden" name="user_id" value="{{ $prefill['user_id'] }}">
                             <input type="hidden" name="is_admin" value="{{ $prefill['is_admin'] }}">
-                            
-                            <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4" role="alert">
+
+                            <div class="bg-primary-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-4" role="alert">
                                 <p class="font-bold">{{ __('Adding yourself as a staff member') }}</p>
                                 <p>{{ __('You are adding yourself as a staff member. Your account information has been pre-filled.') }}</p>
                             </div>
@@ -101,7 +101,7 @@
                                     <select id="role" name="role" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" required>
                                         <option value="">{{ __('Select Role') }}</option>
                                         @foreach ($roles as $role)
-                                            <option value="{{ $role->id }}" 
+                                            <option value="{{ $role->id }}"
                                                 {{ old('role') == $role->id ? 'selected' : '' }}
                                                 {{ (isset($prefill) && $prefill['is_admin'] && $role->name == 'admin') ? 'selected' : '' }}
                                                 {{ (isset($prefill) && $prefill['is_admin'] && !old('role') && $role->name == 'staff') ? 'selected' : '' }}>
@@ -167,15 +167,15 @@
 
 
                                 <!-- Employee section that appears when Is Employee is checked -->
-                                <div id="employee-section" class="mt-4 p-4 bg-blue-50 rounded-lg" style="display: {{ old('is_employee') ? 'block' : 'none' }}">
+                                <div id="employee-section" class="mt-4 p-4 bg-primary-50 rounded-lg" style="display: {{ old('is_employee') ? 'block' : 'none' }}">
                                     <h4 class="text-md font-medium text-gray-900 mb-2">{{ __('Employee Information') }}</h4>
-                                    
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                                         <div>
                                             <x-input-label for="hire_date" :value="__('Hire Date')" :required="true" />
                                             <x-text-input id="hire_date" name="employee[hire_date]" type="date" class="mt-1 block w-full" :value="old('employee.hire_date', date('Y-m-d'))" required />
                                         </div>
-                                        
+
                                         <div>
                                             <x-input-label for="hourly_rate" :value="__('Hourly Rate')" :required="true" />
                                             <div class="mt-1 relative rounded-md shadow-sm">
@@ -211,7 +211,7 @@
                             document.addEventListener('DOMContentLoaded', function() {
                                 const isEmployeeCheckbox = document.getElementById('is_employee');
                                 const employeeSection = document.getElementById('employee-section');
-                                
+
                                 isEmployeeCheckbox.addEventListener('change', function() {
                                     employeeSection.style.display = this.checked ? 'block' : 'none';
                                 });

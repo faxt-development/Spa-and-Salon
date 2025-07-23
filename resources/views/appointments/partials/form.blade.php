@@ -330,9 +330,9 @@
         <div class="flex space-x-3">
             <button type="button"
                     @click="checkAvailability"
-                    :class="{'bg-blue-700': loading, 'bg-blue-600': !loading}"
+                    :class="{'bg-primary-700': loading, 'bg-primary-600': !loading}"
                     :disabled="loading"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                 <span x-text="loading ? 'Checking...' : 'Check Availability'"></span>
             </button>
             <button type="submit"

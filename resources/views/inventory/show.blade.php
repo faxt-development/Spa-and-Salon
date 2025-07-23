@@ -6,7 +6,7 @@
         <!-- Header with Back and Action Buttons -->
         <div class="flex justify-between items-center mb-6">
             <div class="flex items-center">
-                <a href="{{ route('admin.inventory.products.index') }}" 
+                <a href="{{ route('admin.inventory.products.index') }}"
                    class="text-gray-500 hover:text-gray-700 mr-4">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -15,14 +15,14 @@
                 <h1 class="text-2xl font-bold text-gray-800">{{ $product->name }}</h1>
             </div>
             <div class="flex space-x-3">
-                <a href="{{ route('inventory.products.edit', $product) }}" 
-                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <a href="{{ route('inventory.products.edit', $product) }}"
+                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                     Edit Product
                 </a>
-                <button type="button" 
+                <button type="button"
                         @click="adjustInventoryOpen = true"
                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -90,9 +90,9 @@
                                     Inactive
                                 </span>
                             @endif
-                            
+
                             @if($product->is_taxable)
-                                <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-100 text-blue-800">
                                     Taxable ({{ $product->tax_rate }}%)
                                 </span>
                             @endif
@@ -205,7 +205,7 @@
                         Recent inventory adjustments for this product.
                     </p>
                 </div>
-                <button type="button" 
+                <button type="button"
                         @click="adjustInventoryOpen = true"
                         class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -280,28 +280,28 @@
 </div>
 
 <!-- Adjust Inventory Modal -->
-<div x-show="adjustInventoryOpen" 
+<div x-show="adjustInventoryOpen"
      x-transition:enter="ease-out duration-300"
      x-transition:enter-start="opacity-0"
      x-transition:enter-end="opacity-100"
      x-transition:leave="ease-in duration-200"
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0"
-     class="fixed z-10 inset-0 overflow-y-auto" 
-     aria-labelledby="modal-title" 
-     x-ref="dialog" 
+     class="fixed z-10 inset-0 overflow-y-auto"
+     aria-labelledby="modal-title"
+     x-ref="dialog"
      aria-modal="true"
      x-cloak>
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div x-show="adjustInventoryOpen" 
+        <div x-show="adjustInventoryOpen"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0"
              x-transition:enter-end="opacity-100"
              x-transition:leave="ease-in duration-200"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0"
-             x-description="Background overlay, show/hide based on modal state." 
-             class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+             x-description="Background overlay, show/hide based on modal state."
+             class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
              @click="adjustInventoryOpen = false"
              aria-hidden="true">
         </div>
@@ -309,7 +309,7 @@
         <!-- This element is to trick the browser into centering the modal contents. -->
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-        <div x-show="adjustInventoryOpen" 
+        <div x-show="adjustInventoryOpen"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
              x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -339,15 +339,15 @@
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 sm:text-sm">
-                                    {{ $product->quantity_in_stock }} + 
+                                    {{ $product->quantity_in_stock }} +
                                 </span>
                             </div>
-                            <input type="number" 
-                                   name="adjustment" 
-                                   id="adjustment" 
+                            <input type="number"
+                                   name="adjustment"
+                                   id="adjustment"
                                    x-model="adjustment"
                                    @input="updateNewQuantity($event.target.value)"
-                                   class="pl-20 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                                   class="pl-20 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                    placeholder="0">
                         </div>
                         <p class="mt-2 text-sm text-gray-500">
@@ -360,10 +360,10 @@
                             New Quantity
                         </label>
                         <div class="mt-1">
-                            <input type="number" 
-                                   id="new_quantity" 
+                            <input type="number"
+                                   id="new_quantity"
                                    x-model="newQuantity"
-                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                                   class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                    disabled>
                         </div>
                     </div>
@@ -373,9 +373,9 @@
                             Reason for Adjustment *
                         </label>
                         <div class="mt-1">
-                            <select id="reason" 
-                                    name="reason" 
-                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                            <select id="reason"
+                                    name="reason"
+                                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                     required>
                                 <option value="">Select a reason</option>
                                 <option value="Stock Received">Stock Received</option>
@@ -393,20 +393,20 @@
                             Notes
                         </label>
                         <div class="mt-1">
-                            <textarea id="notes" 
-                                      name="notes" 
-                                      rows="3" 
+                            <textarea id="notes"
+                                      name="notes"
+                                      rows="3"
                                       class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
                         </div>
                     </div>
                 </div>
 
                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                    <button type="submit" 
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
+                    <button type="submit"
+                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
                         Update Inventory
                     </button>
-                    <button type="button" 
+                    <button type="button"
                             @click="adjustInventoryOpen = false"
                             class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
                         Cancel
@@ -424,11 +424,11 @@
             adjustInventoryOpen: false,
             adjustment: 0,
             newQuantity: {{ $product->quantity_in_stock }},
-            
+
             init() {
                 // Initialize any required data
             },
-            
+
             updateNewQuantity(value) {
                 const currentStock = {{ $product->quantity_in_stock }};
                 const adjustment = parseInt(value) || 0;

@@ -6,9 +6,9 @@
         <h1 class="text-2xl font-bold text-gray-800 mb-6">
             {{ isset($product) ? 'Edit Product' : 'Add New Product' }}
         </h1>
-        
-        <form action="{{ isset($product) ? route('inventory.products.update', $product) : route('inventory.products.store') }}" 
-              method="POST" 
+
+        <form action="{{ isset($product) ? route('inventory.products.update', $product) : route('inventory.products.store') }}"
+              method="POST"
               enctype="multipart/form-data"
               class="space-y-6">
             @csrf
@@ -23,7 +23,7 @@
                         <!-- Product Name -->
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700">Product Name *</label>
-                            <input type="text" name="name" id="name" 
+                            <input type="text" name="name" id="name"
                                    value="{{ old('name', $product->name ?? '') }}"
                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                    required>
@@ -35,7 +35,7 @@
                         <!-- SKU -->
                         <div>
                             <label for="sku" class="block text-sm font-medium text-gray-700">SKU *</label>
-                            <input type="text" name="sku" id="sku" 
+                            <input type="text" name="sku" id="sku"
                                    value="{{ old('sku', $product->sku ?? '') }}"
                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                    required>
@@ -47,11 +47,11 @@
                         <!-- Category -->
                         <div>
                             <label for="category_id" class="block text-sm font-medium text-gray-700">Category</label>
-                            <select name="category_id" id="category_id" 
+                            <select name="category_id" id="category_id"
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                 <option value="">-- Select Category --</option>
                                 @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" 
+                                    <option value="{{ $category->id }}"
                                         {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
                                         {{ $category->name }}
                                     </option>
@@ -65,7 +65,7 @@
                         <!-- Brand -->
                         <div>
                             <label for="brand" class="block text-sm font-medium text-gray-700">Brand</label>
-                            <input type="text" name="brand" id="brand" 
+                            <input type="text" name="brand" id="brand"
                                    value="{{ old('brand', $product->brand ?? '') }}"
                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             @error('brand')
@@ -76,7 +76,7 @@
                         <!-- Barcode -->
                         <div>
                             <label for="barcode" class="block text-sm font-medium text-gray-700">Barcode</label>
-                            <input type="text" name="barcode" id="barcode" 
+                            <input type="text" name="barcode" id="barcode"
                                    value="{{ old('barcode', $product->barcode ?? '') }}"
                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             @error('barcode')
@@ -94,7 +94,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span class="text-gray-500 sm:text-sm">$</span>
                                 </div>
-                                <input type="number" name="cost_price" id="cost_price" 
+                                <input type="number" name="cost_price" id="cost_price"
                                        step="0.01" min="0"
                                        value="{{ old('cost_price', $product->cost_price ?? '0.00') }}"
                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -112,7 +112,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span class="text-gray-500 sm:text-sm">$</span>
                                 </div>
-                                <input type="number" name="selling_price" id="selling_price" 
+                                <input type="number" name="selling_price" id="selling_price"
                                        step="0.01" min="0"
                                        value="{{ old('selling_price', $product->selling_price ?? '0.00') }}"
                                        class="pl-7 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -126,7 +126,7 @@
                         <!-- Quantity in Stock -->
                         <div>
                             <label for="quantity_in_stock" class="block text-sm font-medium text-gray-700">Quantity in Stock *</label>
-                            <input type="number" name="quantity_in_stock" id="quantity_in_stock" 
+                            <input type="number" name="quantity_in_stock" id="quantity_in_stock"
                                    min="0"
                                    value="{{ old('quantity_in_stock', $product->quantity_in_stock ?? '0') }}"
                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -139,7 +139,7 @@
                         <!-- Minimum Stock Level -->
                         <div>
                             <label for="minimum_stock_level" class="block text-sm font-medium text-gray-700">Minimum Stock Level *</label>
-                            <input type="number" name="minimum_stock_level" id="minimum_stock_level" 
+                            <input type="number" name="minimum_stock_level" id="minimum_stock_level"
                                    min="0"
                                    value="{{ old('minimum_stock_level', $product->minimum_stock_level ?? '0') }}"
                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -152,7 +152,7 @@
                         <!-- Reorder Quantity -->
                         <div>
                             <label for="reorder_quantity" class="block text-sm font-medium text-gray-700">Reorder Quantity *</label>
-                            <input type="number" name="reorder_quantity" id="reorder_quantity" 
+                            <input type="number" name="reorder_quantity" id="reorder_quantity"
                                    min="1"
                                    value="{{ old('reorder_quantity', $product->reorder_quantity ?? '1') }}"
                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -206,7 +206,7 @@
                         <!-- Taxable -->
                         <div class="flex items-start">
                             <div class="flex h-5 items-center">
-                                <input id="is_taxable" name="is_taxable" type="checkbox" 
+                                <input id="is_taxable" name="is_taxable" type="checkbox"
                                        class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                        {{ old('is_taxable', $product->is_taxable ?? false) ? 'checked' : '' }}>
                             </div>
@@ -219,7 +219,7 @@
                         <!-- Active Status -->
                         <div class="flex items-start">
                             <div class="flex h-5 items-center">
-                                <input id="is_active" name="is_active" type="checkbox" 
+                                <input id="is_active" name="is_active" type="checkbox"
                                        class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                        {{ old('is_active', $product->is_active ?? true) ? 'checked' : '' }}>
                             </div>
@@ -238,7 +238,7 @@
                         <div>
                             <label for="tax_rate" class="block text-sm font-medium text-gray-700">Tax Rate (%)</label>
                             <div class="mt-1 relative rounded-md shadow-sm">
-                                <input type="number" name="tax_rate" id="tax_rate" 
+                                <input type="number" name="tax_rate" id="tax_rate"
                                        x-bind:disabled="!isTaxable"
                                        step="0.01" min="0" max="100"
                                        value="{{ old('tax_rate', $product->tax_rate ?? '0.00') }}"
@@ -254,12 +254,12 @@
 
                 <!-- Form Actions -->
                 <div class="mt-8 flex justify-end space-x-3">
-                    <a href="{{ route('admin.inventory.products.index') }}" 
+                    <a href="{{ route('admin.inventory.products.index') }}"
                        class="rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         Cancel
                     </a>
-                    <button type="submit" 
-                            class="inline-flex justify-center rounded-md border border-transparent bg-blue-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <button type="submit"
+                            class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                         {{ isset($product) ? 'Update Product' : 'Add Product' }}
                     </button>
                 </div>
@@ -274,7 +274,7 @@
     document.addEventListener('alpine:init', () => {
         Alpine.data('taxableToggle', () => ({
             isTaxable: {{ old('is_taxable', $product->is_taxable ?? false) ? 'true' : 'false' }},
-            
+
             toggleTaxable() {
                 this.isTaxable = !this.isTaxable;
                 if (!this.isTaxable) {

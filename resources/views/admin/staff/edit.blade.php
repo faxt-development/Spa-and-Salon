@@ -160,15 +160,15 @@
 
 
                                 <!-- Employee section that appears when Is Employee is checked -->
-                                <div id="employee-section" class="mt-4 p-4 bg-blue-50 rounded-lg" style="display: {{ $staff->employee ? 'block' : 'none' }}">
+                                <div id="employee-section" class="mt-4 p-4 bg-primary-50 rounded-lg" style="display: {{ $staff->employee ? 'block' : 'none' }}">
                                     <h4 class="text-md font-medium text-gray-900 mb-2">{{ __('Employee Information') }}</h4>
-                                    
+
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                                         <div>
                                             <x-input-label for="hire_date" :value="__('Hire Date')" :required="true" />
                                             <x-text-input id="hire_date" name="employee[hire_date]" type="date" class="mt-1 block w-full" :value="old('employee.hire_date', $staff->employee && $staff->employee->hire_date ? $staff->employee->hire_date->format('Y-m-d') : date('Y-m-d'))" required />
                                         </div>
-                                        
+
                                         <div>
                                             <x-input-label for="hourly_rate" :value="__('Hourly Rate')" />
                                             <div class="mt-1 relative rounded-md shadow-sm">
@@ -204,7 +204,7 @@
                             document.addEventListener('DOMContentLoaded', function() {
                                 const isEmployeeCheckbox = document.getElementById('is_employee');
                                 const employeeSection = document.getElementById('employee-section');
-                                
+
                                 isEmployeeCheckbox.addEventListener('change', function() {
                                     employeeSection.style.display = this.checked ? 'block' : 'none';
                                 });

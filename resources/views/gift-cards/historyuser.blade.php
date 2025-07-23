@@ -10,7 +10,7 @@
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">My Gift Card History</h2>
 
                 @if($giftCards->isEmpty())
-                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <div class="bg-primary-50 border-l-4 border-blue-400 p-4 mb-6">
                         <div class="flex">
                             <div class="flex-shrink-0">
                                 <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

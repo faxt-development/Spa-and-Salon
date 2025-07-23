@@ -43,17 +43,17 @@
     <div class="bg-white shadow-md rounded-lg p-6">
         <form action="{{ route('admin.services.packages.store') }}" method="POST">
             @csrf
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Package Name <span class="text-red-500">*</span></label>
                     <input type="text" name="name" id="name" value="{{ old('name') }}" required
                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
                 </div>
-                
+
                 <div>
                     <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select name="category_id" id="category_id" 
+                    <select name="category_id" id="category_id"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
                         <option value="">-- Select Category --</option>
                         @foreach($categories as $category)
@@ -63,7 +63,7 @@
                         @endforeach
                     </select>
                 </div>
-                
+
                 <div>
                     <label for="price" class="block text-sm font-medium text-gray-700 mb-1">Package Price <span class="text-red-500">*</span></label>
                     <div class="relative">
@@ -74,7 +74,7 @@
                             class="w-full pl-7 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">
                     </div>
                 </div>
-                
+
                 <div>
                     <label for="discount_percentage" class="block text-sm font-medium text-gray-700 mb-1">Discount Percentage</label>
                     <div class="relative">
@@ -87,13 +87,13 @@
                     <p class="mt-1 text-xs text-gray-500">Optional. Leave at 0 if no discount.</p>
                 </div>
             </div>
-            
+
             <div class="mt-6">
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                <textarea name="description" id="description" rows="3" 
+                <textarea name="description" id="description" rows="3"
                     class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-500 focus:ring-opacity-50">{{ old('description') }}</textarea>
             </div>
-            
+
             <div class="mt-6">
                 <label for="services" class="block text-sm font-medium text-gray-700 mb-1">Services <span class="text-red-500">*</span></label>
                 <select name="services[]" id="services" multiple required
@@ -106,7 +106,7 @@
                 </select>
                 <p class="mt-1 text-xs text-gray-500">Select all services that should be included in this package.</p>
             </div>
-            
+
             <div class="mt-6">
                 <div class="flex items-center">
                     <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }}
@@ -115,12 +115,12 @@
                 </div>
                 <p class="mt-1 text-xs text-gray-500">Inactive packages won't be visible to clients.</p>
             </div>
-            
+
             <div class="mt-8 flex justify-end">
                 <a href="{{ route('admin.services.packages') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md mr-2">
                     Cancel
                 </a>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
+                <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md">
                     Create Package
                 </button>
             </div>

@@ -49,7 +49,7 @@
                 </div>
             </div>
             <div class="mt-6">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded">
                     Save Settings
                 </button>
             </div>
@@ -89,7 +89,7 @@
                 <p class="text-sm text-gray-500 mt-1">You can use the following variables: {client_name}, {appointment_date}, {appointment_time}, {service_name}, {staff_name}, {location_name}, {cancellation_link}</p>
             </div>
             <div class="mt-6">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded">
                     Create Template
                 </button>
             </div>
@@ -98,7 +98,7 @@
 
     <div class="bg-white shadow-md rounded-lg p-6">
         <h2 class="text-xl font-semibold mb-4">Existing Reminder Templates</h2>
-        
+
         @if($reminderTemplates->count() > 0)
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">

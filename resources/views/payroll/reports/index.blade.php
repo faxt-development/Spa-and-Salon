@@ -44,7 +44,7 @@
 
             <!-- Action Buttons -->
             <div class="flex items-end space-x-2">
-                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Apply Filters
                 </button>
                 <button type="button" @click="resetFilters" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -127,7 +127,7 @@
 
         <!-- Loading State -->
         <div class="p-8 text-center" x-show="loading">
-            <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-blue-500">
+            <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-primary-500">
                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -146,7 +146,7 @@
                 No payroll data found for the selected filters.
             </p>
             <div class="mt-6">
-                <button @click="resetFilters" type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button @click="resetFilters" type="button" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Reset filters
                 </button>
             </div>
@@ -244,7 +244,7 @@
                                 'bg-red-100 text-red-800': record.payment_status === 'cancelled'
                             }" x-text="record.payment_status.charAt(0).toUpperCase() + record.payment_status.slice(1)"></span>
                         </div>
-                        
+
                         <div class="mt-4 grid grid-cols-2 gap-4">
                             <div>
                                 <p class="text-sm font-medium text-gray-500">Pay Period</p>
@@ -266,9 +266,9 @@
                                 <p class="text-sm font-medium text-gray-900" x-text="formatCurrency(record.net_amount)"></p>
                             </div>
                         </div>
-                        
+
                         <div class="mt-4 pt-4 border-t border-gray-100">
-                            <a :href="/admin/payroll/records/' + record.id" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <a :href="/admin/payroll/records/' + record.id" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-blue-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                 View Details
                             </a>
                         </div>
@@ -305,7 +305,7 @@
                     <template x-for="page in reportData.links" :key="page.label">
                         <template x-if="page.url">
                             <button @click="changePage(page.label)" :class="{
-                                'bg-blue-50 border-blue-500 text-blue-600 z-10': page.active,
+                                'bg-primary-50 border-blue-500 text-blue-600 z-10': page.active,
                                 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50': !page.active
                             }" class="relative inline-flex items-center px-4 py-2 border text-sm font-medium">
                                 <span x-text="page.label"></span>
@@ -352,23 +352,23 @@
                 page: 1,
                 per_page: 10
             },
-            
+
             init() {
                 // Set default date range to last 30 days
                 const endDate = new Date();
                 const startDate = new Date();
                 startDate.setDate(startDate.getDate() - 30);
-                
+
                 this.filters.start_date = this.formatDateForInput(startDate);
                 this.filters.end_date = this.formatDateForInput(endDate);
-                
+
                 // Load employees for the dropdown
                 this.fetchEmployees();
-                
+
                 // Load initial report data
                 this.fetchReportData();
             },
-            
+
             fetchEmployees() {
                 fetch('{{ route("employees.index") }}')
                     .then(response => response.json())
@@ -379,7 +379,7 @@
                         console.error('Error fetching employees:', error);
                     });
             },
-            
+
             fetchReportData() {
                 this.loading = true;
                 const queryParams = new URLSearchParams({
@@ -387,7 +387,7 @@
                     page: this.filters.page,
                     per_page: this.filters.per_page
                 }).toString();
-                
+
                 fetch(`/api/payroll/reports?${queryParams}`)
                     .then(response => response.json())
                     .then(data => {
@@ -402,12 +402,12 @@
                         this.loading = false;
                     });
             },
-            
+
             applyFilters() {
                 this.filters.page = 1; // Reset to first page when filters change
                 this.fetchReportData();
             },
-            
+
             resetFilters() {
                 this.filters = {
                     employee_id: '',
@@ -419,7 +419,7 @@
                 };
                 this.fetchReportData();
             },
-            
+
             changePage(page) {
                 const pageNumber = parseInt(page);
                 if (pageNumber >= 1 && pageNumber <= this.reportData.last_page) {
@@ -429,20 +429,20 @@
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                 }
             },
-            
+
             toggleViewMode() {
                 this.tableView = !this.tableView;
             },
-            
+
             exportToPDF() {
                 // This would be implemented to generate a PDF report
                 // For now, we'll just show an alert
                 alert('Export to PDF functionality will be implemented here');
-                
+
                 // In a real implementation, you might do something like:
                 // window.location.href = `/api/payroll/reports/export?${new URLSearchParams(this.filters).toString()}`;
             },
-            
+
             getReportTitle() {
                 const titles = {
                     'summary': 'Payroll Summary Report',
@@ -451,7 +451,7 @@
                 };
                 return titles[this.filters.report_type] || 'Payroll Report';
             },
-            
+
             formatCurrency(amount) {
                 return new Intl.NumberFormat('en-US', {
                     style: 'currency',
@@ -459,13 +459,13 @@
                     minimumFractionDigits: 2
                 }).format(amount || 0);
             },
-            
+
             formatDate(dateString) {
                 if (!dateString) return '';
                 const options = { year: 'numeric', month: 'short', day: 'numeric' };
                 return new Date(dateString).toLocaleDateString(undefined, options);
             },
-            
+
             formatDateForInput(date) {
                 if (!date) return '';
                 const d = new Date(date);

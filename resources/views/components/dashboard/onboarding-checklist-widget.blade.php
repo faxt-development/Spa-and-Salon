@@ -1,7 +1,7 @@
 <div class="bg-white shadow rounded-lg overflow-hidden">
     <div class="px-4 py-5 border-b border-gray-200 sm:px-6 flex justify-between items-center">
         <h3 class="text-lg font-medium leading-6 text-gray-900">New Admin Onboarding</h3>
-        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-blue-800">
             New
         </span>
     </div>
@@ -59,7 +59,7 @@
             </div>
         </div>
         <div class="mt-5">
-            <a href="{{ route('admin.onboarding-checklist') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 hover:text-white focus:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <a href="{{ route('admin.onboarding-checklist') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 hover:text-white focus:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 View Full Checklist
             </a>
         </div>

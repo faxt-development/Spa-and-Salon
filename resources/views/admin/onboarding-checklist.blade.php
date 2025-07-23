@@ -222,7 +222,7 @@
         </div>
 
         <div class="mt-8 text-center">
-            <a href="{{ route('admin.dashboard') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+            <a href="{{ route('admin.dashboard') }}" class="bg-primary-500 hover:bg-primary-600 text-white font-bold py-2 px-4 rounded">
                 Start Managing Your Business
             </a>
         </div>

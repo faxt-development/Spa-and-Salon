@@ -8,7 +8,7 @@
                 <span class="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                     Confirmed
                 </span>
-                <button type="button" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <button type="button" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     Save Changes
                 </button>
             </div>
@@ -38,13 +38,13 @@
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                     VIP Client
                                 </span>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-blue-800">
                                     Last visit: 2 weeks ago
                                 </span>
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="mt-4 border-t border-gray-200 pt-4">
                         <h4 class="text-sm font-medium text-gray-900 mb-2">Notes</h4>
                         <ul class="space-y-1 text-sm text-gray-600">
@@ -133,7 +133,7 @@
                             @endif
                         </div>
                         @endforeach
-                        
+
                         <!-- Total -->
                         <div class="border-t border-gray-200 pt-4 mt-4">
                             <div class="flex justify-between">
@@ -205,7 +205,7 @@
                         </svg>
                         Back to Calendar
                     </a>
-                    <a href="{{ route('web.appointments.edit', $appointment->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <a href="{{ route('web.appointments.edit', $appointment->id) }}" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>

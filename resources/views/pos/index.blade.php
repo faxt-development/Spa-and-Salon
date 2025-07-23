@@ -54,7 +54,7 @@
                 <div class="flex flex-wrap gap-2 mb-4">
                     <button
                         @click="setActiveCategory('all')"
-                        :class="{'bg-blue-600 text-white': activeCategory === 'all'}"
+                        :class="{'bg-primary-600 text-white': activeCategory === 'all'}"
                         class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
                         All
@@ -62,7 +62,7 @@
                     <template x-for="category in categories" :key="category.id">
                         <button
                             @click="setActiveCategory(category.id)"
-                            :class="{'bg-blue-600 text-white': activeCategory === category.id}"
+                            :class="{'bg-primary-600 text-white': activeCategory === category.id}"
                             class="px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                             x-text="category.name"
                         ></button>
@@ -191,9 +191,9 @@
                             :disabled="cart.length === 0"
                             :class="{
                                 'opacity-50 cursor-not-allowed': cart.length === 0,
-                                'bg-blue-600 hover:bg-blue-700': cart.length > 0
+                                'bg-primary-600 hover:bg-primary-700': cart.length > 0
                             }"
-                            class="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 3v2m10-2v2M7 19v2m10-2v2M5 10l-.868 12.142A2 2 0 006.137 24h11.726a2 2 0 002.005-1.858L19 10H5zM10 10v6m4-6v6" />
                         </svg>
@@ -312,7 +312,7 @@
             const toast = document.createElement('div');
             toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white ${
                 type === 'success' ? 'bg-green-500' :
-                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+                type === 'error' ? 'bg-red-500' : 'bg-primary-500'
             }`;
             toast.textContent = message;
 

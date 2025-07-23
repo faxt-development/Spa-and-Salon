@@ -4,8 +4,8 @@
 <div class="container mx-auto px-4 py-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Inventory Management</h1>
-        <a href="{{ route('inventory.products.create') }}" 
-           class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
+        <a href="{{ route('inventory.products.create') }}"
+           class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 ease-in-out">
             Add New Product
         </a>
     </div>
@@ -14,8 +14,8 @@
     <div class="bg-white rounded-lg shadow p-4 mb-6">
         <form action="{{ route('admin.inventory.products.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="flex-1">
-                <input type="text" name="search" value="{{ request('search') }}" 
-                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" 
+                <input type="text" name="search" value="{{ request('search') }}"
+                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                        placeholder="Search products...">
             </div>
             <div class="w-full md:w-48">
@@ -35,7 +35,7 @@
                     <option value="out" {{ request('stock_status') === 'out' ? 'selected' : '' }}>Out of Stock</option>
                 </select>
             </div>
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
+            <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out">
                 Filter
             </button>
             <a href="{{ route('admin.inventory.products.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center">
@@ -121,13 +121,13 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-2">
-                                    <a href="{{ route('inventory.products.edit', $product) }}" 
+                                    <a href="{{ route('inventory.products.edit', $product) }}"
                                        class="text-blue-600 hover:text-blue-900">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                         </svg>
                                     </a>
-                                    <a href="{{ route('inventory.products.details', $product) }}" 
+                                    <a href="{{ route('inventory.products.details', $product) }}"
                                        class="text-green-600 hover:text-green-900">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -137,7 +137,7 @@
                                     <form action="{{ route('inventory.products.destroy', $product) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" 
+                                        <button type="submit" class="text-red-600 hover:text-red-900"
                                                 onclick="return confirm('Are you sure you want to delete this product?')">
                                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -157,7 +157,7 @@
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Pagination -->
         @if($products->hasPages())
             <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
@@ -169,7 +169,7 @@
 
 <!-- Success/Error Messages -->
 @if(session('success'))
-    <div x-data="{ show: true }" 
+    <div x-data="{ show: true }"
          x-init="setTimeout(() => show = false, 3000)"
          x-show="show"
          class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg">
@@ -178,7 +178,7 @@
 @endif
 
 @if(session('error'))
-    <div x-data="{ show: true }" 
+    <div x-data="{ show: true }"
          x-init="setTimeout(() => show = false, 5000)"
          x-show="show"
          class="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg">

@@ -48,7 +48,7 @@
 
                     <!-- Role-specific Edit Links -->
                     @if($user->roles->isNotEmpty())
-                        <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4">
+                        <div class="mb-6 bg-primary-50 border-l-4 border-blue-500 p-4">
                             <div class="flex">
                                 <div class="flex-shrink-0">
                                     <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

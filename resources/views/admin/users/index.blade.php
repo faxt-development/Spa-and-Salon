@@ -21,7 +21,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                     <h2 class="text-2xl font-semibold text-gray-800">User Management</h2>
                     <div class="mt-4 sm:mt-0">
-                        <a href="{{ route('admin.users.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                        <a href="{{ route('admin.users.create') }}" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium">
                             Create New User
                         </a>
                     </div>
@@ -115,7 +115,7 @@
                                             @forelse ($user->roles as $role)
                                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                                     {{ $role->name === 'admin' ? 'bg-primary-100 text-primary-800' :
-                                                       ($role->name === 'staff' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
+                                                       ($role->name === 'staff' ? 'bg-primary-100 text-blue-800' : 'bg-green-100 text-green-800') }}">
                                                     {{ $role->name }}
                                                 </span>
                                             @empty

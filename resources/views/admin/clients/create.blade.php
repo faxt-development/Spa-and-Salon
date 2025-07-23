@@ -93,7 +93,7 @@
                                 <button type="button" @click="resetForm" class="inline-flex items-center px-4 py-2 bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-gray-800 uppercase tracking-widest hover:bg-gray-300 active:bg-gray-400 focus:outline-none focus:border-gray-500 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150 mr-3">
                                     {{ __('Reset') }}
                                 </button>
-                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150" :disabled="isSubmitting">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 active:bg-primary-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150" :disabled="isSubmitting">
                                     <span x-show="isSubmitting" class="inline-block mr-2">
                                         <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -128,13 +128,13 @@
                 successMessage: '',
                 errorMessage: '',
                 isSubmitting: false,
-                
+
                 submitForm() {
                     this.isSubmitting = true;
                     this.errors = {};
                     this.successMessage = '';
                     this.errorMessage = '';
-                    
+
                     // Form validation
                     if (!this.form.first_name) {
                         this.errors.first_name = 'First name is required';
@@ -145,18 +145,18 @@
                     if (this.form.email && !this.validateEmail(this.form.email)) {
                         this.errors.email = 'Please enter a valid email address';
                     }
-                    
+
                     // If there are validation errors, stop submission
                     if (Object.keys(this.errors).length > 0) {
                         this.isSubmitting = false;
                         return;
                     }
-                    
+
                     // Submit the form
                     const form = document.querySelector('form');
                     form.submit();
                 },
-                
+
                 resetForm() {
                     this.form = {
                         first_name: '',
@@ -170,7 +170,7 @@
                     };
                     this.errors = {};
                 },
-                
+
                 validateEmail(email) {
                     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     return re.test(String(email).toLowerCase());

@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Client Management') }}
             </h2>
-            <a href="{{ route('admin.clients.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+            <a href="{{ route('admin.clients.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                 </svg>
@@ -23,7 +23,7 @@
                             <div class="flex-1">
                                 <form method="GET" action="{{ route('admin.clients.index') }}" class="flex items-center">
                                     <div class="relative flex-1">
-                                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search clients..." 
+                                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search clients..."
                                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                         <button type="submit" class="absolute right-0 top-0 mt-2 mr-2">
                                             <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,12 +42,12 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <!-- Filter Options -->
                         <div x-show="showFilters" x-transition class="mt-4 p-4 bg-gray-50 rounded-md">
                             <form method="GET" action="{{ route('admin.clients.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <input type="hidden" name="search" value="{{ request('search') }}">
-                                
+
                                 <div>
                                     <label for="sort_by" class="block text-sm font-medium text-gray-700">{{ __('Sort By') }}</label>
                                     <select name="sort_by" id="sort_by" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -56,7 +56,7 @@
                                         <option value="last_visit" {{ request('sort_by') == 'last_visit' ? 'selected' : '' }}>{{ __('Last Visit') }}</option>
                                     </select>
                                 </div>
-                                
+
                                 <div>
                                     <label for="sort_direction" class="block text-sm font-medium text-gray-700">{{ __('Order') }}</label>
                                     <select name="sort_direction" id="sort_direction" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -64,7 +64,7 @@
                                         <option value="asc" {{ request('sort_direction') == 'asc' ? 'selected' : '' }}>{{ __('Ascending') }}</option>
                                     </select>
                                 </div>
-                                
+
                                 <div>
                                     <label for="per_page" class="block text-sm font-medium text-gray-700">{{ __('Items Per Page') }}</label>
                                     <select name="per_page" id="per_page" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -74,7 +74,7 @@
                                         <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
                                     </select>
                                 </div>
-                                
+
                                 <div class="md:col-span-3 flex justify-end">
                                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
                                         {{ __('Apply Filters') }}
@@ -83,7 +83,7 @@
                             </form>
                         </div>
                     </div>
-                    
+
                     <!-- Client List -->
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -163,7 +163,7 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <!-- Pagination -->
                     <div class="mt-4">
                         {{ $clients->withQueryString()->links() }}

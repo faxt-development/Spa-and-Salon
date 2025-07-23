@@ -54,7 +54,7 @@
                         </td>
                         <td class="px-6 py-4">
                             @foreach($service->categories as $category)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-blue-800 mr-1">
                                     {{ $category->name }}
                                 </span>
                             @endforeach
@@ -78,7 +78,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <a href="{{ route('admin.services.edit', $service) }}" class="text-primary-600 hover:text-primary-900 mr-3">Edit</a>
-                            
+
                             <form action="{{ route('admin.services.destroy', $service) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')

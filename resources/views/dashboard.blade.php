@@ -531,7 +531,7 @@
 
                     // Show loading state
                     const loadingToast = document.createElement('div');
-                    loadingToast.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded shadow-lg';
+                    loadingToast.className = 'fixed bottom-4 right-4 bg-primary-500 text-white px-4 py-2 rounded shadow-lg';
                     loadingToast.textContent = 'Checking availability...';
                     document.body.appendChild(loadingToast);
 
@@ -562,7 +562,7 @@
 
                             data.available_slots.forEach(slot => {
                                 html += `
-                                    <button type="button" class="time-slot-btn p-2 border rounded text-center hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    <button type="button" class="time-slot-btn p-2 border rounded text-center hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         data-time="${slot.time}" data-end-time="${slot.end_time}">
                                         ${slot.formatted_time}
                                     </button>

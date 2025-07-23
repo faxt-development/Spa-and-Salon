@@ -67,7 +67,7 @@
                                 <!-- Appointment timeline -->
                                 <div class="flow-root">
                                     <div x-show="isLoading" class="text-center py-4">
-                                        <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-blue-500">
+                                        <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-primary-500">
                                             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -111,7 +111,7 @@
                                                             <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white"
                                                                   :class="{
                                                                       'bg-green-500': appointment.status === 'completed',
-                                                                      'bg-blue-500': appointment.status === 'scheduled',
+                                                                      'bg-primary-500': appointment.status === 'scheduled',
                                                                       'bg-yellow-500': appointment.status === 'in_progress',
                                                                       'bg-red-500': appointment.status === 'cancelled' || appointment.status === 'no_show',
                                                                       'bg-gray-400': !['completed', 'scheduled', 'in_progress', 'cancelled', 'no_show'].includes(appointment.status)
@@ -298,7 +298,7 @@
 
                 getStatusColor(status) {
                     const statusColors = {
-                        'scheduled': 'bg-blue-100 text-blue-800',
+                        'scheduled': 'bg-primary-100 text-blue-800',
                         'in_progress': 'bg-yellow-100 text-yellow-800',
                         'completed': 'bg-green-100 text-green-800',
                         'cancelled': 'bg-red-100 text-red-800',

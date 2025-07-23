@@ -168,5 +168,5 @@ textarea {
 }
 
 .alert-info {
-    @apply bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-900 dark:text-blue-100 dark:border-blue-800;
+    @apply bg-primary-50 text-blue-800 border-blue-200 dark:bg-primary-900 dark:text-blue-100 dark:border-blue-800;
 }

@@ -6,19 +6,19 @@
 <div class="container mx-auto px-4 py-8">
     <div class="bg-white rounded-lg shadow-md p-6">
         <h1 class="text-2xl font-bold text-gray-800 mb-6">Backup Procedures</h1>
-        
+
         <div class="mb-8">
-            <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 mb-6">
+            <div class="bg-primary-50 p-5 rounded-lg border border-blue-100 mb-6">
                 <h2 class="text-xl font-semibold mb-3 text-blue-700">Why Backups Matter</h2>
                 <p class="text-gray-700 mb-3">Regular backups are crucial for protecting your business data. They help you recover from hardware failures, accidental deletions, cyber attacks, and other data loss scenarios.</p>
                 <p class="text-gray-700">Faxtina automatically backs up your data, but it's important to understand how our backup system works and what additional steps you can take to ensure your data is protected.</p>
             </div>
-            
+
             <div class="space-y-6">
                 <div class="border border-gray-200 rounded-lg p-5">
                     <h3 class="text-lg font-semibold mb-3 text-gray-800">Automatic Backups</h3>
                     <p class="text-gray-600 mb-4">Faxtina performs automatic backups of your data according to the following schedule:</p>
-                    
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full bg-white border border-gray-200">
                             <thead>
@@ -48,38 +48,38 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <div class="border border-gray-200 rounded-lg p-5">
                     <h3 class="text-lg font-semibold mb-3 text-gray-800">Manual Data Export</h3>
                     <p class="text-gray-600 mb-4">In addition to our automatic backups, we recommend regularly exporting your critical data. This provides an additional layer of protection and gives you direct access to your data.</p>
-                    
+
                     <div class="space-y-4">
                         <div class="bg-gray-50 p-4 rounded-md">
                             <h4 class="font-medium text-gray-800 mb-2">Client Data Export</h4>
                             <p class="text-gray-600 mb-3">Export your client database including contact information and appointment history.</p>
-                            <a href="{{ route('admin.reports.clients.export') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            <a href="{{ route('admin.reports.clients.export') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
                                 Export Client Data
                             </a>
                         </div>
-                        
+
                         <div class="bg-gray-50 p-4 rounded-md">
                             <h4 class="font-medium text-gray-800 mb-2">Sales Reports</h4>
                             <p class="text-gray-600 mb-3">Export detailed sales reports for your financial records.</p>
-                            <a href="{{ route('admin.reports.sales') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            <a href="{{ route('admin.reports.sales') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
                                 View Sales Reports
                             </a>
                         </div>
-                        
+
                         <div class="bg-gray-50 p-4 rounded-md">
                             <h4 class="font-medium text-gray-800 mb-2">Inventory Data</h4>
                             <p class="text-gray-600 mb-3">Export your current inventory levels and product information.</p>
-                            <a href="{{ route('inventory.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            <a href="{{ route('inventory.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                                 </svg>
@@ -88,11 +88,11 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="border border-gray-200 rounded-lg p-5">
                     <h3 class="text-lg font-semibold mb-3 text-gray-800">Disaster Recovery Plan</h3>
                     <p class="text-gray-600 mb-4">In the event of data loss, follow these steps to recover your data:</p>
-                    
+
                     <ol class="list-decimal list-inside space-y-3 text-gray-700">
                         <li>Contact Faxtina support immediately at <a href="mailto:support@faxtina.com" class="text-blue-600 hover:underline">support@faxtina.com</a> or call <a href="tel:+18005551234" class="text-blue-600 hover:underline">1-800-555-1234</a>.</li>
                         <li>Provide your account details and describe the data loss situation.</li>
@@ -100,7 +100,7 @@
                         <li>For critical situations, we offer expedited recovery services.</li>
                     </ol>
                 </div>
-                
+
                 <div class="border border-gray-200 rounded-lg p-5">
                     <h3 class="text-lg font-semibold mb-3 text-gray-800">Best Practices</h3>
                     <ul class="list-disc list-inside space-y-2 text-gray-700">
@@ -113,7 +113,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="bg-green-50 p-5 rounded-lg border border-green-100">
             <h2 class="text-lg font-semibold mb-3 text-green-700">Need Help?</h2>
             <p class="text-gray-700 mb-4">Our support team is available to assist you with any questions about data backups or recovery procedures.</p>

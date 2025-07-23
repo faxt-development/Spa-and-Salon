@@ -9,13 +9,13 @@
             </svg>
         </a>
         <h1 class="text-3xl font-bold">{{ $location->name }}</h1>
-        
+
         @if($location->is_primary)
-            <span class="ml-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+            <span class="ml-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-blue-800">
                 Primary Location
             </span>
         @endif
-        
+
         @if(!$location->is_active)
             <span class="ml-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">
                 Inactive
@@ -36,7 +36,7 @@
                 <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
                     <h2 class="text-lg font-semibold">Location Details</h2>
                 </div>
-                
+
                 <div class="p-6">
                     @if($location->description)
                         <div class="mb-6">
@@ -44,7 +44,7 @@
                         </div>
                         <hr class="my-4">
                     @endif
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <h3 class="text-md font-semibold mb-2">Address</h3>
@@ -55,7 +55,7 @@
                             <p class="text-gray-700">{{ $location->city }}, {{ $location->state }} {{ $location->postal_code }}</p>
                             <p class="text-gray-700">{{ $location->country }}</p>
                         </div>
-                        
+
                         <div>
                             <h3 class="text-md font-semibold mb-2">Contact Information</h3>
                             @if($location->contact_name)
@@ -69,9 +69,9 @@
                             @endif
                         </div>
                     </div>
-                    
+
                     <hr class="my-4">
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <h3 class="text-md font-semibold mb-2">Settings</h3>
@@ -79,7 +79,7 @@
                             <p class="text-gray-700"><span class="font-medium">Timezone:</span> {{ $location->timezone }}</p>
                             <p class="text-gray-700"><span class="font-medium">Currency:</span> {{ $location->currency }}</p>
                         </div>
-                        
+
                         @if($location->notes)
                             <div>
                                 <h3 class="text-md font-semibold mb-2">Notes</h3>
@@ -89,14 +89,14 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Staff Section -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden mt-6">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Staff at this Location</h2>
                     <a href="#" class="text-blue-600 hover:text-blue-800 text-sm">Manage Staff</a>
                 </div>
-                
+
                 <div class="p-6">
                     @if($location->staff->count() > 0)
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -117,14 +117,14 @@
                     @endif
                 </div>
             </div>
-            
+
             <!-- Services Section -->
             <div class="bg-white rounded-lg shadow-md overflow-hidden mt-6">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
                     <h2 class="text-lg font-semibold">Services at this Location</h2>
                     <a href="#" class="text-blue-600 hover:text-blue-800 text-sm">Manage Services</a>
                 </div>
-                
+
                 <div class="p-6">
                     @if($location->services->count() > 0)
                         <div class="grid grid-cols-1 gap-4">
@@ -146,32 +146,32 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Sidebar -->
         <div class="md:col-span-1">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
                     <h2 class="text-lg font-semibold">Actions</h2>
                 </div>
-                
+
                 <div class="p-6">
                     <div class="space-y-3">
-                        <a href="{{ route('admin.locations.edit', $location) }}" class="block w-full bg-blue-500 hover:bg-blue-600 text-white text-center font-bold py-2 px-4 rounded">
+                        <a href="{{ route('admin.locations.edit', $location) }}" class="block w-full bg-primary-500 hover:bg-primary-600 text-white text-center font-bold py-2 px-4 rounded">
                             Edit Location
                         </a>
-                        
+
                         @if(!$location->is_primary)
                             <form action="{{ route('admin.locations.destroy', $location) }}" method="POST" class="block w-full">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white text-center font-bold py-2 px-4 rounded" 
+                                <button type="submit" class="w-full bg-red-500 hover:bg-red-600 text-white text-center font-bold py-2 px-4 rounded"
                                         onclick="return confirm('Are you sure you want to delete this location?')">
                                     Delete Location
                                 </button>
                             </form>
                         @endif
                     </div>
-                    
+
                     <div class="mt-6">
                         <h3 class="text-md font-semibold mb-2">Quick Stats</h3>
                         <div class="space-y-2">
@@ -191,12 +191,12 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="bg-white rounded-lg shadow-md overflow-hidden mt-6">
                 <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
                     <h2 class="text-lg font-semibold">Business Hours</h2>
                 </div>
-                
+
                 <div class="p-6">
                     @if($location->business_hours)
                         <div class="space-y-2">

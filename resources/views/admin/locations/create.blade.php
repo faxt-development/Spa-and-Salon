@@ -14,7 +14,7 @@
     <div class="bg-white rounded-lg shadow-md p-6">
         <form action="{{ route('admin.locations.store') }}" method="POST">
             @csrf
-            
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Basic Information -->
                 <div class="col-span-2">
@@ -213,7 +213,7 @@
                 <a href="{{ route('admin.locations.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mr-2">
                     Cancel
                 </a>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                <button type="submit" class="bg-primary-500 hover:bg-primary-600 text-white font-bold py-2 px-4 rounded">
                     Create Location
                 </button>
             </div>

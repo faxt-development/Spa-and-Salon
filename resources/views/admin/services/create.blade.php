@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const categories = JSON.parse(selectedServiceCategories);
             categories.forEach(categoryId => {
                 const category = document.createElement('div');
-                category.className = 'inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2';
+                category.className = 'inline-block bg-primary-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full mr-2';
                 category.textContent = getCategoryName(categoryId);
                 categoriesDiv.appendChild(category);
             });

@@ -21,7 +21,7 @@
                             <h2 class="text-2xl font-semibold text-gray-800">{{ $campaign->name }}</h2>
                             <span class="ml-4 px-2.5 py-0.5 rounded-full text-xs font-medium {{
                                 $campaign->status === 'sent' ? 'bg-green-100 text-green-800' :
-                                ($campaign->status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
+                                ($campaign->status === 'scheduled' ? 'bg-primary-100 text-blue-800' :
                                 ($campaign->status === 'sending' ? 'bg-yellow-100 text-yellow-800' :
                                 ($campaign->status === 'draft' ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800')))
                             }}">
@@ -88,7 +88,7 @@
                         <!-- Sent -->
                         <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
                             <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-blue-50 text-blue-600">
+                                <div class="p-3 rounded-full bg-primary-50 text-blue-600">
                                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                     </svg>
@@ -341,7 +341,7 @@
                                                     </span>
                                                 @endif
                                                 @if($recipient->clicked_at)
-                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800" title="Clicked {{ $recipient->clicked_at->diffForHumans() }}">
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-100 text-blue-800" title="Clicked {{ $recipient->clicked_at->diffForHumans() }}">
                                                         Clicked
                                                     </span>
                                                 @endif

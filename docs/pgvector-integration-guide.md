@@ -663,7 +663,7 @@ Create `resources/views/pgvector-test.blade.php` with an interactive UI for test
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Test Vector Operations</h2>
             <div class="mb-4 flex space-x-4">
-                <button id="testButton" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+                <button id="testButton" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded">
                     Run Test
                 </button>
                 <button id="searchPathButton" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
@@ -692,13 +692,13 @@ Create `resources/views/pgvector-test.blade.php` with an interactive UI for test
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Test Vector Syntax</h2>
             <div class="mb-4 flex flex-wrap gap-2">
-                <button class="test-syntax bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" data-syntax="::vector">
+                <button class="test-syntax bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded" data-syntax="::vector">
                     Test ::vector
                 </button>
-                <button class="test-syntax bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" data-syntax="::public.vector">
+                <button class="test-syntax bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded" data-syntax="::public.vector">
                     Test ::public.vector
                 </button>
-                <button class="test-syntax bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded" data-syntax="::extensions.vector">
+                <button class="test-syntax bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded" data-syntax="::extensions.vector">
                     Test ::extensions.vector
                 </button>
                 <button class="test-syntax bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded" data-syntax="::pg_catalog.vector">

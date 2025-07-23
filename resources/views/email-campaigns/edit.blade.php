@@ -181,7 +181,7 @@
                                     <div class="text-3xl font-bold text-gray-900">{{ $campaign->sent_count }}</div>
                                     <div class="text-sm text-gray-500">Sent</div>
                                 </div>
-                                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                                <div class="bg-primary-50 p-4 rounded-lg text-center">
                                     <div class="text-3xl font-bold text-blue-900">{{ $campaign->opened_count }}</div>
                                     <div class="text-sm text-blue-600">Opened ({{ $campaign->open_rate }}%)</div>
                                 </div>
@@ -218,7 +218,7 @@
                                     </button>
 
                                     <button type="submit" name="action" value="schedule"
-                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                             x-bind:disabled="!form.scheduled_for"
                                             x-bind:class="{'opacity-50 cursor-not-allowed': !form.scheduled_for}">
                                         Schedule for Later

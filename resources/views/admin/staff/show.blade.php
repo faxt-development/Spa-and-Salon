@@ -5,7 +5,7 @@
                 {{ __('Staff Details') }}
             </h2>
             <div class="flex space-x-2">
-                <a href="{{ route('admin.staff.edit', $staff->id) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <a href="{{ route('admin.staff.edit', $staff->id) }}" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:bg-primary-700 active:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     {{ __('Edit') }}
                 </a>
                 <a href="{{ route('admin.staff.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-300 border border-transparent rounded-md font-semibold text-xs text-gray-800 uppercase tracking-widest hover:bg-gray-400 focus:bg-gray-400 active:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
@@ -136,7 +136,7 @@
                                         <div class="mt-1 flex flex-wrap gap-1">
                                             @if ($staff->work_days && count($staff->work_days) > 0)
                                                 @foreach ($staff->work_days as $day)
-                                                    <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                                                    <span class="px-2 py-1 text-xs rounded-full bg-primary-100 text-blue-800">
                                                         {{ __(ucfirst($day)) }}
                                                     </span>
                                                 @endforeach

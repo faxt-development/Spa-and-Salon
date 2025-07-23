@@ -29,6 +29,109 @@ class AppointmentService
     {
         $this->transactionService = $transactionService;
     }
+
+    /**
+     * Get available time slots between two dates
+     *
+     * @param Carbon $startDate
+     * @param Carbon $endDate
+     * @param int $staffId
+     * @param int $serviceId
+     * @return array
+     */
+    public function getAvailableTimeSlots(Carbon $startDate, Carbon $endDate, $staffId = null, $serviceId = null)
+    {
+        // Default working hours (9 AM to 5 PM)
+        $workingHours = [
+            'start' => 9, // 9 AM
+            'end' => 17,  // 5 PM
+        ];
+
+        // Get all appointments that overlap with the date range
+        $query = Appointment::whereBetween('start_time', [$startDate, $endDate])
+            ->orWhereBetween('end_time', [$startDate, $endDate])
+            ->orWhere(function($q) use ($startDate, $endDate) {
+                $q->where('start_time', '<=', $startDate)
+                  ->where('end_time', '>=', $endDate);
+            });
+
+        if ($staffId) {
+            $query->where('staff_id', $staffId);
+        }
+
+        $appointments = $query->get(['start_time', 'end_time', 'staff_id']);
+
+        // Group appointments by date and staff
+        $bookedSlots = [];
+        foreach ($appointments as $appointment) {
+            $date = $appointment->start_time->format('Y-m-d');
+            $staffId = $appointment->staff_id;
+            $bookedSlots[$date][$staffId][] = [
+                'start' => $appointment->start_time->format('H:i'),
+                'end' => $appointment->end_time->format('H:i'),
+            ];
+        }
+
+        // Generate available time slots (30-minute intervals)
+        $availableSlots = [];
+        $currentDate = $startDate->copy();
+        $interval = new \DateInterval('PT30M');
+
+        while ($currentDate <= $endDate) {
+            $dateStr = $currentDate->format('Y-m-d');
+            $dayOfWeek = $currentDate->dayOfWeek; // 0 (Sunday) to 6 (Saturday)
+            
+            // Skip weekends (optional)
+            if ($dayOfWeek === 0 || $dayOfWeek === 6) {
+                $currentDate->addDay();
+                continue;
+            }
+
+            // Get all staff members (or filter by staffId if provided)
+            $staffQuery = \App\Models\Staff::query();
+            if ($staffId) {
+                $staffQuery->where('id', $staffId);
+            }
+            $staffMembers = $staffQuery->get(['id', 'first_name', 'last_name']);
+
+            foreach ($staffMembers as $staff) {
+                $staffId = $staff->id;
+                $currentTime = $currentDate->copy()->setTime($workingHours['start'], 0);
+                $endTime = $currentDate->copy()->setTime($workingHours['end'], 0);
+
+                while ($currentTime < $endTime) {
+                    $slotEnd = (clone $currentTime)->add($interval);
+                    $slot = [
+                        'start' => $currentTime->format('H:i'),
+                        'end' => $slotEnd->format('H:i'),
+                        'staff' => $staff->first_name . ' ' . $staff->last_name,
+                        'staff_id' => $staff->id,
+                        'date' => $dateStr,
+                        'is_available' => true
+                    ];
+
+                    // Check if this time slot is booked
+                    if (isset($bookedSlots[$dateStr][$staffId])) {
+                        foreach ($bookedSlots[$dateStr][$staffId] as $booked) {
+                            if (($slot['start'] >= $booked['start'] && $slot['start'] < $booked['end']) ||
+                                ($slot['end'] > $booked['start'] && $slot['end'] <= $booked['end']) ||
+                                ($slot['start'] <= $booked['start'] && $slot['end'] >= $booked['end'])) {
+                                $slot['is_available'] = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    $availableSlots[$dateStr][$staffId][] = $slot;
+                    $currentTime->add($interval);
+                }
+            }
+
+            $currentDate->addDay();
+        }
+
+        return $availableSlots;
+    }
     /**
      * Create a new appointment
      *
