@@ -5,7 +5,7 @@
     <div>
         <label for="name" class="block text-sm font-medium text-gray-700">Permission Name *</label>
         <div class="mt-1">
-            <input type="text" name="name" id="name" 
+            <input type="text" name="name" id="name"
                    value="{{ old('name', $permission->name ?? '') }}"
                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                    placeholder="e.g., view users" required>
@@ -20,7 +20,7 @@
     <div>
         <label for="display_name" class="block text-sm font-medium text-gray-700">Display Name</label>
         <div class="mt-1">
-            <input type="text" name="display_name" id="display_name" 
+            <input type="text" name="display_name" id="display_name"
                    value="{{ old('display_name', $permission->display_name ?? '') }}"
                    class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                    placeholder="e.g., View Users">
@@ -48,7 +48,7 @@
     <div>
         <label for="guard_name" class="block text-sm font-medium text-gray-700">Guard Name *</label>
         <div class="mt-1">
-            <select name="guard_name" id="guard_name" 
+            <select name="guard_name" id="guard_name"
                     class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     required>
                 @foreach($guards as $guard)
@@ -70,12 +70,12 @@
         @error('roles')
             <p class="mb-2 text-sm text-red-600">{{ $message }}</p>
         @enderror
-        
+
         <div class="bg-white rounded-md shadow-sm -space-y-px">
             @forelse($roles as $role)
                 <div class="border-b border-gray-200 p-4 flex items-start">
                     <div class="flex items-center h-5">
-                        <input id="role-{{ $role->id }}" name="roles[]" type="checkbox" 
+                        <input id="role-{{ $role->id }}" name="roles[]" type="checkbox"
                                value="{{ $role->id }}"
                                @if(in_array($role->id, old('roles', $permissionRoles ?? []))) checked @endif
                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
@@ -102,7 +102,7 @@
         <a href="{{ route('admin.permissions.index') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             Cancel
         </a>
-        <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <button type="submit" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             {{ isset($permission) ? 'Update Permission' : 'Create Permission' }}
         </button>
     </div>

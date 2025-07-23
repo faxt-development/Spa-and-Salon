@@ -6,15 +6,15 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
             <div class="p-6 bg-white border-b border-gray-200">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">Payroll Records</h2>
-                
+
                 <!-- Filters -->
                 <div class="mb-6 bg-gray-50 p-4 rounded-lg">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <!-- Employee Filter -->
                         <div>
                             <label for="employee_id" class="block text-sm font-medium text-gray-700 mb-1">Employee</label>
-                            <select 
-                                id="employee_id" 
+                            <select
+                                id="employee_id"
                                 x-model="filters.employee_id"
                                 class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                 @change="fetchPayrollRecords()"
@@ -29,8 +29,8 @@
                         <!-- Status Filter -->
                         <div>
                             <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                            <select 
-                                id="status" 
+                            <select
+                                id="status"
                                 x-model="filters.status"
                                 class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                 @change="fetchPayrollRecords()"
@@ -45,9 +45,9 @@
                         <!-- Date Range -->
                         <div>
                             <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                            <input 
-                                type="date" 
-                                id="start_date" 
+                            <input
+                                type="date"
+                                id="start_date"
                                 x-model="filters.start_date"
                                 @change="fetchPayrollRecords()"
                                 class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
@@ -56,9 +56,9 @@
 
                         <div>
                             <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                            <input 
-                                type="date" 
-                                id="end_date" 
+                            <input
+                                type="date"
+                                id="end_date"
                                 x-model="filters.end_date"
                                 @change="fetchPayrollRecords()"
                                 class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
@@ -108,7 +108,7 @@
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-10 w-10">
-                                                    <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                                    <div class="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
                                                         <span class="text-indigo-700 font-medium" x-text="record.employee.staff.first_name.charAt(0) + record.employee.staff.last_name.charAt(0)"></span>
                                                     </div>
                                                 </div>
@@ -131,32 +131,32 @@
                                             <div class="text-sm text-gray-500" x-text="'Net: $' + formatCurrency(record.net_amount)"></div>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
-                                            <span 
+                                            <span
                                                 x-bind:class="{
                                                     'bg-yellow-100 text-yellow-800': record.payment_status === 'pending',
                                                     'bg-green-100 text-green-800': record.payment_status === 'processed',
                                                     'bg-red-100 text-red-800': record.payment_status === 'cancelled'
-                                                }" 
+                                                }"
                                                 class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full capitalize"
                                                 x-text="record.payment_status"
                                             ></span>
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <a 
-                                                :href="'{{ route('payroll.records.show', '') }}/' + record.id" 
+                                            <a
+                                                :href="'{{ route('payroll.records.show', '') }}/' + record.id"
                                                 class="text-indigo-600 hover:text-indigo-900 mr-3"
                                             >View</a>
                                             <template x-if="record.payment_status === 'pending'">
-                                                <button 
-                                                    @click="processPayroll(record.id)" 
+                                                <button
+                                                    @click="processPayroll(record.id)"
                                                     class="text-green-600 hover:text-green-900 mr-3"
                                                 >
                                                     Process
                                                 </button>
                                             </template>
                                             <template x-if="record.payment_status === 'pending'">
-                                                <button 
-                                                    @click="confirmCancel(record.id)" 
+                                                <button
+                                                    @click="confirmCancel(record.id)"
                                                     class="text-red-600 hover:text-red-900"
                                                 >
                                                     Cancel
@@ -176,16 +176,16 @@
                         Showing <span x-text="meta.from"></span> to <span x-text="meta.to"></span> of <span x-text="meta.total"></span> results
                     </div>
                     <div class="flex-1 flex justify-between sm:justify-end">
-                        <button 
-                            @click="previousPage()" 
+                        <button
+                            @click="previousPage()"
                             :disabled="!meta.prev_page_url"
                             :class="{'opacity-50 cursor-not-allowed': !meta.prev_page_url}"
                             class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                         >
                             Previous
                         </button>
-                        <button 
-                            @click="nextPage()" 
+                        <button
+                            @click="nextPage()"
                             :disabled="!meta.next_page_url"
                             :class="{'opacity-50 cursor-not-allowed': !meta.next_page_url}"
                             class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
@@ -199,18 +199,18 @@
     </div>
 
     <!-- Cancel Confirmation Modal -->
-    <div 
-        x-show="showCancelModal" 
-        class="fixed z-10 inset-0 overflow-y-auto" 
-        aria-labelledby="modal-title" 
-        role="dialog" 
+    <div
+        x-show="showCancelModal"
+        class="fixed z-10 inset-0 overflow-y-auto"
+        aria-labelledby="modal-title"
+        role="dialog"
         aria-modal="true"
         style="display: none;"
         :style="{ display: showCancelModal ? 'block' : 'none' }"
     >
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div 
-                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+            <div
+                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
                 aria-hidden="true"
                 @click="showCancelModal = false"
             ></div>
@@ -236,15 +236,15 @@
                     </div>
                 </div>
                 <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                    <button 
-                        type="button" 
+                    <button
+                        type="button"
                         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
                         @click="cancelPayroll()"
                     >
                         Yes, cancel it
                     </button>
-                    <button 
-                        type="button" 
+                    <button
+                        type="button"
                         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
                         @click="showCancelModal = false"
                     >
@@ -273,35 +273,35 @@
                 end_date: '',
                 page: 1
             },
-            
+
             async fetchPayrollRecords() {
                 this.loading = true;
                 try {
                     // Build query string from filters
                     const query = new URLSearchParams();
-                    
+
                     if (this.filters.employee_id) {
                         query.append('employee_id', this.filters.employee_id);
                     }
-                    
+
                     if (this.filters.status) {
                         query.append('payment_status', this.filters.status);
                     }
-                    
+
                     if (this.filters.start_date) {
                         query.append('start_date', this.filters.start_date);
                     }
-                    
+
                     if (this.filters.end_date) {
                         query.append('end_date', this.filters.end_date);
                     }
-                    
+
                     query.append('page', this.filters.page);
-                    
+
                     // Fetch data from API
                     const response = await fetch(`/api/payroll?${query.toString()}`);
                     const data = await response.json();
-                    
+
                     this.records = data.data;
                     this.meta = {
                         current_page: data.current_page,
@@ -314,7 +314,7 @@
                         to: data.to,
                         total: data.total
                     };
-                    
+
                 } catch (error) {
                     console.error('Error fetching payroll records:', error);
                     // Show error message
@@ -322,7 +322,7 @@
                     this.loading = false;
                 }
             },
-            
+
             async fetchEmployees() {
                 try {
                     const response = await fetch('/api/employees?per_page=100'); // Adjust per_page as needed
@@ -332,12 +332,12 @@
                     console.error('Error fetching employees:', error);
                 }
             },
-            
+
             async processPayroll(recordId) {
                 if (!confirm('Are you sure you want to process this payroll record?')) {
                     return;
                 }
-                
+
                 try {
                     const response = await fetch(`/api/payroll/${recordId}/process`, {
                         method: 'POST',
@@ -346,7 +346,7 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         }
                     });
-                    
+
                     if (response.ok) {
                         this.fetchPayrollRecords(); // Refresh the list
                         // Show success message
@@ -360,17 +360,17 @@
                     alert(`Error: ${error.message}`);
                 }
             },
-            
+
             confirmCancel(recordId) {
                 this.selectedRecordId = recordId;
                 this.showCancelModal = true;
             },
-            
+
             async cancelPayroll() {
                 if (!this.selectedRecordId) return;
-                
+
                 this.showCancelModal = false;
-                
+
                 try {
                     const response = await fetch(`/api/payroll/${this.selectedRecordId}/cancel`, {
                         method: 'POST',
@@ -379,7 +379,7 @@
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                         }
                     });
-                    
+
                     if (response.ok) {
                         this.fetchPayrollRecords(); // Refresh the list
                         // Show success message
@@ -395,27 +395,27 @@
                     this.selectedRecordId = null;
                 }
             },
-            
+
             nextPage() {
                 if (this.meta.next_page_url) {
                     this.filters.page++;
                     this.fetchPayrollRecords();
                 }
             },
-            
+
             previousPage() {
                 if (this.filters.page > 1) {
                     this.filters.page--;
                     this.fetchPayrollRecords();
                 }
             },
-            
+
             formatDate(dateString) {
                 if (!dateString) return '';
                 const options = { year: 'numeric', month: 'short', day: 'numeric' };
                 return new Date(dateString).toLocaleDateString(undefined, options);
             },
-            
+
             formatCurrency(amount) {
                 if (amount === null || amount === undefined) return '0.00';
                 return parseFloat(amount).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');

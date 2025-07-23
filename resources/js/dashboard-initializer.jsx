@@ -1,5 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { CssBaseline } from '@mui/material';
+import { AppThemeProvider } from './theme/ThemeProvider';
 import ConfigurableDashboard from './components/Dashboard/ConfigurableDashboard.jsx';
 
 // Store root instances to prevent multiple initializations
@@ -38,7 +40,10 @@ window.initConfigurableDashboard = function(containerId, options = {}) {
         const root = createRoot(container);
         root.render(
             <React.StrictMode>
-                <ConfigurableDashboard {...dashboardOptions} />
+                <AppThemeProvider>
+                    <CssBaseline />
+                    <ConfigurableDashboard {...dashboardOptions} />
+                </AppThemeProvider>
             </React.StrictMode>
         );
 

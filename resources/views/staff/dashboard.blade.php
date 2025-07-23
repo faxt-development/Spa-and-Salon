@@ -19,10 +19,10 @@
                     <div class="bg-white border rounded-lg p-6">
                         <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
                         <div class="space-y-3">
-                            <a href="#" class="block px-4 py-2 bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200 transition">
+                            <a href="#" class="block px-4 py-2 bg-accent-50 text-accent-800 rounded-md hover:bg-accent-100 transition">
                                 Check Schedule
                             </a>
-                            <a href="#" class="block px-4 py-2 bg-green-100 text-green-800 rounded-md hover:bg-green-200 transition">
+                            <a href="#" class="block px-4 py-2 bg-accent-50 text-accent-800 rounded-md hover:bg-accent-100 transition">
                                 Add New Client
                             </a>
                             <a href="#" class="block px-4 py-2 bg-primary-100 text-primary-800 rounded-md hover:bg-primary-200 transition">

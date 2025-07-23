@@ -124,10 +124,30 @@ const TopPerformersWidget = ({
         onChange={handleTypeChange} 
         aria-label="top performers tabs"
         variant="fullWidth"
-        sx={{ mb: 2 }}
+        sx={{ 
+          mb: 2,
+          '& .MuiTabs-indicator': {
+            height: 3,
+          },
+        }}
+        textColor="primary"
       >
-        <Tab value="services" label="Services" />
-        <Tab value="staff" label="Staff" />
+        <Tab 
+          value="services" 
+          label="Services" 
+          sx={{ 
+            fontWeight: type === 'services' ? 600 : 400,
+            fontSize: '0.875rem',
+          }}
+        />
+        <Tab 
+          value="staff" 
+          label="Staff" 
+          sx={{ 
+            fontWeight: type === 'staff' ? 600 : 400,
+            fontSize: '0.875rem',
+          }}
+        />
       </Tabs>
 
       <Grid container spacing={2} sx={{ mb: 2 }}>

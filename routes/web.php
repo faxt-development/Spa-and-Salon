@@ -230,10 +230,19 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin', \A
         Route::put('/tax', [\App\Http\Controllers\Admin\PaymentController::class, 'updateTax'])->name('tax.update');
     });
 
+    // Help section routes
+    Route::prefix('help')->name('help.')->group(function () {
+        Route::get('/appointments', [\App\Http\Controllers\Admin\AppointmentTutorialController::class, 'index'])
+            ->name('appointments');
+    });
+
     // Appointments routes - using consolidated AppointmentController
     Route::prefix('appointments')->name('appointments.')->group(function () {
         Route::get('/', [\App\Http\Controllers\AppointmentController::class, 'index'])->name('index');
-        Route::get('/learn', [\App\Http\Controllers\Admin\AppointmentTutorialController::class, 'index'])->name('learn');
+        // Keep old route for backward compatibility but redirect to new help section
+        Route::get('/learn', function () {
+            return redirect()->route('help.appointments');
+        })->name('learn');
         Route::get('/reminders', [\App\Http\Controllers\Admin\AppointmentReminderController::class, 'index'])->name('reminders');
         Route::put('/reminders', [\App\Http\Controllers\Admin\AppointmentReminderController::class, 'update'])->name('reminders.update');
         Route::get('/policies', [\App\Http\Controllers\Admin\AppointmentPolicyController::class, 'index'])->name('policies');

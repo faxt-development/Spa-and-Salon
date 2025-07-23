@@ -70,7 +70,7 @@
                                             
                                             <div class="mb-4">
                                                 <label class="inline-flex items-center">
-                                                    <input type="checkbox" name="settings[{{ $index }}][send_customer_reminders]" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" {{ $setting->send_customer_reminders ? 'checked' : '' }}>
+                                                    <input type="checkbox" name="settings[{{ $index }}][send_customer_reminders]" value="1" class="rounded border-gray-300 text-accent-500 shadow-sm focus:border-accent-300 focus:ring focus:ring-accent-200 focus:ring-opacity-50" {{ $setting->send_customer_reminders ? 'checked' : '' }}>
                                                     <span class="ml-2">Send appointment reminders to customers</span>
                                                 </label>
                                             </div>
@@ -97,7 +97,7 @@
                                             
                                             <div class="mb-4">
                                                 <label class="inline-flex items-center">
-                                                    <input type="checkbox" name="settings[{{ $index }}][send_staff_notifications]" value="1" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" {{ $setting->send_staff_notifications ? 'checked' : '' }}>
+                                                    <input type="checkbox" name="settings[{{ $index }}][send_staff_notifications]" value="1" class="rounded border-gray-300 text-accent-500 shadow-sm focus:border-accent-300 focus:ring focus:ring-accent-200 focus:ring-opacity-50" {{ $setting->send_staff_notifications ? 'checked' : '' }}>
                                                     <span class="ml-2">Send appointment notifications to staff</span>
                                                 </label>
                                             </div>
@@ -111,7 +111,7 @@
                             @endforeach
 
                             <div class="flex justify-end mt-6">
-                                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <button type="submit" class="px-4 py-2 bg-accent-500 text-white rounded-md hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 transition-colors duration-200">
                                     Save Reminder Settings
                                 </button>
                             </div>

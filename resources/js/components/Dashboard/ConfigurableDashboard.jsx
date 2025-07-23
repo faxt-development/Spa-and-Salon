@@ -307,6 +307,12 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
           startIcon={<AddIcon />}
           onClick={() => setAddWidgetDialogOpen(true)}
           size={compact ? 'small' : 'medium'}
+          sx={{
+            backgroundColor: 'var(--accent-500, #F4C96C)',
+            '&:hover': {
+              backgroundColor: 'var(--accent-600, #E8B53D)',
+            },
+          }}
         >
           Add Widget
         </Button>
@@ -333,10 +339,16 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
           <Typography variant="body1" sx={{ mb: 3 }}>
             Add widgets to customize your dashboard
           </Typography>
-          <Button
+ <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => setAddWidgetDialogOpen(true)}
+            sx={{
+              backgroundColor: 'var(--accent-500, #F4C96C)',
+              '&:hover': {
+                backgroundColor: 'var(--accent-600, #E8B53D)',
+              },
+            }}
           >
             Add Your First Widget
           </Button>

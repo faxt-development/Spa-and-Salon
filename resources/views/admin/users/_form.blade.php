@@ -6,7 +6,7 @@
         <!-- Name -->
         <div>
             <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
-            <input type="text" name="name" id="name" value="{{ old('name', $user->name ?? '') }}" 
+            <input type="text" name="name" id="name" value="{{ old('name', $user->name ?? '') }}"
                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                    required autofocus>
             @error('name')
@@ -60,7 +60,7 @@
             <label class="block text-sm font-medium text-gray-700">Status</label>
             <div class="mt-2 space-y-2">
                 <div class="flex items-center">
-                    <input id="is_active_true" name="is_active" type="radio" value="1" 
+                    <input id="is_active_true" name="is_active" type="radio" value="1"
                            class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                            {{ old('is_active', isset($user) && $user->is_active ? '1' : '0') == '1' ? 'checked' : '' }}>
                     <label for="is_active_true" class="ml-2 block text-sm text-gray-700">
@@ -86,7 +86,7 @@
         <div>
             <div class="flex items-start">
                 <div class="flex items-center h-5">
-                    <input id="send_verification" name="send_verification" type="checkbox" 
+                    <input id="send_verification" name="send_verification" type="checkbox"
                            class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                 </div>
                 <div class="ml-3 text-sm">
@@ -103,12 +103,12 @@
             @error('roles')
                 <p class="mb-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
-            
+
             <div class="space-y-2">
                 @foreach($roles as $role)
                     <div class="flex items-start">
                         <div class="flex items-center h-5">
-                            <input id="role-{{ $role->id }}" name="roles[]" type="checkbox" 
+                            <input id="role-{{ $role->id }}" name="roles[]" type="checkbox"
                                    value="{{ $role->id }}"
                                    @if(in_array($role->id, old('roles', $userRoles ?? []))) checked @endif
                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
@@ -132,7 +132,7 @@
     <a href="{{ route('admin.users.index') }}" class="mr-4 text-sm font-medium text-gray-700 hover:text-gray-500">
         Cancel
     </a>
-    <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+    <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
         {{ isset($user) ? 'Update User' : 'Create User' }}
     </button>
 </div>

@@ -13,10 +13,10 @@
                 <a href="{{ route('promotions.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Cancel
                 </a>
-                <button 
-                    @click="save()" 
-                    type="button" 
-                    class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                <button
+                    @click="save()"
+                    type="button"
+                    class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     :disabled="saving">
                     <svg x-show="saving" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -59,10 +59,10 @@
                                 <div class="mt-1 flex rounded-md shadow-sm">
                                     <input type="text" name="code" id="code" x-model="form.code" required
                                            class="flex-1 min-w-0 block w-full px-3 py-2 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300"
-                                           :class="{'bg-gray-100': !form.is_public}" 
+                                           :class="{'bg-gray-100': !form.is_public}"
                                            :disabled="!form.is_public"
                                            @input="form.code = form.code.toUpperCase()">
-                                    <button type="button" 
+                                    <button type="button"
                                             @click="generateCode()"
                                             class="ml-3 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                         Generate
@@ -84,7 +84,7 @@
                             <!-- Type -->
                             <div class="sm:col-span-3">
                                 <label for="type" class="block text-sm font-medium text-gray-700">Promotion Type</label>
-                                <select id="type" name="type" x-model="form.type" 
+                                <select id="type" name="type" x-model="form.type"
                                         @change="updateFormForType()"
                                         class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                                     @foreach($types as $type => $details)
@@ -131,7 +131,7 @@
                                 <div class="mt-1">
                                     <div class="flex items-center">
                                         <input type="hidden" name="is_active" value="0">
-                                        <input type="checkbox" id="is_active" name="is_active" value="1" 
+                                        <input type="checkbox" id="is_active" name="is_active" value="1"
                                                x-model="form.is_active"
                                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                         <label for="is_active" class="ml-2 block text-sm text-gray-700">
@@ -147,7 +147,7 @@
                                 <div class="mt-1">
                                     <div class="flex items-center">
                                         <input type="hidden" name="is_public" value="0">
-                                        <input type="checkbox" id="is_public" name="is_public" value="1" 
+                                        <input type="checkbox" id="is_public" name="is_public" value="1"
                                                x-model="form.is_public"
                                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                         <label for="is_public" class="ml-2 block text-sm text-gray-700">
@@ -166,7 +166,7 @@
                             <div class="sm:col-span-3">
                                 <label for="starts_at" class="block text-sm font-medium text-gray-700">Start Date & Time</label>
                                 <div class="mt-1">
-                                    <input type="datetime-local" name="starts_at" id="starts_at" 
+                                    <input type="datetime-local" name="starts_at" id="starts_at"
                                            x-model="form.starts_at"
                                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
                                 </div>
@@ -176,7 +176,7 @@
                             <div class="sm:col-span-3">
                                 <label for="ends_at" class="block text-sm font-medium text-gray-700">End Date & Time (Optional)</label>
                                 <div class="mt-1">
-                                    <input type="datetime-local" name="ends_at" id="ends_at" 
+                                    <input type="datetime-local" name="ends_at" id="ends_at"
                                            x-model="form.ends_at"
                                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
                                 </div>
@@ -191,7 +191,7 @@
                             <div class="sm:col-span-3">
                                 <label for="usage_limit" class="block text-sm font-medium text-gray-700">Usage Limit (Optional)</label>
                                 <div class="mt-1">
-                                    <input type="number" name="usage_limit" id="usage_limit" 
+                                    <input type="number" name="usage_limit" id="usage_limit"
                                            x-model="form.usage_limit"
                                            min="1"
                                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
@@ -203,7 +203,7 @@
                             <div class="sm:col-span-3">
                                 <label for="min_requirements" class="block text-sm font-medium text-gray-700">Minimum Requirements (Optional)</label>
                                 <div class="mt-1">
-                                    <input type="number" name="min_requirements" id="min_requirements" 
+                                    <input type="number" name="min_requirements" id="min_requirements"
                                            x-model="form.min_requirements"
                                            min="0" step="0.01"
                                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
@@ -223,9 +223,9 @@
                                 <div class="mt-2 space-y-2">
                                     @foreach($services as $service)
                                         <div class="flex items-center">
-                                            <input type="checkbox" 
-                                                   id="service_{{ $service->id }}" 
-                                                   name="services[]" 
+                                            <input type="checkbox"
+                                                   id="service_{{ $service->id }}"
+                                                   name="services[]"
                                                    value="{{ $service->id }}"
                                                    x-model="form.services"
                                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
@@ -266,26 +266,26 @@
             errors: @json($errors->toArray()),
             saving: false,
             types: @json($types),
-            
+
             init() {
                 // Set default values for BOGO and Package types
                 if (['bogo', 'package'].includes(this.form.type)) {
                     this.form.value = this.types[this.form.type].default_value;
                 }
-                
+
                 // Set up form submission handling
                 this.$watch('form.type', (newType) => {
                     this.updateFormForType();
                 });
             },
-            
+
             updateFormForType() {
                 // Update form values based on type
                 if (['bogo', 'package'].includes(this.form.type)) {
                     this.form.value = this.types[this.form.type].default_value;
                 }
             },
-            
+
             generateCode() {
                 // Generate a random 8-character alphanumeric code
                 const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -295,18 +295,18 @@
                 }
                 this.form.code = result;
             },
-            
+
             save() {
                 this.saving = true;
                 document.getElementById('promotion-form').submit();
             },
-            
+
             formatDate(dateString) {
                 if (!dateString) return '';
                 const date = new Date(dateString);
                 return date.toLocaleString();
             },
-            
+
             formatCurrency(amount) {
                 if (amount === null || amount === '') return '';
                 return new Intl.NumberFormat('en-US', {
@@ -315,7 +315,7 @@
                     minimumFractionDigits: 2
                 }).format(amount);
             },
-            
+
             formatPercentage(amount) {
                 if (amount === null || amount === '') return '';
                 return `${parseFloat(amount).toFixed(2)}%`;

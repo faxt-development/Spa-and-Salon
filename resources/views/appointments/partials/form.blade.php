@@ -157,7 +157,7 @@
             isAdmin: config.isAdmin || false,
             isNewClient: false,
             clientId: config.clientId || null,
-            
+
             // Form data model
             formData: {
                 client_name: config.clientName || '',
@@ -166,7 +166,7 @@
                 start_time: '',
                 end_time: ''
             },
-            
+
             // Initialize selectedServices as an array
             selectedServices: config.selectedServices || [],
             startTime: config.startTime || '09:00',
@@ -209,7 +209,7 @@
                 if (this.isAdmin && this.clientId) {
                     this.updateClientInfo();
                 }
-                
+
                 // Set initial end time based on services
                 this.updateEndTime();
             },
@@ -270,10 +270,10 @@
             // Update client info when selected from dropdown (admin only)
             updateClientInfo() {
                 if (!this.isAdmin) return;
-                
+
                 const clientSelect = document.getElementById('client_id');
                 if (!clientSelect) return;
-                
+
                 const selectedOption = clientSelect.options[clientSelect.selectedIndex];
                 if (selectedOption && selectedOption.value) {
                     this.formData.client_name = selectedOption.text.split(' (')[0];
@@ -285,7 +285,7 @@
                     this.formData.client_phone = '';
                 }
             },
-            
+
             updateTotals() {
                 this.totalDuration = 0;
                 this.totalPrice = 0;
@@ -336,7 +336,7 @@
                 <span x-text="loading ? 'Checking...' : 'Check Availability'"></span>
             </button>
             <button type="submit"
-                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Create Appointment
             </button>
         </div>

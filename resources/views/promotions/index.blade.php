@@ -5,11 +5,11 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-semibold text-gray-900">Promotions</h1>
-            <a href="{{ route('promotions.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+            <a href="{{ route('promotions.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 Create Promotion
             </a>
         </div>
-        
+
         <!-- Search and Filter -->
         <div class="mb-6 bg-white p-4 rounded-lg shadow">
             <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
@@ -20,14 +20,14 @@
                                 <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <input 
-                            x-model="search" 
+                        <input
+                            x-model="search"
                             @input.debounce.300ms="applyFilters()"
-                            type="text" 
-                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" 
+                            type="text"
+                            class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             placeholder="Search promotions...">
-                        <button 
-                            x-show="search" 
+                        <button
+                            x-show="search"
                             @click="clearSearch()"
                             class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                             type="button">
@@ -38,8 +38,8 @@
                     </div>
                 </div>
                 <div class="w-full sm:w-64">
-                    <select 
-                        x-model="status" 
+                    <select
+                        x-model="status"
                         @change="applyFilters()"
                         class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                         @foreach($statusOptions as $value => $label)
@@ -47,7 +47,7 @@
                         @endforeach
                     </select>
                 </div>
-                <button 
+                <button
                     @click="resetFilters()"
                     :disabled="!hasActiveFilters"
                     :class="{'opacity-50 cursor-not-allowed': !hasActiveFilters}"
@@ -90,7 +90,7 @@
                                     <div class="text-sm text-gray-500">{{ $promotion->description }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-100 text-indigo-800">
                                         {{ $promotion->code }}
                                     </span>
                                 </td>
@@ -130,8 +130,8 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <a href="{{ route('promotions.show', $promotion) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">View</a>
                                     <a href="{{ route('promotions.edit', $promotion) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a>
-                                    <button 
-                                        @click="confirmDelete({{ $promotion->id }})" 
+                                    <button
+                                        @click="confirmDelete({{ $promotion->id }})"
                                         class="text-red-600 hover:text-red-900"
                                     >
                                         Delete
@@ -148,7 +148,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             @if($promotions->hasPages())
                 <div class="px-6 py-4">
                     {{ $promotions->links() }}
@@ -160,29 +160,29 @@
 
 <!-- Delete Confirmation Modal -->
 <div x-data="{ show: false, id: null }" x-cloak>
-    <div 
-        x-show="show" 
-        class="fixed z-10 inset-0 overflow-y-auto" 
-        aria-labelledby="modal-title" 
-        role="dialog" 
+    <div
+        x-show="show"
+        class="fixed z-10 inset-0 overflow-y-auto"
+        aria-labelledby="modal-title"
+        role="dialog"
         aria-modal="true"
     >
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div x-show="show" 
-                 x-transition:enter="ease-out duration-300" 
-                 x-transition:enter-start="opacity-0" 
+            <div x-show="show"
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
                  x-transition:leave="ease-in duration-200"
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
-                 class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
+                 class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
                  @click="show = false"
                  aria-hidden="true">
             </div>
 
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-            <div x-show="show" 
+            <div x-show="show"
                  x-transition:enter="ease-out duration-300"
                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -231,17 +231,17 @@
             search: '{{ request('search', '') }}',
             status: '{{ request('status', '') }}',
             loading: false,
-            
+
             get hasActiveFilters() {
                 return this.search || this.status;
             },
-            
+
             init() {
                 // Set initial values from URL params
                 const urlParams = new URLSearchParams(window.location.search);
                 this.search = urlParams.get('search') || '';
                 this.status = urlParams.get('status') || '';
-                
+
                 // Listen for browser back/forward buttons
                 window.addEventListener('popstate', () => {
                     const urlParams = new URLSearchParams(window.location.search);
@@ -249,26 +249,26 @@
                     this.status = urlParams.get('status') || '';
                 });
             },
-            
+
             applyFilters() {
                 const params = new URLSearchParams();
-                
+
                 if (this.search) params.set('search', this.search);
                 if (this.status) params.set('status', this.status);
-                
+
                 // Update URL without page reload
                 const newUrl = `${window.location.pathname}?${params.toString()}`;
                 window.history.pushState({}, '', newUrl);
-                
+
                 // Reload the page to apply filters
                 window.location.href = newUrl;
             },
-            
+
             clearSearch() {
                 this.search = '';
                 this.applyFilters();
             },
-            
+
             resetFilters() {
                 if (this.hasActiveFilters) {
                     this.search = '';
@@ -276,15 +276,15 @@
                     this.applyFilters();
                 }
             },
-            
+
             confirmDelete(id) {
-                this.$dispatch('open-modal', { 
-                    component: 'confirm-delete', 
-                    props: { 
+                this.$dispatch('open-modal', {
+                    component: 'confirm-delete',
+                    props: {
                         url: `{{ url('promotions') }}/${id}`,
                         title: 'Delete Promotion',
                         message: 'Are you sure you want to delete this promotion? This action cannot be undone.'
-                    } 
+                    }
                 });
             }
         };

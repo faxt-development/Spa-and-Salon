@@ -19,11 +19,49 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $isNewAdmin = $this->isNewAdmin($user);
+        $onboardingCompleted = $this->isOnboardingCompleted($user);
+        $showOnboardingWidget = $isNewAdmin && !$onboardingCompleted;
         
         return view('admin.dashboard', [
             'title' => 'Admin Dashboard',
-            'isNewAdmin' => $isNewAdmin
+            'isNewAdmin' => $isNewAdmin,
+            'showOnboardingWidget' => $showOnboardingWidget,
+            'onboardingCompleted' => $onboardingCompleted
         ]);
+    }
+    
+    /**
+     * Check if the user has completed the onboarding process.
+     *
+     * @param \App\Models\User $user
+     * @return bool
+     */
+    private function isOnboardingCompleted($user)
+    {
+        if (!$user) {
+            return false;
+        }
+        
+        $company = $user->primaryCompany();
+        if (!$company) {
+            return false;
+        }
+        
+        // Check if all onboarding steps are completed
+        // 1. Profile setup (basic check if name is set)
+        $profileComplete = !empty($user->name);
+        
+        // 2. Business settings (check if company has required fields)
+        $businessSettingsComplete = !empty($company->name) && !empty($company->phone);
+        
+        // 3. Staff added (at least one staff member)
+        $userIds = $company->users()->pluck('users.id');
+        $hasStaff = \App\Models\Staff::whereIn('user_id', $userIds)->exists();
+        
+        // 4. Services added (at least one service)
+        $hasServices = $company->services()->exists();
+        
+        return $profileComplete && $businessSettingsComplete && $hasStaff && $hasServices;
     }
     
     /**

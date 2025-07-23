@@ -30,7 +30,7 @@
                                     {{ __('Add New Role') }}
                                 </button>
                             </div>
-                            
+
                             <div class="bg-white shadow overflow-hidden sm:rounded-md">
                                 <ul class="divide-y divide-gray-200">
                                     @foreach ($roles as $role)
@@ -46,7 +46,7 @@
                                                         </p>
                                                     </div>
                                                     <div class="flex space-x-2">
-                                                        <button type="button" onclick="editRole('{{ $role->id }}', '{{ $role->name }}', '{{ $role->display_name }}', '{{ $role->description }}', {{ json_encode($role->permissions->pluck('id')) }})" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                        <button type="button" onclick="editRole('{{ $role->id }}', '{{ $role->name }}', '{{ $role->display_name }}', '{{ $role->description }}', {{ json_encode($role->permissions->pluck('id')) }})" class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-indigo-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                                             {{ __('Edit') }}
                                                         </button>
                                                     </div>
@@ -69,13 +69,13 @@
                                 </ul>
                             </div>
                         </div>
-                        
+
                         <!-- Permissions List -->
                         <div>
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-lg font-medium text-gray-900">{{ __('Permissions') }}</h3>
                             </div>
-                            
+
                             <div class="bg-white shadow overflow-hidden sm:rounded-md">
                                 <div class="p-4">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -112,17 +112,17 @@
                                     <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" required />
                                     <p class="mt-1 text-xs text-gray-500">{{ __('This is the internal name used by the system. Use lowercase and underscores.') }}</p>
                                 </div>
-                                
+
                                 <div class="mb-4">
                                     <x-input-label for="display_name" :value="__('Display Name')" />
                                     <x-text-input id="display_name" name="display_name" type="text" class="mt-1 block w-full" required />
                                 </div>
-                                
+
                                 <div class="mb-4">
                                     <x-input-label for="description" :value="__('Description')" />
                                     <textarea id="description" name="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows="2"></textarea>
                                 </div>
-                                
+
                                 <div class="mb-4">
                                     <x-input-label :value="__('Permissions')" />
                                     <div class="mt-2 h-48 overflow-y-auto p-2 border rounded-md">
@@ -169,17 +169,17 @@
                                     <x-input-label for="edit_name" :value="__('Role Name')" />
                                     <x-text-input id="edit_name" type="text" class="mt-1 block w-full bg-gray-100" disabled />
                                 </div>
-                                
+
                                 <div class="mb-4">
                                     <x-input-label for="edit_display_name" :value="__('Display Name')" />
                                     <x-text-input id="edit_display_name" name="display_name" type="text" class="mt-1 block w-full" required />
                                 </div>
-                                
+
                                 <div class="mb-4">
                                     <x-input-label for="edit_description" :value="__('Description')" />
                                     <textarea id="edit_description" name="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows="2"></textarea>
                                 </div>
-                                
+
                                 <div class="mb-4">
                                     <x-input-label :value="__('Permissions')" />
                                     <div class="mt-2 h-48 overflow-y-auto p-2 border rounded-md">
@@ -213,17 +213,17 @@
         function editRole(id, name, displayName, description, permissions) {
             const form = document.getElementById('edit-role-form');
             form.action = "{{ route('admin.staff.roles.update', '') }}/" + id;
-            
+
             document.getElementById('edit_name').value = name;
             document.getElementById('edit_display_name').value = displayName || name;
             document.getElementById('edit_description').value = description || '';
-            
+
             // Reset all checkboxes
             const checkboxes = document.querySelectorAll('.edit-permission-checkbox');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = false;
             });
-            
+
             // Check the appropriate permissions
             permissions.forEach(permissionId => {
                 const checkbox = document.querySelector(`.edit-permission-checkbox[value="${permissionId}"]`);
@@ -231,7 +231,7 @@
                     checkbox.checked = true;
                 }
             });
-            
+
             document.getElementById('edit-role-modal').classList.remove('hidden');
         }
     </script>

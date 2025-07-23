@@ -4,7 +4,7 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Appointment Settings</h1>
-        <a href="{{ route('admin.appointments.settings.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+        <a href="{{ route('admin.appointments.settings.create') }}" class="bg-accent-500 hover:bg-accent-600 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
             Add New Settings
         </a>
     </div>
@@ -20,7 +20,7 @@
             <div class="p-6 text-center">
                 <p class="text-gray-600 mb-4">No appointment settings have been configured yet.</p>
                 <p class="text-gray-600">Start by adding company-wide settings or location-specific settings.</p>
-                <a href="{{ route('admin.appointments.settings.create') }}" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ route('admin.appointments.settings.create') }}" class="mt-4 inline-block bg-accent-500 hover:bg-accent-600 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
                     Configure Settings
                 </a>
             </div>

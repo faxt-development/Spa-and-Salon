@@ -8,7 +8,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6">My Gift Card History</h2>
-                
+
                 @if($giftCards->isEmpty())
                     <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
                         <div class="flex">
@@ -82,14 +82,14 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <div class="mt-4">
                         {{ $giftCards->links() }}
                     </div>
                 @endif
-                
+
                 <div class="mt-8">
-                    <a href="{{ route('gift-cards.purchase') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <a href="{{ route('gift-cards.purchase') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Purchase New Gift Card
                     </a>
                 </div>

@@ -44,8 +44,8 @@
                 <a href="{{ route('promotions.edit', $promotion) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Edit
                 </a>
-                <button 
-                    @click="confirmDelete()" 
+                <button
+                    @click="confirmDelete()"
                     class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                     Delete
                 </button>
@@ -58,7 +58,7 @@
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                            <div class="flex-shrink-0 bg-primary-500 rounded-md p-3">
                                 @if($promotion->isActive())
                                     <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -91,7 +91,7 @@
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                            <div class="flex-shrink-0 bg-primary-500 rounded-md p-3">
                                 <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
@@ -119,7 +119,7 @@
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
+                            <div class="flex-shrink-0 bg-primary-500 rounded-md p-3">
                                 <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
@@ -254,32 +254,32 @@
         return {
             showDeleteModal: false,
             deleting: false,
-            
+
             confirmDelete() {
-                this.$dispatch('open-modal', { 
-                    component: 'confirm-delete', 
-                    props: { 
+                this.$dispatch('open-modal', {
+                    component: 'confirm-delete',
+                    props: {
                         url: '{{ route('promotions.destroy', $promotion) }}',
                         title: 'Delete Promotion',
                         message: 'Are you sure you want to delete this promotion? This action cannot be undone.',
                         method: 'DELETE'
-                    } 
+                    }
                 });
             },
-            
+
             // Format date for display
             formatDate(dateString) {
                 if (!dateString) return 'N/A';
-                const options = { 
-                    year: 'numeric', 
-                    month: 'short', 
+                const options = {
+                    year: 'numeric',
+                    month: 'short',
                     day: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit'
                 };
                 return new Date(dateString).toLocaleDateString(undefined, options);
             },
-            
+
             // Format currency
             formatCurrency(amount) {
                 if (amount === null || amount === '') return '$0.00';

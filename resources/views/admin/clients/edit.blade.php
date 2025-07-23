@@ -5,7 +5,7 @@
                 {{ __('Edit Client') }}: {{ $client->first_name }} {{ $client->last_name }}
             </h2>
             <div class="flex space-x-2">
-                <a href="{{ route('admin.clients.show', $client->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                <a href="{{ route('admin.clients.show', $client->id) }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -144,13 +144,13 @@
                 successMessage: '',
                 errorMessage: '',
                 isSubmitting: false,
-                
+
                 submitForm() {
                     this.isSubmitting = true;
                     this.errors = {};
                     this.successMessage = '';
                     this.errorMessage = '';
-                    
+
                     // Form validation
                     if (!this.form.first_name) {
                         this.errors.first_name = 'First name is required';
@@ -161,18 +161,18 @@
                     if (this.form.email && !this.validateEmail(this.form.email)) {
                         this.errors.email = 'Please enter a valid email address';
                     }
-                    
+
                     // If there are validation errors, stop submission
                     if (Object.keys(this.errors).length > 0) {
                         this.isSubmitting = false;
                         return;
                     }
-                    
+
                     // Submit the form
                     const form = document.querySelector('form');
                     form.submit();
                 },
-                
+
                 resetForm() {
                     this.form = {
                         first_name: '{{ $client->first_name }}',
@@ -186,7 +186,7 @@
                     };
                     this.errors = {};
                 },
-                
+
                 validateEmail(email) {
                     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                     return re.test(String(email).toLowerCase());

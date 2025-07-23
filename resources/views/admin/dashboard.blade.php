@@ -7,18 +7,37 @@
 
     <div class="py-6" x-data="dashboard">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            @if(isset($isNewAdmin) && $isNewAdmin)
+            @if(isset($showOnboardingWidget) && $showOnboardingWidget)
             <!-- Onboarding Checklist Widget for New Admins - Positioned First -->
             <div class="mb-6">
                 <x-dashboard.onboarding-checklist-widget />
             </div>
             @endif
-            
+
+            <!-- Always show the full checklist link, but with different text based on completion status -->
+            @if(isset($onboardingCompleted) && $onboardingCompleted)
+            <div class="mb-6">
+                <div class="bg-white shadow rounded-lg overflow-hidden">
+                    <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Getting Started Resources</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-sm text-gray-600 mb-4">
+                            Review our guides and resources to make the most of your Faxtina experience.
+                        </p>
+                        <a href="{{ route('admin.onboarding-checklist') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-accent-500 hover:bg-accent-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 focus:text-white">
+                            View Getting Started Guide
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Configurable Dashboard Area -->
             <x-dashboard.configurable-area />
-            
+
             <div class="border-t border-gray-200 my-6"></div>
-            
+
             <!-- Original Dashboard Content -->
             <!-- Stats Overview -->
             <div class="grid grid-cols-1 gap-5 mt-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -131,7 +150,7 @@
                                     </ul>
                                 </div>
                                 <div class="mt-6">
-                                    <a href="{{ route('admin.appointments.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <a href="{{ route('admin.appointments.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-500 hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500">
                                         View Full Schedule
                                     </a>
                                 </div>
@@ -147,12 +166,12 @@
                                 <h3 class="text-lg font-medium leading-6 text-gray-900">Quick Actions</h3>
                             </div>
                             <div class="p-6 space-y-4">
-                                <button type="button" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <a href="{{ route('web.appointments.index', ['date' => now()->format('Y-m-d')]) }}" class="w-full flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-500 hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-</svg>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
                                     New Booking
-                                </button>
+                                </a>
                                 <a href="{{ route('pos.index') }}" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />

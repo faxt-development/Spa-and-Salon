@@ -9,7 +9,7 @@
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-bold mb-4">PGVector Test</h1>
-        
+
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Test Vector Operations</h2>
             <div class="mb-4 flex flex-wrap gap-2">
@@ -29,22 +29,22 @@
                     Check Extension
                 </button>
             </div>
-            
+
             <div id="loading" class="hidden">
                 <p class="text-gray-600">Testing pgvector functionality...</p>
             </div>
-            
+
             <div id="results" class="hidden">
                 <h3 class="text-lg font-medium mb-2">Results:</h3>
                 <pre id="resultJson" class="bg-gray-100 p-4 rounded overflow-auto max-h-96"></pre>
             </div>
-            
+
             <div id="error" class="hidden">
                 <h3 class="text-lg font-medium mb-2 text-red-600">Error:</h3>
                 <pre id="errorJson" class="bg-red-50 p-4 rounded overflow-auto max-h-96"></pre>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Test Vector Syntax</h2>
             <div class="mb-4 flex flex-wrap gap-2">
@@ -65,22 +65,22 @@
                 </button>
             </div>
             <div class="mt-4">
-                <input type="text" id="customSyntax" placeholder="Custom syntax (e.g., ::pgvector.vector)" 
+                <input type="text" id="customSyntax" placeholder="Custom syntax (e.g., ::pgvector.vector)"
                        class="border rounded px-3 py-2 w-64">
                 <button id="testCustom" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded ml-2">
                     Test Custom
                 </button>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Test Raw SQL Query</h2>
             <div class="mb-4">
-                <textarea id="rawSqlQuery" rows="4" class="border rounded px-3 py-2 w-full font-mono text-sm" 
+                <textarea id="rawSqlQuery" rows="4" class="border rounded px-3 py-2 w-full font-mono text-sm"
                     placeholder="Enter raw SQL query to test (e.g., SELECT '[1,2,3]'::extensions.vector <=> '[4,5,6]'::extensions.vector AS distance)">SELECT '[1,2,3]'::extensions.vector <=> '[4,5,6]'::extensions.vector AS distance</textarea>
             </div>
             <div class="mb-4">
-                <button id="testRawSqlButton" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
+                <button id="testRawSqlButton" class="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded">
                     Execute Raw SQL
                 </button>
             </div>
@@ -94,7 +94,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-lg shadow p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Test RPC Approach</h2>
             <div class="mb-4">
@@ -112,7 +112,7 @@
                 </p>
             </div>
         </div>
-        
+
         <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-semibold mb-4">Schema Information</h2>
             <div class="space-y-2">
@@ -139,41 +139,41 @@
             const resultJson = document.getElementById('resultJson');
             const error = document.getElementById('error');
             const errorJson = document.getElementById('errorJson');
-            
+
             testButton.addEventListener('click', function() {
                 runTest('/api/test-pgvector');
             });
-            
+
             searchPathButton.addEventListener('click', function() {
                 runTest('/api/test-pgvector/search-path');
             });
-            
+
             viewEmbeddingButton.addEventListener('click', function() {
                 runTest('/api/test-pgvector/embedding');
             });
-            
+
             schemaIdButton.addEventListener('click', function() {
                 runTest('/api/test-pgvector/schema-id');
             });
-            
+
             checkExtensionButton.addEventListener('click', function() {
                 runTest('/api/test-pgvector/check-extension');
             });
-            
+
             document.querySelectorAll('.test-syntax').forEach(button => {
                 button.addEventListener('click', function() {
                     const syntax = this.getAttribute('data-syntax');
                     runTest(`/api/test-pgvector/syntax?syntax=${encodeURIComponent(syntax)}`);
                 });
             });
-            
+
             document.getElementById('testCustom').addEventListener('click', function() {
                 const syntax = document.getElementById('customSyntax').value;
                 if (syntax) {
                     runTest(`/api/test-pgvector/syntax?syntax=${encodeURIComponent(syntax)}`);
                 }
             });
-            
+
             // Raw SQL testing
             document.getElementById('testRawSqlButton').addEventListener('click', function() {
                 const sql = document.getElementById('rawSqlQuery').value;
@@ -181,7 +181,7 @@
                     runTest(`/api/test-pgvector/raw-sql?sql=${encodeURIComponent(sql)}`);
                 }
             });
-            
+
             // SQL examples
             document.querySelectorAll('.sql-example').forEach(link => {
                 link.addEventListener('click', function(e) {
@@ -190,24 +190,24 @@
                     document.getElementById('rawSqlQuery').value = sql;
                 });
             });
-            
+
             // RPC approach test
             document.getElementById('testRpcButton').addEventListener('click', function() {
                 runTest('/api/test-pgvector/rpc');
             });
-            
+
             function runTest(url) {
                 loading.classList.remove('hidden');
                 results.classList.add('hidden');
                 error.classList.add('hidden');
-                
+
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
                         loading.classList.add('hidden');
                         results.classList.remove('hidden');
                         resultJson.textContent = JSON.stringify(data, null, 2);
-                        
+
                         if (!data.success) {
                             error.classList.remove('hidden');
                             errorJson.textContent = data.error || 'Unknown error';

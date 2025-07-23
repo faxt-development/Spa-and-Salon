@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="flex items-center mb-6">
-        <a href="{{ route('admin.appointments.settings') }}" class="mr-4 text-blue-500 hover:text-blue-700">
+        <a href="{{ route('admin.appointments.settings') }}" class="mr-4 text-accent-600 hover:text-accent-800 font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
@@ -256,7 +256,7 @@
                 <a href="{{ route('admin.appointments.settings') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded mr-2">
                     Cancel
                 </a>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
                     Save Settings
                 </button>
             </div>

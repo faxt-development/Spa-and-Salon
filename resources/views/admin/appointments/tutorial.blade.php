@@ -28,7 +28,7 @@
                         </ul>
                         <p>
                             If you haven't completed these steps, please visit the 
-                            <a href="{{ route('admin.onboarding-checklist') }}" class="text-blue-600 hover:text-blue-800">onboarding checklist</a> 
+                            <a href="{{ route('admin.onboarding-checklist') }}" class="text-accent-600 hover:text-accent-800 font-medium">onboarding checklist</a> 
                             to get started.
                         </p>
                     </div>

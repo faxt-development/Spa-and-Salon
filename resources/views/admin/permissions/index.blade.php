@@ -5,7 +5,7 @@
                 {{ __('Permissions Management') }}
             </h2>
             <div class="space-x-2">
-                <a href="{{ route('admin.permissions.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <a href="{{ route('admin.permissions.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                     </svg>
@@ -24,7 +24,7 @@
                         <p class="mt-1 text-sm text-gray-600">Manage system permissions and their assignments</p>
                     </div>
                     <div class="mt-4 sm:mt-0">
-                        <a href="{{ route('admin.permissions.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <a href="{{ route('admin.permissions.create') }}" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             Create New Permission
                         </a>
                     </div>
@@ -53,7 +53,7 @@
                                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                                 </svg>
                             </div>
-                            <input type="text" id="search" name="search" placeholder="Search permissions..." 
+                            <input type="text" id="search" name="search" placeholder="Search permissions..."
                                    class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                    value="{{ request('search') }}">
                         </div>
@@ -64,7 +64,7 @@
                                     <option value="{{ $guard }}" {{ request('guard_name') === $guard ? 'selected' : '' }}>{{ ucfirst($guard) }}</option>
                                 @endforeach
                             </select>
-                            <button id="filterButton" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <button id="filterButton" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 Filter
                             </button>
                         </div>
@@ -160,27 +160,27 @@
         const searchInput = document.getElementById('search');
         const guardFilter = document.getElementById('guard_filter');
         const filterButton = document.getElementById('filterButton');
-        
+
         function applyFilters() {
             const params = new URLSearchParams(window.location.search);
-            
+
             if (searchInput.value) {
                 params.set('search', searchInput.value);
             } else {
                 params.delete('search');
             }
-            
+
             if (guardFilter.value) {
                 params.set('guard_name', guardFilter.value);
             } else {
                 params.delete('guard_name');
             }
-            
+
             window.location.href = window.location.pathname + '?' + params.toString();
         }
-        
+
         filterButton.addEventListener('click', applyFilters);
-        
+
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 applyFilters();

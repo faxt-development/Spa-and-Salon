@@ -29,7 +29,7 @@
                         <span class="px-2 py-1 text-xs font-medium rounded-full" 
                               :class="{
                                   'bg-green-100 text-green-800': $appointment->status === 'completed',
-                                  'bg-blue-100 text-blue-800': $appointment->status === 'scheduled',
+                                  'bg-primary-100 text-primary-800': $appointment->status === 'scheduled',
                                   'bg-yellow-100 text-yellow-800': $appointment->status === 'in_progress',
                                   'bg-red-100 text-red-800': in_array($appointment->status, ['cancelled', 'no_show']),
                                   'bg-gray-100 text-gray-800': !in_array($appointment->status, ['completed', 'scheduled', 'in_progress', 'cancelled', 'no_show'])
@@ -127,7 +127,7 @@
                     <a href="{{ route('admin.appointments.index') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Back to List
                     </a>
-                    <a href="{{ route('admin.appointments.edit', $appointment) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <a href="{{ route('admin.appointments.edit', $appointment) }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-accent-500 hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 transition-colors duration-200">
                         Edit Appointment
                     </a>
                 </div>
