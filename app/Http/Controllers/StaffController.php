@@ -809,13 +809,65 @@ class StaffController extends Controller
 {
     \Log::info('Update availability request:', $request->all());
 
-    $validated = $request->validate([
+    // Custom validation for start and end times that handles day boundaries
+    $endTime = $request->work_end_time;
+    $startTime = $request->work_start_time;
+    
+    // Basic validation rules
+    $rules = [
         'staff_id' => 'required|exists:staff,id',
         'work_days' => 'nullable|array',
         'work_days.*' => 'in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
         'work_start_time' => 'required|date_format:H:i',
-        'work_end_time' => 'required|date_format:H:i|after:work_start_time',
-    ]);
+        'work_end_time' => 'required|date_format:H:i',
+    ];
+    
+    // Perform basic validation first
+    $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
+    
+    if ($validator->fails()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Validation failed',
+            'errors' => $validator->errors()
+        ], 422);
+    }
+    
+    // Now handle the time comparison logic
+    if ($startTime && $endTime) {
+        // Parse the times
+        list($startHour, $startMinute) = array_map('intval', explode(':', $startTime));
+        list($endHour, $endMinute) = array_map('intval', explode(':', $endTime));
+        
+        // Convert to minutes for easier comparison
+        $startMinutes = $startHour * 60 + $startMinute;
+        $endMinutes = $endHour * 60 + $endMinute;
+        
+        // Special case: if end time is earlier than start time, assume it's the next day
+        // This handles cases like start=22:00, end=01:00 (meaning 1 AM the next day)
+        if ($endMinutes < $startMinutes && $endTime !== '00:00') {
+            // End time is on the next day, which is valid
+            // No additional validation needed
+        } 
+        // Special case: midnight (00:00) is treated as end of day (24:00)
+        else if ($endTime === '00:00') {
+            // Midnight is always considered after any other time of day
+            // No additional validation needed
+        }
+        // Normal case: both times are on the same day, end must be after start
+        else if ($endMinutes <= $startMinutes) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => [
+                    'work_end_time' => ['The end time must be after the start time.']
+                ]
+            ], 422);
+        }
+    }
+    
+    // If we've reached here, validation passed
+    $validated = $validator->validated();
 
     \Log::info('Validated data:', $validated);
 

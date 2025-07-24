@@ -150,20 +150,12 @@
         });
 
         function loadStaffAvailability(staffId) {
-            console.log('========== START: loadStaffAvailability ==========');
-            console.log(`Loading availability for staff ID: ${staffId}`);
-            
             // Find the staff member in the data
             const staffMember = staffData.find(s => s.id == staffId);
             if (!staffMember) {
                 console.error('Staff member not found in data');
                 return;
             }
-            
-            console.log('Staff member found:', JSON.stringify(staffMember));
-            console.log(`Staff work_days:`, staffMember.work_days);
-            console.log(`Staff work_start_time:`, staffMember.work_start_time);
-            console.log(`Staff work_end_time:`, staffMember.work_end_time);
 
             // Send log to server
             fetch('{{ route('admin.staff.log-activity') }}', {
@@ -188,15 +180,11 @@
             document.querySelectorAll('input[name="work_days[]"]').forEach(cb => cb.checked = false);
 
             // Set working days
-            console.log('Setting working days');
             if (staffMember.work_days) {
-                console.log(`Work days array:`, staffMember.work_days);
                 staffMember.work_days.forEach(day => {
-                    console.log(`Processing day: ${day}`);
                     const checkbox = document.getElementById(`day-${day}`);
                     if (checkbox) {
                         checkbox.checked = true;
-                        console.log(`Checked checkbox for day-${day}`);
                     } else {
                         console.warn(`Checkbox not found for day-${day}`);
                     }
@@ -206,152 +194,106 @@
             }
 
             // Set working hours - default to 9:00 AM to 5:00 PM if not set
-            console.log('Setting work start time');
             if (staffMember.work_start_time) {
-                console.log(`Raw work_start_time: ${staffMember.work_start_time}`);
                 // Parse the time correctly from the database format
                 let localHours, localMinutes;
-                
+
                 if (staffMember.work_start_time.includes('T')) {
                     // Handle ISO format like "2023-01-01T09:00:00.000Z"
-                    console.log('Parsing ISO format start time');
                     // Parse UTC time and convert to local time
                     const utcDate = new Date(staffMember.work_start_time);
                     localHours = utcDate.getHours();
                     localMinutes = utcDate.getMinutes();
-                    console.log(`Parsed ISO start time (local): ${localHours}:${localMinutes}`);
                 } else {
                     // Handle time-only format like "09:00:00"
-                    console.log('Parsing time-only format start time');
                     [localHours, localMinutes] = staffMember.work_start_time.split(':').map(Number);
-                    console.log(`Parsed hours: ${localHours}, minutes: ${localMinutes}`);
                 }
-                
+
                 const formattedStartTime = `${String(localHours).padStart(2, '0')}:${String(localMinutes).padStart(2, '0')}`;
-                console.log(`Formatted start time for input: ${formattedStartTime}`);
                 document.getElementById('work_start_time').value = formattedStartTime;
             } else {
-                console.log('No start time defined, using default 09:00');
                 document.getElementById('work_start_time').value = '09:00';
             }
 
-            console.log('Setting work end time');
             if (staffMember.work_end_time) {
-                console.log(`Raw work_end_time: ${staffMember.work_end_time}`);
                 // Parse the time correctly from the database format
                 let localHours, localMinutes;
-                
+
                 if (staffMember.work_end_time.includes('T')) {
                     // Handle ISO format like "2023-01-01T17:00:00.000Z"
-                    console.log('Parsing ISO format end time');
                     // Parse UTC time and convert to local time
                     const utcDate = new Date(staffMember.work_end_time);
                     localHours = utcDate.getHours();
                     localMinutes = utcDate.getMinutes();
-                    console.log(`Parsed ISO end time (local): ${localHours}:${localMinutes}`);
                 } else {
                     // Handle time-only format like "17:00:00"
-                    console.log('Parsing time-only format end time');
                     [localHours, localMinutes] = staffMember.work_end_time.split(':').map(Number);
-                    console.log(`Parsed hours: ${localHours}, minutes: ${localMinutes}`);
                 }
-                
+
                 const formattedEndTime = `${String(localHours).padStart(2, '0')}:${String(localMinutes).padStart(2, '0')}`;
-                console.log(`Formatted end time for input: ${formattedEndTime}`);
                 document.getElementById('work_end_time').value = formattedEndTime;
             } else {
-                console.log('No end time defined, using default 17:00');
                 document.getElementById('work_end_time').value = '17:00';
             }
 
             // Update the availability grid
-            console.log('Calling updateAvailabilityGrid with staff member data');
             updateAvailabilityGrid(staffMember);
-            console.log('========== END: loadStaffAvailability ==========');
         }
 
         function updateAvailabilityGrid(staffMember) {
-            console.log('========== START: updateAvailabilityGrid ==========');
-            console.log('Staff member data:', JSON.stringify(staffMember));
-            
             const grid = document.getElementById('availability-grid');
             const dateRange = @json($dateRange);
             const businessHours = @json($businessHours);
-            
-            console.log('Date range:', JSON.stringify(dateRange));
-            console.log('Business hours:', JSON.stringify(businessHours));
-            
+
             grid.innerHTML = '';
 
             // Helper function to convert UTC time to local time for display
             const parseTime = timeStr => {
-                console.log(`Parsing time string: ${timeStr}`);
-                if (!timeStr) {
-                    console.warn('Empty time string, returning [0, 0]');
-                    return [0, 0];
-                }
-                
-                if (timeStr.includes('T')) {
-                    console.log('Parsing ISO format time (UTC)');
-                    // For ISO format, extract hours and minutes directly from the string
-                    // to avoid timezone conversion issues
-                    const timePart = timeStr.split('T')[1];
-                    const [hoursStr, minutesStr] = timePart.split(':');
-                    const hours = parseInt(hoursStr, 10);
-                    const minutes = parseInt(minutesStr, 10);
-                    console.log(`Extracted UTC time: [${hours}, ${minutes}]`);
-                    
-                    // Convert UTC time to local time for display
-                    const utcDate = new Date(Date.UTC(2023, 0, 1, hours, minutes, 0));
-                    const localHours = utcDate.getHours();
-                    const localMinutes = utcDate.getMinutes();
-                    console.log(`Converted to local time: [${localHours}, ${localMinutes}]`);
-                    return [localHours, localMinutes];
-                }
-                
-                console.log('Parsing time-only format');
-                const [hour, minute] = timeStr.split(':').map(Number);
-                const result = [hour || 0, minute || 0];
-                console.log(`Parsed time: [${result[0]}, ${result[1]}]`);
-                return result;
-            };
+    if (!timeStr) {
+        console.warn('Empty time string, returning [0, 0]');
+        return [0, 0];
+    }
+
+    let hours, minutes;
+
+    if (timeStr.includes('T')) {
+        [hours, minutes] = timeStr.split('T')[1].split(':').map(Number);
+    } else {
+        [hours, minutes] = timeStr.split(':').map(str => parseInt(str, 10));
+    }
+
+    const baseDate = new Date();
+    const utcDate = new Date(Date.UTC(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), hours, minutes, 0));
+    const localHours = utcDate.getHours();
+    const localMinutes = utcDate.getMinutes();
+
+    return [localHours, localMinutes];
+};
 
             let earliestOpenHour = 23;
             let latestCloseHour = 0;
 
-            console.log('Calculating business hour range');
             Object.values(businessHours).forEach(({ is_closed, open_time, close_time }) => {
-                console.log(`Processing business hours: is_closed=${is_closed}, open_time=${open_time}, close_time=${close_time}`);
                 if (!is_closed) {
                     const [openHour] = open_time.split(':').map(Number);
                     const [closeHour] = close_time.split(':').map(Number);
-                    console.log(`Open hour: ${openHour}, Close hour: ${closeHour}`);
                     earliestOpenHour = Math.min(earliestOpenHour, openHour);
                     latestCloseHour = Math.max(latestCloseHour, closeHour);
-                    console.log(`Updated earliestOpenHour: ${earliestOpenHour}, latestCloseHour: ${latestCloseHour}`);
                 }
             });
 
             earliestOpenHour = earliestOpenHour === 23 ? 9 : earliestOpenHour;
             latestCloseHour = latestCloseHour === 0 ? 17 : latestCloseHour;
-            console.log(`Final business hours range: ${earliestOpenHour}:00 - ${latestCloseHour}:00`);
 
             const timeSlots = [];
-            console.log('Generating time slots');
             for (let hour = earliestOpenHour; hour <= latestCloseHour; hour++) {
                 timeSlots.push(`${hour}:00`);
-                console.log(`Added time slot: ${hour}:00`);
                 if (hour < latestCloseHour) {
                     timeSlots.push(`${hour}:30`);
-                    console.log(`Added time slot: ${hour}:30`);
                 }
             }
-            console.log(`Generated ${timeSlots.length} time slots:`, timeSlots);
 
-            console.log('Processing time slots to create availability grid');
             timeSlots.forEach(timeSlot => {
-                console.log(`
-========== Processing time slot: ${timeSlot} ==========`);
                 const row = document.createElement('tr');
 
                 const timeCell = document.createElement('td');
@@ -362,64 +304,44 @@
                 const ampm = hour >= 12 ? 'PM' : 'AM';
                 timeCell.textContent = `${displayHour}:${String(minute).padStart(2, '0')} ${ampm}`;
                 row.appendChild(timeCell);
-                console.log(`Created time cell: ${displayHour}:${String(minute).padStart(2, '0')} ${ampm}`);
 
-                console.log('Calculating staff availability for this time slot');
                 const [startHour, startMinute] = parseTime(staffMember.work_start_time);
                 const [endHour, endMinute] = parseTime(staffMember.work_end_time);
                 const workMinutesStart = startHour * 60 + startMinute;
                 const workMinutesEnd = endHour * 60 + endMinute;
                 const slotMinutes = hour * 60 + minute;
-                
-                console.log(`Staff work hours: ${startHour}:${startMinute} (${workMinutesStart} minutes) to ${endHour}:${endMinute} (${workMinutesEnd} minutes)`);
-                console.log(`Current slot: ${hour}:${minute} (${slotMinutes} minutes)`);
 
-                console.log('Processing days for this time slot');
                 dateRange.forEach(({ full_day }) => {
-                    console.log(`
-Checking day: ${full_day}`);
                     const dayCell = document.createElement('td');
                     dayCell.className = 'py-2 px-4 border-b border-gray-200 text-center';
 
                     const isWorkDay = Array.isArray(staffMember.work_days) &&
                         staffMember.work_days.includes(full_day.toLowerCase());
-                    
-                    console.log(`Is ${full_day} a work day? ${isWorkDay}`);
-                    console.log(`Staff work_days array:`, staffMember.work_days);
-                    console.log(`Checking if ${full_day.toLowerCase()} is in work_days array`);
 
                     const isAvailable = isWorkDay &&
                         slotMinutes >= workMinutesStart &&
                         slotMinutes < workMinutesEnd;
-                    
-                    console.log(`Availability check: isWorkDay=${isWorkDay}, slotMinutes=${slotMinutes}, workMinutesStart=${workMinutesStart}, workMinutesEnd=${workMinutesEnd}`);
-                    console.log(`Is time in range? ${slotMinutes >= workMinutesStart && slotMinutes < workMinutesEnd}`);
-                    console.log(`Final availability for ${full_day} at ${hour}:${minute}: ${isAvailable}`);
 
                     if (isAvailable) {
                         dayCell.classList.add('bg-green-100');
                         dayCell.innerHTML = '<span class="text-green-600">Available</span>';
-                        console.log(`Marked as AVAILABLE`);
                     } else {
                         dayCell.classList.add('bg-gray-100');
                         dayCell.innerHTML = '<span class="text-gray-400">Off</span>';
-                        console.log(`Marked as OFF`);
                     }
 
                     row.appendChild(dayCell);
                 });
 
                 grid.appendChild(row);
-                console.log(`Added row for time slot ${timeSlot} to grid`);
             });
-            console.log('========== END: updateAvailabilityGrid ==========');
         }
 
         // Handle form submission
         document.getElementById('availability-form').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
-            
+
             // Convert to JSON
             const jsonData = {};
             formData.forEach((value, key) => {
@@ -432,15 +354,14 @@ Checking day: ${full_day}`);
                     jsonData[key] = value;
                 }
             });
-            
+
             // Convert local time to UTC for storage
             if (jsonData.work_start_time) {
-                console.log(`Converting start time to UTC: ${jsonData.work_start_time}`);
                 const [hours, minutes] = jsonData.work_start_time.split(':').map(Number);
-                
+
                 // Get current date in local time
                 const now = new Date();
-                
+
                 // Create a date object with the input time in local timezone
                 const localDate = new Date(
                     now.getFullYear(),
@@ -450,23 +371,21 @@ Checking day: ${full_day}`);
                     minutes,
                     0
                 );
-                
+
                 // Calculate the UTC time
                 const utcHours = localDate.getUTCHours();
                 const utcMinutes = localDate.getUTCMinutes();
-                
+
                 // Create UTC time string
                 jsonData.work_start_time = `${String(utcHours).padStart(2, '0')}:${String(utcMinutes).padStart(2, '0')}`;
-                console.log(`Converted start time to UTC: ${jsonData.work_start_time}`);
             }
-            
+
             if (jsonData.work_end_time) {
-                console.log(`Converting end time to UTC: ${jsonData.work_end_time}`);
                 const [hours, minutes] = jsonData.work_end_time.split(':').map(Number);
-                
+
                 // Get current date in local time
                 const now = new Date();
-                
+
                 // Create a date object with the input time in local timezone
                 const localDate = new Date(
                     now.getFullYear(),
@@ -476,14 +395,21 @@ Checking day: ${full_day}`);
                     minutes,
                     0
                 );
-                
+
                 // Calculate the UTC time
                 const utcHours = localDate.getUTCHours();
                 const utcMinutes = localDate.getUTCMinutes();
-                
+
                 // Create UTC time string
                 jsonData.work_end_time = `${String(utcHours).padStart(2, '0')}:${String(utcMinutes).padStart(2, '0')}`;
-                console.log(`Converted end time to UTC: ${jsonData.work_end_time}`);
+            }
+
+            // Make sure work_days is always an array
+            if (jsonData['work_days[]']) {
+                jsonData.work_days = Array.isArray(jsonData['work_days[]']) ? jsonData['work_days[]'] : [jsonData['work_days[]']];
+                delete jsonData['work_days[]'];
+            } else {
+                jsonData.work_days = [];
             }
 
             // Send the data
@@ -512,7 +438,7 @@ Checking day: ${full_day}`);
                         staffData[staffIndex].work_days = jsonData.work_days || [];
                         staffData[staffIndex].work_start_time = jsonData.work_start_time;
                         staffData[staffIndex].work_end_time = jsonData.work_end_time;
-                        
+
                         // Update the grid
                         updateAvailabilityGrid(staffData[staffIndex]);
                     }
