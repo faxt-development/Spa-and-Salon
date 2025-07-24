@@ -13,11 +13,14 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class Staff extends Model
 {
     use SoftDeletes;
     use HasFactory;
+    use LogsActivity;
 
     /**
      * The table associated with the model.
@@ -47,6 +50,29 @@ class Staff extends Model
         'commission_rate',
         'commission_structure_id',
     ];
+
+    /**
+     * Get the options for the activity log.
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['first_name', 'last_name', 'email', 'position', 'active'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn(string $eventName) => "Staff member {$this->full_name} was {$eventName}")
+            ->useLogName('staff');
+    }
+
+    /**
+     * Get the staff member's full name.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
 
     /**
      * The attributes that should be cast.
@@ -344,15 +370,7 @@ class Staff extends Model
         return $this->hasMany(Payment::class);
     }
 
-    /**
-     * Get the staff member's full name.
-     *
-     * @return string
-     */
-    public function getFullNameAttribute(): string
-    {
-        return trim("{$this->first_name} {$this->last_name}");
-    }
+
 
     /**
      * Get the staff member's work schedule for a given date.
@@ -372,7 +390,7 @@ class Staff extends Model
             'is_working' => $isWorkDay,
             'start_time' => $isWorkDay ? $this->work_start_time : null,
             'end_time' => $isWorkDay ? $this->work_end_time : null,
-            'day_name' => $dayName,
+            'day_name' => $dayName
         ];
     }
 

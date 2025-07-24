@@ -331,6 +331,7 @@ Route::middleware(['auth:web'])->group(function () {
         // Staff Management Routes, important order here
         Route::get('/staff/add-admin-as-staff', [App\Http\Controllers\StaffController::class, 'addAdminAsStaff'])->name('staff.add-admin');
         Route::get('/staff/availability', [App\Http\Controllers\StaffController::class, 'availability'])->name('staff.availability');
+        Route::post('/staff/availability/log', [App\Http\Controllers\StaffController::class, 'logActivity'])->name('staff.log-activity');
         Route::post('/staff/availability/update', [App\Http\Controllers\StaffController::class, 'updateAvailability'])->name('staff.update-availability');
         Route::get('/staff/services', [App\Http\Controllers\StaffController::class, 'services'])->name('staff.services');
         Route::post('/staff/services/update', [App\Http\Controllers\StaffController::class, 'updateServices'])->name('staff.update-services');

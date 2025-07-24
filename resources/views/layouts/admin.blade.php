@@ -10,7 +10,7 @@
 
     // Set page title
     $pageTitle = isset($pageTitle) ? "$pageTitle - $companyName" : "$companyName - Admin";
-@endsection
+@endphp
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">

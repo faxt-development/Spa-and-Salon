@@ -15,6 +15,7 @@
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
         "pgvector/pgvector": "^0.2.2",
+        "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.20",
         "stripe/stripe-php": "^17.3"
     },

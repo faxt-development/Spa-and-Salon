@@ -7,11 +7,14 @@ use App\Models\Role;
 use App\Models\Permission;
 use App\Models\Service;
 use App\Models\User;
+use App\Models\BusinessHour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Spatie\Activitylog\Facades\Activity;
 
 class StaffController extends Controller
 {
@@ -726,11 +729,11 @@ class StaffController extends Controller
         $userIds = $company->users()->pluck('users.id');
         $staff = Staff::whereIn('user_id', $userIds)->with('user.roles')->active()->get();
 
-        // Get the next 7 days for the availability calendar
-        $startDate = now()->startOfDay();
-        $endDate = now()->addDays(6)->endOfDay();
+        // Get all 7 days of the week for the availability calendar, starting with Monday
+        $startDate = now()->startOfWeek(); // Start with Monday
         $dateRange = [];
 
+        // Create a fixed order of days: Monday through Sunday
         for ($i = 0; $i < 7; $i++) {
             $date = $startDate->copy()->addDays($i);
             $dateRange[] = [
@@ -740,19 +743,72 @@ class StaffController extends Controller
             ];
         }
 
-        return view('admin.staff.availability', compact('staff', 'dateRange', 'startDate', 'endDate'));
+        $endDate = $startDate->copy()->addDays(6)->endOfDay(); // Sunday end of day
+
+        // Get business hours for the company
+        $businessHours = [];
+        
+        // First check if there's a primary location
+        $primaryLocation = $company->locations()->where('is_primary', true)->first();
+        
+        if ($primaryLocation) {
+            // Try to get business hours from the primary location
+            $locationBusinessHours = $primaryLocation->businessHours()->get();
+            
+            if ($locationBusinessHours->isNotEmpty()) {
+                foreach ($locationBusinessHours as $hour) {
+                    $businessHours[$hour->day_of_week] = [
+                        'open_time' => $hour->open_time,
+                        'close_time' => $hour->close_time,
+                        'is_closed' => $hour->is_closed
+                    ];
+                }
+            }
+        }
+        
+        // If no location business hours found, try company-wide business hours
+        if (empty($businessHours)) {
+            $companyBusinessHours = BusinessHour::where('company_id', $company->id)
+                ->whereNull('location_id')
+                ->get();
+                
+            if ($companyBusinessHours->isNotEmpty()) {
+                foreach ($companyBusinessHours as $hour) {
+                    $businessHours[$hour->day_of_week] = [
+                        'open_time' => $hour->open_time,
+                        'close_time' => $hour->close_time,
+                        'is_closed' => $hour->is_closed
+                    ];
+                }
+            }
+        }
+        
+        // Default business hours if none are set
+        if (empty($businessHours)) {
+            // Default to 9am-5pm for weekdays, closed on weekends
+            for ($i = 0; $i < 7; $i++) {
+                $isClosed = ($i == 0 || $i == 6); // Sunday (0) and Saturday (6) are closed
+                $businessHours[$i] = [
+                    'open_time' => '09:00:00',
+                    'close_time' => '17:00:00',
+                    'is_closed' => $isClosed
+                ];
+            }
+        }
+
+        return view('admin.staff.availability', compact('staff', 'dateRange', 'startDate', 'endDate', 'businessHours'));
     }
 
     /**
      * Update staff availability settings.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return \Illuminate\Http\JsonResponse
      */
     public function updateAvailability(Request $request)
 {
     \Log::info('Update availability request:', $request->all());
-    
+
     $validated = $request->validate([
         'staff_id' => 'required|exists:staff,id',
         'work_days' => 'nullable|array',
@@ -779,15 +835,11 @@ class StaffController extends Controller
             'staff_user_id' => $staff->user_id,
             'company_id' => $company->id
         ]);
-        
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You do not have permission to edit this staff member.'
-            ], 403);
-        }
-        
-        return back()->with('error', 'You do not have permission to edit this staff member.');
+
+        return response()->json([
+            'success' => false,
+            'message' => 'You do not have permission to edit this staff member.'
+        ], 403);
     }
 
     // Update staff availability
@@ -804,18 +856,14 @@ class StaffController extends Controller
     $staff->save();
 
     \Log::info('Staff availability updated successfully');
-    
-    if ($request->ajax()) {
-        return response()->json([
-            'success' => true,
-            'message' => 'Staff availability updated successfully.',
-            'work_days' => $staff->work_days,
-            'work_start_time' => $staff->work_start_time,
-            'work_end_time' => $staff->work_end_time
-        ]);
-    }
-    
-    return back()->with('success', 'Staff availability updated successfully.');
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Staff availability updated successfully.',
+        'work_days' => $staff->work_days,
+        'work_start_time' => $staff->work_start_time,
+        'work_end_time' => $staff->work_end_time
+    ]);
 }
 
     /**
@@ -934,6 +982,53 @@ class StaffController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to update staff service assignments: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Log staff activity.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logActivity(Request $request)
+    {
+        $request->validate([
+            'staff_id' => 'required|exists:staff,id',
+            'activity_type' => 'required|string|max:50',
+            'details' => 'nullable|string|max:255',
+            'url' => 'nullable|url|max:500',
+        ]);
+
+        try {
+            // Get the staff member
+            $staff = Staff::findOrFail($request->staff_id);
+
+            // Log the activity
+            activity()
+                ->causedBy(auth()->user())
+                ->performedOn($staff)
+                ->withProperties([
+                    'activity_type' => $request->activity_type,
+                    'details' => $request->details,
+                    'url' => $request->url,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ])
+                ->log('Staff activity: ' . $request->details);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Activity logged successfully',
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to log staff activity: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to log activity',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }
