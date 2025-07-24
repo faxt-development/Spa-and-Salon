@@ -29,7 +29,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach ($staff as $staffMember)
                     <div class="border rounded-lg p-4 hover:bg-primary-50 cursor-pointer staff-card {{ $loop->first ? 'bg-primary-50 border-blue-500' : '' }}"
-                         data-staff-id="{{ $staffMember->id }}">
+                         data-staff-id="{{ $staffMember->id }}" onclick="selectStaff({{ $staffMember->id }})">
                         <div class="flex items-center">
                             @if ($staffMember->profile_image)
                                 <img src="{{ Storage::url($staffMember->profile_image) }}" alt="{{ $staffMember->full_name }}"
@@ -153,47 +153,59 @@
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Staff selection
+    // Staff selection function called directly from onclick attribute
+    function selectStaff(staffId) {
+        // Update active staff card
         const staffCards = document.querySelectorAll('.staff-card');
-        const serviceContainers = document.querySelectorAll('.staff-services-container');
-
         staffCards.forEach(card => {
-            card.addEventListener('click', function() {
-                const staffId = this.dataset.staffId;
-
-                // Update active staff card
-                staffCards.forEach(c => c.classList.remove('bg-primary-50', 'border-blue-500'));
-                this.classList.add('bg-primary-50', 'border-blue-500');
-
-                // Show corresponding services container
-                serviceContainers.forEach(container => {
-                    container.classList.add('hidden');
-                });
-                document.getElementById(`staff-services-${staffId}`).classList.remove('hidden');
-            });
+            card.classList.remove('bg-primary-50');
+            card.classList.remove('border-blue-500');
         });
+        
+        // Add active class to the clicked card
+        const selectedCard = document.querySelector(`.staff-card[data-staff-id="${staffId}"]`);
+        if (selectedCard) {
+            selectedCard.classList.add('bg-primary-50');
+            selectedCard.classList.add('border-blue-500');
+        }
+        
+        // Show corresponding services container
+        const serviceContainers = document.querySelectorAll('.staff-services-container');
+        serviceContainers.forEach(container => {
+            container.classList.add('hidden');
+        });
+        
+        const targetContainer = document.getElementById(`staff-services-${staffId}`);
+        if (targetContainer) {
+            targetContainer.classList.remove('hidden');
+        } else {
+            console.error(`Could not find services container for staff ID: ${staffId}`);
+        }
+    }
 
-        // Select/Deselect all buttons
+    // Handle select/deselect all buttons
+    document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.select-all-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.onclick = function() {
                 const form = this.closest('form');
                 form.querySelectorAll('.service-checkbox').forEach(checkbox => {
                     checkbox.checked = true;
                 });
-            });
+                return false;
+            };
         });
-
+        
         document.querySelectorAll('.deselect-all-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.onclick = function() {
                 const form = this.closest('form');
                 form.querySelectorAll('.service-checkbox').forEach(checkbox => {
                     checkbox.checked = false;
                 });
-            });
+                return false;
+            };
         });
     });
 </script>
-@endsection
+@endpush
