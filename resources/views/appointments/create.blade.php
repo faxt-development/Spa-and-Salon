@@ -33,7 +33,148 @@
                 @if(isset($isClient) && $isClient)
                     @include('appointments.partials.form', ['staff' => $staff, 'services' => $services])
                 @else
-                <form id="appointmentForm" method="POST" action="/appointments" class="space-y-6" x-data="appointmentForm">
+                <form id="appointmentForm" method="POST" action="/appointments" class="space-y-6" x-data="{
+                    loading: false,
+                    validationError: '',
+                    
+                    async updateServices() {
+                        const staffId = document.getElementById('staff_id').value;
+                        if (!staffId) return;
+
+                        try {
+                            this.loading = true;
+                            const response = await fetch(`/api/staff/${staffId}/services`);
+                            const services = await response.json();
+
+                            const servicesSelect = document.getElementById('services');
+                            servicesSelect.innerHTML = ''; // Clear existing options
+
+                            services.forEach(service => {
+                                const option = document.createElement('option');
+                                option.value = service.id;
+                                option.textContent = `${service.name} - $${service.price.toFixed(2)} (${service.duration} min)`;
+                                option.dataset.duration = service.duration;
+                                option.dataset.price = service.price;
+                                servicesSelect.appendChild(option);
+                            });
+
+                            // Trigger change event to update totals
+                            $(servicesSelect).trigger('change');
+                        } catch (error) {
+                            console.error('Error loading services:', error);
+                        } finally {
+                            this.loading = false;
+                        }
+                    },
+
+                    checkAvailability() {
+                        this.loading = true;
+                        this.validationError = '';
+
+                        const date = document.getElementById('date').value;
+                        const staffId = document.getElementById('staff_id').value;
+                        const servicesSelect = document.getElementById('services');
+                        const serviceIds = Array.from(servicesSelect.selectedOptions).map(option => option.value);
+
+                        if (!date) {
+                            this.validationError = 'Please select a date';
+                            this.loading = false;
+                            return;
+                        }
+
+                        if (serviceIds.length === 0) {
+                            this.validationError = 'Please select at least one service';
+                            this.loading = false;
+                            return;
+                        }
+
+                        const availabilityModal = document.getElementById('availability-modal');
+                        const availabilityResults = document.getElementById('availability-results');
+
+                        availabilityResults.innerHTML = '<p class="text-center">Loading available time slots...</p>';
+                        availabilityModal.classList.remove('hidden');
+
+                        // Create a status message element to show network activity
+                        const statusMessage = document.createElement('div');
+                        statusMessage.className = 'fixed bottom-4 right-4 bg-primary-500 text-white px-4 py-2 rounded shadow-lg';
+                        statusMessage.textContent = 'Checking availability...';
+                        document.body.appendChild(statusMessage);
+
+                        // Fetch available time slots from API
+                        fetch('/api/booking/availability', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                date: date,
+                                staff_id: staffId || null,
+                                service_ids: serviceIds
+                            })
+                        })
+                        .then(response => {
+                            // Remove status message
+                            document.body.removeChild(statusMessage);
+
+                            // Reset loading state
+                            this.loading = false;
+
+                            if (!response.ok) {
+                                throw new Error(`Server responded with status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.available_slots && data.available_slots.length > 0) {
+                                let html = '<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">';
+
+                                data.available_slots.forEach(slot => {
+                                    html += `
+                                        <button type="button" class="time-slot-btn p-2 border rounded text-center hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            data-time="${slot.time}" data-end-time="${slot.end_time}">
+                                            ${slot.formatted_time}
+                                        </button>
+                                    `;
+                                });
+
+                                html += '</div>';
+                                availabilityResults.innerHTML = html;
+
+                                // Add event listeners to time slot buttons
+                                document.querySelectorAll('.time-slot-btn').forEach(btn => {
+                                    btn.addEventListener('click', function() {
+                                        const startTimeInput = document.getElementById('start_time');
+                                        const endTimeInput = document.getElementById('end_time');
+                                        startTimeInput._flatpickr.setDate(this.dataset.time);
+                                        endTimeInput._flatpickr.setDate(this.dataset.endTime);
+                                        availabilityModal.classList.add('hidden');
+                                    });
+                                });
+                            } else {
+                                availabilityResults.innerHTML = '<p class="text-center text-red-500">No available time slots found for the selected date and services.</p>';
+                            }
+                        })
+                        .catch(error => {
+                            // Reset loading state if not already done
+                            this.loading = false;
+
+                            // Remove status message if still present
+                            if (document.body.contains(statusMessage)) {
+                                document.body.removeChild(statusMessage);
+                            }
+
+                            console.error('Error checking availability:', error);
+                            availabilityResults.innerHTML = `
+                                <div class="text-center text-red-500">
+                                    <p class="font-bold">Error checking availability</p>
+                                    <p class="text-sm">${error.message || 'Please try again'}</p>
+                                    <pre class="mt-2 text-xs text-left bg-gray-100 p-2 rounded overflow-auto max-h-40">${JSON.stringify(error, null, 2)}</pre>
+                                </div>`;
+                        });
+                    }
+                }">
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -161,13 +302,13 @@
                     <div class="flex justify-center mt-4">
                         <button type="button"
                             @click="checkAvailability"
-                            :class="{'bg-primary-700': appointmentForm.loading, 'bg-primary-600': !appointmentForm.loading}"
+                            :class="{'bg-primary-700': loading, 'bg-primary-600': !loading}"
                             :disabled="loading"
                             class="inline-flex items-center px-4 py-2 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 active:bg-primary-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
-                            <span x-text="appointmentForm.loading ? 'Checking...' : 'Check Availability'"></span>
+                            <span x-text="loading ? 'Checking...' : 'Check Availability'"></span>
                         </button>
                     </div>
-                    <div x-show="validationError" x-text="validationError" class="mt-2 text-red-600 text-sm"></div>
+                    <div x-show="validationError !== ''" x-text="validationError" class="mt-2 text-red-600 text-sm"></div>
                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-primary-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-primary-700 active:bg-primary-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition ease-in-out duration-150">
                         Create Appointment
                     </button>

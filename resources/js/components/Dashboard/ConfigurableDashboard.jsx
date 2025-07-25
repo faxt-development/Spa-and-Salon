@@ -35,7 +35,7 @@ import RevenueTrendsWidget from './RevenueTrendsWidget';
 import TopPerformersWidget from './TopPerformersWidget';
 import RevenueByLocationWidget from './RevenueByLocationWidget';
 
-const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
+const ConfigurableDashboard = ({ userType = 'admin', compact = false, columns = 3 }) => {
   const [widgets, setWidgets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -371,8 +371,8 @@ const ConfigurableDashboard = ({ userType = 'admin', compact = false }) => {
                         <Grid
                           item
                           xs={12}
-                          md={compact ? 4 : 6}
-                          lg={compact ? 3 : 4}
+                          md={columns === 4 ? 3 : (compact ? 4 : 6)}
+                          lg={columns === 4 ? 3 : (compact ? 3 : 4)}
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           {...provided.dragHandleProps}

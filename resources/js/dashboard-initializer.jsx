@@ -34,7 +34,8 @@ window.initConfigurableDashboard = function(containerId, options = {}) {
         const dashboardOptions = {
             ...options,
             userType: isAdmin ? 'admin' : 'client',
-            compact: true // Use compact mode when embedded in existing dashboards
+            compact: true, // Use compact mode when embedded in existing dashboards
+            columns: options.columns || 3 // Default to 3 columns if not specified
         };
         
         const root = createRoot(container);

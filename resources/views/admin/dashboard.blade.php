@@ -33,9 +33,6 @@
             </div>
             @endif
 
-            <!-- Configurable Dashboard Area -->
-            <x-dashboard.configurable-area />
-
             <div class="border-t border-gray-200 my-6"></div>
 
             <!-- Original Dashboard Content -->
@@ -217,6 +214,9 @@
             </div>
         </div>
     </div>
+
+            <!-- Configurable Dashboard Area -->
+            <x-dashboard.configurable-area :columns="4" />
 
     @push('scripts')
     <script>

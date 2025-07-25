@@ -1,4 +1,6 @@
-<div class="configurable-dashboard-area mb-8" id="configurableDashboardArea">
+@props(['columns' => 3])
+
+<div class="configurable-dashboard-area mb-8" id="configurableDashboardArea" data-columns="{{ $columns }}">
     <!-- This div will be the mount point for the React component -->
 </div>
 
@@ -7,7 +9,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize the configurable dashboard area
         if (typeof window.initConfigurableDashboard === 'function') {
-            window.initConfigurableDashboard('configurableDashboardArea');
+            const columns = parseInt(document.getElementById('configurableDashboardArea').dataset.columns) || 3;
+            window.initConfigurableDashboard('configurableDashboardArea', { columns: columns });
         }
     });
 </script>
