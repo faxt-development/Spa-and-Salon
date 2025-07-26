@@ -4,7 +4,7 @@
 <div class="min-h-screen bg-gradient-to-b from-primary-100 to-secondary-100">
     <div class="bg-primary-700 text-white text-center py-3">
         <div class="container mx-auto">
-            <p class="font-medium">This page is for spa and salon owners looking to manage their business. <span class="font-bold">Not a business owner?</span> <a href="/" class="underline hover:text-primary-200">Click here to book an appointment as a customer</a>.</p>
+            <p class="font-medium">This page is for spa and salon owners looking to manage their business. <span class="font-bold">Not a business owner?</span> <a href="{{ route('guest.booking.index') }}" class="underline text-accent-200 hover:text-accent-600">Click here to book an appointment as a customer</a>.</p>
         </div>
     </div>
     <main class="container mx-auto px-4 py-12 md:py-24">

@@ -34,6 +34,7 @@ class Client extends Model
         'source',
         'total_spent',
         'visit_count',
+        'is_guest',
     ];
 
     /**
@@ -46,6 +47,7 @@ class Client extends Model
         'marketing_consent' => 'boolean',
         'last_visit' => 'datetime',
         'total_spent' => 'decimal:2',
+        'is_guest' => 'boolean',
     ];
 
     /**

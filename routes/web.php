@@ -40,6 +40,13 @@ Route::get('/theme-test', function () {
 // Pricing page route
 Route::get('/pricing', [\App\Http\Controllers\PricingController::class, 'index'])->name('pricing');
 
+// Guest booking routes
+Route::prefix('guest-booking')->name('guest.booking.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\GuestBookingController::class, 'index'])->name('index');
+    Route::post('/search', [\App\Http\Controllers\GuestBookingController::class, 'searchByZip'])->name('search');
+    Route::get('/{locationId}', [\App\Http\Controllers\GuestBookingController::class, 'bookingForm'])->name('form');
+});
+
 // Success page after checkout
 Route::get('/success', function () {
     return view('success');

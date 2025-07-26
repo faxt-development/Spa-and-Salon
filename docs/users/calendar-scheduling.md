@@ -84,6 +84,19 @@ Rapidly schedule simple appointments:
 4. Click "Book" to create the appointment
 5. Edit additional details later if needed
 
+### Guest Booking
+Allow unauthenticated clients to book appointments:
+1. Guests access the booking system through the public website
+2. They select services they're interested in
+3. They choose a preferred date
+4. Available time slots and staff members are displayed based on service selection
+5. They select their preferred time slot and staff member
+6. They provide their contact information (name, email, phone)
+7. They confirm their booking
+8. The system creates a guest client record and appointment
+9. Confirmation details are sent to the provided email address
+10. Staff can view and manage these appointments in the regular calendar
+
 ### Group Appointments
 Schedule services for multiple clients:
 1. Click "Group Appointment" in the calendar

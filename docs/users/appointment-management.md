@@ -53,6 +53,23 @@ View detailed information about any appointment:
 
 ## Creating Appointments
 
+### Guest Appointment Booking
+Guests can book appointments without creating an account first:
+
+1. Guests access the booking system through the "Book Now" button on the website
+2. They select desired service(s) from the available options
+3. They choose a date for their appointment
+4. Available time slots and staff members are displayed
+5. They select their preferred time and staff member
+6. They enter their contact information (name, email, phone)
+7. They confirm their booking
+8. A confirmation email is sent to their provided email address
+
+Benefits of guest booking:
+- Reduces friction in the booking process
+- Increases conversion rates for new clients
+- Provides a seamless experience for first-time visitors
+
 ### Staff Creating Appointments
 1. Click the "+" button in the calendar or "New Appointment" button
 2. Select or search for a client (or create a new client)

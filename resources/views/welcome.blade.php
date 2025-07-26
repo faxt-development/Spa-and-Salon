@@ -128,7 +128,7 @@
                             </a>
                         </div>
                         <div class="rounded-md shadow">
-                            <a href="/pricing" class="w-full flex items-center justify-center px-8 py-4 border-2 border-white text-base font-bold rounded-md text-white bg-transparent hover:bg-white hover:bg-opacity-10 md:py-4 md:text-lg md:px-10 transition duration-150 ease-in-out transform hover:scale-105">
+                            <a href="/pricing" class="w-full flex items-center justify-center px-8 py-4 border-2 border-white text-base font-bold rounded-md text-white bg-transparent hover:bg-white hover:bg-opacity-10 hover:text-accent-600 md:py-4 md:text-lg md:px-10 transition duration-150 ease-in-out transform hover:scale-105">
                                 View Pricing
                             </a>
                         </div>

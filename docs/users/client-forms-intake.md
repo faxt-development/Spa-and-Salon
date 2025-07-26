@@ -61,6 +61,21 @@ Create dynamic, conditional forms:
 
 ## Client Intake Process
 
+### Guest Client Intake
+Process clients who book as guests:
+1. When a guest books an appointment online, a guest client record is automatically created
+2. Guest clients are flagged with the `is_guest` status in the system
+3. Guest client records include:
+   - First and last name
+   - Email address
+   - Phone number (if provided)
+   - Marketing consent status
+4. After their appointment, guest clients can be:
+   - Converted to regular clients
+   - Merged with existing client records if duplicates are found
+   - Retained as guest clients for future bookings
+5. Access guest client records under Clients > Guest Clients
+
 ### New Client Intake
 Streamline the onboarding process:
 1. Navigate to Clients > New Client
