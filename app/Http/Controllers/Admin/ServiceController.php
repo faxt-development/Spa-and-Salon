@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use App\Models\ServiceCategory;
+use App\Models\ServicePackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -187,6 +188,18 @@ class ServiceController extends Controller
             'service' => $service,
             'categories' => ServiceCategory::active()->get()
         ]);
+    }
+ /**
+     * Show the form for editing the specified service.
+     */
+    public function show()
+    {
+        $packages = ServicePackage::with(['services', 'category'])
+        ->orderBy('name')
+        ->get();
+
+    return view('admin.services.packages.index', compact('packages'));
+
     }
 
     /**

@@ -438,19 +438,17 @@
                     document.body.appendChild(dialog);
                     document.body.style.overflow = 'hidden';
 
-                    // Return a promise that resolves when the user makes a choice
-                    return new Promise((resolve) => {
-                        dialog.querySelector('#confirm-ok').addEventListener('click', () => {
-                            document.body.removeChild(dialog);
-                            document.body.style.overflow = '';
-                            resolve(true);
-                        });
+                    // Set up event listeners for the buttons
+                    dialog.querySelector('#confirm-ok').addEventListener('click', () => {
+                        document.body.removeChild(dialog);
+                        document.body.style.overflow = '';
+                        resolve(true);
+                    });
 
-                        dialog.querySelector('#confirm-cancel').addEventListener('click', () => {
-                            document.body.removeChild(dialog);
-                            document.body.style.overflow = '';
-                            resolve(false);
-                        });
+                    dialog.querySelector('#confirm-cancel').addEventListener('click', () => {
+                        document.body.removeChild(dialog);
+                        document.body.style.overflow = '';
+                        resolve(false);
                     });
                 });
             }
@@ -497,16 +495,15 @@
                 if (!serviceElement) return;
 
                 const serviceName = serviceElement.querySelector('h3')?.textContent?.trim() || 'this service';
-
                 // Show confirmation dialog
                 const confirmed = await showConfirmationDialog(`Are you sure you want to remove "${serviceName}" from your company's services?`);
-
                 if (!confirmed) {
                     return; // User cancelled
                 }
 
                 try {
-                    const response = await fetch(`/admin/services/${serviceId}/remove-from-company`, {
+
+\                    const response = await fetch(`/services/${serviceId}/remove-from-company`, {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

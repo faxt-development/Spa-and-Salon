@@ -52,9 +52,9 @@ class LocationController extends Controller
         if (empty($validated['code'])) {
             $validated['code'] = $this->generateUniqueCode($validated['name']);
         }
-        info('company_id: ' . auth()->user()->primaryCompany->id);
+        info('company_id: ' . auth()->user()->primaryCompany()->id);
         // Set the company_id from the authenticated user's primary company
-        $validated['company_id'] = auth()->user()->primaryCompany->id;
+        $validated['company_id'] = auth()->user()->primaryCompany()->id;
 
         // Handle primary location logic
         if (!empty($validated['is_primary'])) {
