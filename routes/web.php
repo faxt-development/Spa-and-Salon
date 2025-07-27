@@ -47,6 +47,12 @@ Route::prefix('guest-booking')->name('guest.booking.')->group(function () {
     Route::get('/{locationId}', [\App\Http\Controllers\GuestBookingController::class, 'bookingForm'])->name('form');
 });
 
+// Guest appointment viewing routes (no authentication required)
+Route::prefix('guest-appointment')->name('guest.appointment.')->group(function () {
+    Route::get('/{token}', [\App\Http\Controllers\GuestAppointmentController::class, 'show'])->name('view');
+    Route::post('/{token}/resend-confirmation', [\App\Http\Controllers\GuestAppointmentController::class, 'resendConfirmation'])->name('resend-confirmation');
+});
+
 // Success page after checkout
 Route::get('/success', function () {
     return view('success');

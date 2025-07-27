@@ -265,11 +265,19 @@ class GuestBookingController extends Controller
                 throw new \Exception('Failed to create appointment');
             }
 
+            // Generate appointment token for guest access
+            $appointmentToken = \App\Models\AppointmentToken::createForAppointment(
+                $appointment->id,
+                $request->email,
+                30 // Token valid for 30 days
+            );
+
             DB::commit();
 
             Log::info('GuestBookingController@book: Appointment booked successfully', [
                 'appointment_id' => $appointment->id,
-                'client_id' => $client->id
+                'client_id' => $client->id,
+                'token' => $appointmentToken->token
             ]);
 
             return response()->json([
@@ -287,7 +295,9 @@ class GuestBookingController extends Controller
                             'duration' => $service->duration,
                             'price' => $service->price
                         ];
-                    })
+                    }),
+                    'guest_token' => $appointmentToken->token,
+                    'guest_link' => route('guest.appointment.view', ['token' => $appointmentToken->token])
                 ]
             ]);
         } catch (\Exception $e) {

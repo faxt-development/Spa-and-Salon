@@ -2,14 +2,13 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 use Stripe\Webhook;
 
 class ResendStripeWebhookTest extends TestCase
 {
-    use RefreshDatabase;
+
 
     /**
      * Test resending a failed Stripe webhook

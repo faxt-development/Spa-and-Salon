@@ -8,11 +8,10 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ServiceCategory;
 use App\Services\FinancialReportingService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class FinancialReportingServiceTest extends TestCase
 {
-    use RefreshDatabase;
+
 
     private $reportingService;
 
@@ -28,13 +27,13 @@ class FinancialReportingServiceTest extends TestCase
         // Create test data
         $category1 = ServiceCategory::factory()->create(['name' => 'Hair']);
         $category2 = ServiceCategory::factory()->create(['name' => 'Nails']);
-        
+
         $service1 = Service::factory()->create(['price' => 50.00]);
         $service1->categories()->attach($category1->id);
-        
+
         $service2 = Service::factory()->create(['price' => 30.00]);
         $service2->categories()->attach($category2->id);
-        
+
         // Create orders with items
         $order1 = Order::factory()->create(['total_amount' => 100.00]);
         OrderItem::factory()->create([
@@ -65,7 +64,7 @@ class FinancialReportingServiceTest extends TestCase
         );
 
         $this->assertCount(2, $result);
-        
+
         // Verify category data
         $hairCategory = collect($result)->firstWhere('category_id', $category1->id);
         $this->assertEquals(100.00, $hairCategory['revenue']);
@@ -89,7 +88,7 @@ class FinancialReportingServiceTest extends TestCase
         $category = ServiceCategory::factory()->create(['name' => 'Hair']);
         $service1 = Service::factory()->create(['name' => 'Haircut', 'price' => 50.00]);
         $service1->categories()->attach($category->id);
-        
+
         $service2 = Service::factory()->create(['name' => 'Coloring', 'price' => 80.00]);
         $service2->categories()->attach($category->id);
 
@@ -104,7 +103,7 @@ class FinancialReportingServiceTest extends TestCase
             'subtotal' => 100.00,
             'service_category_id' => $category->id
         ]);
-        
+
         OrderItem::factory()->create([
             'order_id' => $order1->id,
             'itemable_id' => $service2->id,
@@ -121,7 +120,7 @@ class FinancialReportingServiceTest extends TestCase
         );
 
         $this->assertCount(2, $result);
-        
+
         $haircutData = collect($result)->firstWhere('service_id', $service1->id);
         $this->assertEquals(100.00, $haircutData['revenue']);
         $this->assertEquals(2, $haircutData['quantity_sold']);

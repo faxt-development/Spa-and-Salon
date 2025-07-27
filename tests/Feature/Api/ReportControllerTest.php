@@ -8,12 +8,11 @@ use App\Models\PayrollRecord;
 use App\Models\TaxRate;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ReportControllerTest extends TestCase
 {
-    use RefreshDatabase;
+
 
     protected $admin;
     protected $taxRate;
@@ -21,10 +20,10 @@ class ReportControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Run migrations
         Artisan::call('migrate:fresh');
-        
+
         // Create an admin user
         $this->admin = User::factory()->create([
             'role' => 'admin'
@@ -55,10 +54,10 @@ class ReportControllerTest extends TestCase
     public function it_requires_admin_permission()
     {
         $user = User::factory()->create(['role' => 'user']);
-        
+
         $response = $this->actingAs($user, 'sanctum')
             ->getJson('/api/reports/tax/summary');
-            
+
         $response->assertStatus(403);
     }
 

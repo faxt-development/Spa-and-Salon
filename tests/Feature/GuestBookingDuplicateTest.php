@@ -8,12 +8,11 @@ use App\Models\Service;
 use App\Models\Staff;
 use App\Models\Location;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class GuestBookingDuplicateTest extends TestCase
 {
-    use RefreshDatabase;
+
 
     public function test_duplicate_appointment_is_prevented_for_guest()
     {
@@ -21,13 +20,13 @@ class GuestBookingDuplicateTest extends TestCase
         $location = Location::factory()->create();
         $service = Service::factory()->create(['duration' => 60]);
         $staff = Staff::factory()->create();
-        
+
         // Create a client
         $client = Client::factory()->create([
             'email' => 'test@example.com',
             'is_guest' => true
         ]);
-        
+
         // Create an existing appointment
         $existingAppointment = Appointment::factory()->create([
             'client_id' => $client->id,
@@ -36,7 +35,7 @@ class GuestBookingDuplicateTest extends TestCase
             'end_time' => Carbon::tomorrow()->setTime(11, 0),
             'status' => 'scheduled'
         ]);
-        
+
         // Attach service to appointment
         $existingAppointment->services()->attach($service->id, [
             'price' => $service->price,
@@ -75,13 +74,13 @@ class GuestBookingDuplicateTest extends TestCase
         $location = Location::factory()->create();
         $service = Service::factory()->create(['duration' => 60]);
         $staff = Staff::factory()->create();
-        
+
         // Create a client
         $client = Client::factory()->create([
             'email' => 'test@example.com',
             'is_guest' => true
         ]);
-        
+
         // Create an existing appointment for different time
         $existingAppointment = Appointment::factory()->create([
             'client_id' => $client->id,
@@ -90,7 +89,7 @@ class GuestBookingDuplicateTest extends TestCase
             'end_time' => Carbon::tomorrow()->setTime(11, 0),
             'status' => 'scheduled'
         ]);
-        
+
         // Attach service to appointment
         $existingAppointment->services()->attach($service->id, [
             'price' => $service->price,
@@ -127,13 +126,13 @@ class GuestBookingDuplicateTest extends TestCase
         $location = Location::factory()->create();
         $service = Service::factory()->create(['duration' => 60]);
         $staff = Staff::factory()->create();
-        
+
         // Create a client
         $client = Client::factory()->create([
             'email' => 'test@example.com',
             'is_guest' => true
         ]);
-        
+
         // Create a cancelled appointment
         $cancelledAppointment = Appointment::factory()->create([
             'client_id' => $client->id,
@@ -142,7 +141,7 @@ class GuestBookingDuplicateTest extends TestCase
             'end_time' => Carbon::tomorrow()->setTime(11, 0),
             'status' => 'cancelled'
         ]);
-        
+
         // Attach service to appointment
         $cancelledAppointment->services()->attach($service->id, [
             'price' => $service->price,

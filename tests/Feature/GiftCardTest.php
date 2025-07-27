@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\GiftCard;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -16,7 +15,7 @@ class GiftCardTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Mock Stripe API
         $this->mockStripe();
     }
@@ -45,7 +44,7 @@ class GiftCardTest extends TestCase
     public function authenticated_user_can_purchase_gift_card()
     {
         $user = User::factory()->create();
-        
+
         $response = $this->actingAs($user, 'web')
             ->postJson(route('api.gift-cards.create-payment-intent'), [
                 'amount' => '50.00',
@@ -91,7 +90,7 @@ class GiftCardTest extends TestCase
     public function it_handles_successful_payment()
     {
         $user = User::factory()->create();
-        
+
         // Simulate creating a payment intent
         $paymentIntent = $this->createTestPaymentIntent([
             'amount' => 5000, // $50.00 in cents
@@ -135,7 +134,7 @@ class GiftCardTest extends TestCase
     public function it_prevents_duplicate_payment_processing()
     {
         $paymentIntent = $this->createTestPaymentIntent();
-        
+
         // First attempt
         $response1 = $this->postJson(route('api.gift-cards.handle-payment'), [
             'payment_intent_id' => $paymentIntent->id,
@@ -152,7 +151,7 @@ class GiftCardTest extends TestCase
                     'client_secret' => 'test_cs_' . Str::random(43),
                     'status' => 'requires_payment_method',
                 ]);
-                
+
             $mock->shouldReceive('paymentIntents->retrieve')
                 ->andReturnUsing(function ($id) {
                     return (object)[
@@ -165,7 +164,7 @@ class GiftCardTest extends TestCase
                 });
         });
     }
-    
+
     private function createTestPaymentIntent($params = [])
     {
         $defaults = [
@@ -175,7 +174,7 @@ class GiftCardTest extends TestCase
             'status' => 'succeeded',
             'metadata' => (object)[],
         ];
-        
+
         return (object)array_merge($defaults, $params);
     }
 }

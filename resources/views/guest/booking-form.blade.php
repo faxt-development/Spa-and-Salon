@@ -435,24 +435,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             if (data.success) {
-                // Show success message
-                document.getElementById('booking-form').style.display = 'none';
-                document.getElementById('success-message').style.display = 'block';
-                
-                // Update success message details
-                document.getElementById('success-service-name').textContent = selectedService.name;
-                document.getElementById('success-date-time').textContent = 
-                    new Date(selectedDate + ' ' + selectedTime).toLocaleString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit'
-                    });
-                
-                // Scroll to top
-                window.scrollTo(0, 0);
+                // Redirect to guest appointment confirmation page
+                if (data.data && data.data.guest_link) {
+                    window.location.href = data.data.guest_link;
+                } else {
+                    // Fallback to generic success
+                    alert('Appointment booked successfully!');
+                    window.location.href = '{{ route("guest.booking.index") }}';
+                }
             } else {
                 // Show error message
                 alert('Error booking appointment: ' + (data.message || 'Please try again.'));
