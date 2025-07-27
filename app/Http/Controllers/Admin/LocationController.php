@@ -21,7 +21,7 @@ class LocationController extends Controller
         $locations = Location::orderBy('is_primary', 'desc')
             ->orderBy('name')
             ->paginate(10);
-        
+
         return view('admin.locations.index', compact('locations'));
     }
 
@@ -34,7 +34,7 @@ class LocationController extends Controller
     {
         $timezones = $this->getTimezoneOptions();
         $currencies = $this->getCurrencyOptions();
-        
+
         return view('admin.locations.create', compact('timezones', 'currencies'));
     }
 
@@ -47,21 +47,26 @@ class LocationController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validateLocation($request);
-        
+
         // Generate a unique code if not provided
         if (empty($validated['code'])) {
             $validated['code'] = $this->generateUniqueCode($validated['name']);
         }
-        
+        info('company_id: ' . auth()->user()->primaryCompany->id);
+        // Set the company_id from the authenticated user's primary company
+        $validated['company_id'] = auth()->user()->primaryCompany->id;
+
         // Handle primary location logic
         if (!empty($validated['is_primary'])) {
-            // Remove primary status from all other locations
-            Location::where('is_primary', true)->update(['is_primary' => false]);
+            // Remove primary status from all other locations for this company
+            Location::where('company_id', $validated['company_id'])
+                ->where('is_primary', true)
+                ->update(['is_primary' => false]);
         }
-        
+
         // Create the location
         $location = Location::create($validated);
-        
+
         return redirect()->route('admin.locations.index')
             ->with('success', 'Location created successfully.');
     }
@@ -87,7 +92,7 @@ class LocationController extends Controller
     {
         $timezones = $this->getTimezoneOptions();
         $currencies = $this->getCurrencyOptions();
-        
+
         return view('admin.locations.edit', compact('location', 'timezones', 'currencies'));
     }
 
@@ -101,16 +106,27 @@ class LocationController extends Controller
     public function update(Request $request, Location $location)
     {
         $validated = $this->validateLocation($request, $location->id);
-        
+
+        // Ensure company_id is set - use existing location's company_id or fall back to user's primary company
+        $validated['company_id'] = $location->company_id ?? auth()->user()->company()->first()?->id;
+
+        if (empty($validated['company_id'])) {
+            return redirect()->back()
+                ->with('error', 'Could not determine company for this location. Please ensure you have a primary company set.');
+        }
+
         // Handle primary location logic
         if (!empty($validated['is_primary']) && !$location->is_primary) {
-            // Remove primary status from all other locations
-            Location::where('is_primary', true)->update(['is_primary' => false]);
+            // Remove primary status from all other locations for this company
+            Location::where('company_id', $validated['company_id'])
+                ->where('is_primary', true)
+                ->where('id', '!=', $location->id)
+                ->update(['is_primary' => false]);
         }
-        
+
         // Update the location
         $location->update($validated);
-        
+
         return redirect()->route('admin.locations.index')
             ->with('success', 'Location updated successfully.');
     }
@@ -128,15 +144,15 @@ class LocationController extends Controller
             return redirect()->route('admin.locations.index')
                 ->with('error', 'Cannot delete the primary location.');
         }
-        
+
         // Check if location has related data
         if ($location->staff()->count() > 0 || $location->appointments()->count() > 0) {
             return redirect()->route('admin.locations.index')
                 ->with('error', 'Cannot delete a location with associated staff or appointments.');
         }
-        
+
         $location->delete();
-        
+
         return redirect()->route('admin.locations.index')
             ->with('success', 'Location deleted successfully.');
     }
@@ -187,13 +203,13 @@ class LocationController extends Controller
         $baseCode = strtoupper(substr(Str::slug($name), 0, 8));
         $code = $baseCode;
         $counter = 1;
-        
+
         // Make sure the code is unique
         while (Location::where('code', $code)->exists()) {
             $code = $baseCode . $counter;
             $counter++;
         }
-        
+
         return $code;
     }
 
@@ -224,7 +240,7 @@ class LocationController extends Controller
             'JPY' => 'Japanese Yen (JPY)',
         ];
     }
-    
+
     /**
      * Show the form for editing location hours.
      *
@@ -238,10 +254,10 @@ class LocationController extends Controller
             ->orderBy('day_of_week')
             ->get()
             ->keyBy('day_of_week');
-            
+
         // Ensure we have entries for all 7 days of the week
         $daysOfWeek = [0, 1, 2, 3, 4, 5, 6]; // 0 = Sunday, 1 = Monday, etc.
-        
+
         foreach ($daysOfWeek as $day) {
             if (!$businessHours->has($day)) {
                 // Create default hours for this day
@@ -251,14 +267,14 @@ class LocationController extends Controller
                     'close_time' => '17:00:00',
                     'is_closed' => ($day === 0 || $day === 6), // Closed on weekends by default
                 ]);
-                
+
                 $businessHours->put($day, $defaultHour);
             }
         }
-        
+
         return view('admin.locations.hours', compact('location', 'businessHours'));
     }
-    
+
     /**
      * Update the location hours.
      *
@@ -275,10 +291,10 @@ class LocationController extends Controller
             'business_hours.*.slots.*.open' => 'required_with:business_hours.*.slots|string',
             'business_hours.*.slots.*.close' => 'required_with:business_hours.*.slots|string',
         ]);
-        
+
         // Delete existing business hours for this location
         BusinessHour::where('location_id', $location->id)->delete();
-        
+
         // Map day names to day_of_week values (0 = Sunday, 1 = Monday, etc.)
         $dayMapping = [
             'sunday' => 0,
@@ -289,17 +305,17 @@ class LocationController extends Controller
             'friday' => 5,
             'saturday' => 6,
         ];
-        
+
         // Process and save new business hours
         foreach ($request->input('business_hours', []) as $dayName => $data) {
             // Skip if day name is not valid
             if (!isset($dayMapping[$dayName])) {
                 continue;
             }
-            
+
             $dayOfWeek = $dayMapping[$dayName];
             $isClosed = !isset($data['is_open']) || !$data['is_open'];
-            
+
             if ($isClosed) {
                 // Create a closed day entry
                 BusinessHour::create([
@@ -315,7 +331,7 @@ class LocationController extends Controller
                     // For now, we'll just use the first slot as we're transitioning from JSON
                     // In the future, we could support multiple slots per day
                     $slot = $data['slots'][0] ?? null;
-                    
+
                     if ($slot && isset($slot['open']) && isset($slot['close'])) {
                         BusinessHour::create([
                             'location_id' => $location->id,
@@ -328,7 +344,7 @@ class LocationController extends Controller
                 }
             }
         }
-        
+
         return redirect()->route('admin.locations.hours', $location)
             ->with('success', 'Business hours updated successfully.');
     }

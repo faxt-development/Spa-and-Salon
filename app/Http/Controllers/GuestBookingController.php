@@ -29,7 +29,7 @@ class GuestBookingController extends Controller
             'pageTitle' => 'Find a Spa or Salon Near You',
         ]);
     }
-    
+
     /**
      * Search for locations by zip code
      *
@@ -41,15 +41,15 @@ class GuestBookingController extends Controller
         $request->validate([
             'zip_code' => 'required|string|min:5|max:10',
         ]);
-        
+
         $zipCode = $request->input('zip_code');
-        
+
         // Log the search request
         Log::info('Guest location search by zip code', [
             'zip_code' => $zipCode,
             'ip' => $request->ip(),
         ]);
-        
+
         // Find locations near the provided zip code
         // In a real implementation, this would use a distance calculation
         // For now, we'll just search for exact or similar zip codes
@@ -75,14 +75,14 @@ class GuestBookingController extends Controller
                     'company_id' => $location->company_id,
                 ];
             });
-            
+
         return response()->json([
             'success' => true,
             'locations' => $locations,
             'count' => $locations->count(),
         ]);
     }
-    
+
     /**
      * Display the booking form for a specific location
      *
@@ -94,17 +94,15 @@ class GuestBookingController extends Controller
         $location = Location::where('is_active', true)
             ->with('company')
             ->findOrFail($locationId);
-            
-        // Get active services for the booking form
+
+        // Get active services for this location's company
         $services = Service::where('active', true)
-            ->where(function ($query) use ($location) {
-                // Filter services by company if needed
-                $query->where('company_id', $location->company_id)
-                    ->orWhereNull('company_id'); // Include global services
+            ->whereHas('companies', function ($query) use ($location) {
+                $query->where('companies.id', $location->company_id);
             })
             ->orderBy('name')
             ->get();
-        
+
         return view('guest.booking-form', [
             'location' => $location,
             'services' => $services,

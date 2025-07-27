@@ -31,6 +31,15 @@
 </head>
 <body class="font-sans antialiased bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 flex flex-col min-h-full">
     <div class="flex flex-col min-h-full">
+        <!-- Business Owner Banner -->
+        <div class="bg-primary-500 text-white text-center py-2 px-4">
+            <p class="text-sm md:text-base">
+                This page is for spa and salon owners looking to manage their business.
+                Not a business owner?
+                <a href="{{ route('guest.booking.index') }}"  class="underline hover:no-underline font-medium text-accent-200">Click here to book an appointment as a customer</a>.
+            </p>
+        </div>
+
         <!-- Main Header -->
         <header class="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

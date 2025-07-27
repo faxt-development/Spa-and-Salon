@@ -34,7 +34,7 @@ class GuestBookingController extends Controller
      */
     public function services()
     {
-        $services = Service::where('is_active', true)
+        $services = Service::where('active', true)
             ->orderBy('category')
             ->orderBy('name')
             ->get();
@@ -53,59 +53,96 @@ class GuestBookingController extends Controller
      */
     public function checkAvailability(Request $request)
     {
+        // Validate the request
         $request->validate([
             'date' => 'required|date|after_or_equal:today',
-            'service_ids' => 'required|array',
-            'service_ids.*' => 'exists:services,id',
-            'staff_id' => 'nullable|exists:staff,id',
+            'service_id' => 'required|exists:services,id',
             'location_id' => 'required|exists:locations,id',
         ]);
 
-        Log::info('GuestBookingController@checkAvailability: Request received', [
-            'request_data' => $request->all(),
-            'session_id' => session()->getId(),
-            'headers' => $request->headers->all(),
-            'method' => $request->method(),
-            'url' => $request->fullUrl(),
-            'ip' => $request->ip(),
-        ]);
-
-        // Get the selected services
-        $services = Service::whereIn('id', $request->service_ids)->get();
-        Log::info('GuestBookingController@checkAvailability: Services retrieved', [
-            'service_count' => $services->count(),
-            'service_ids' => $services->pluck('id')->toArray(),
-            'service_names' => $services->pluck('name')->toArray(),
-        ]);
-        
-        // Calculate total duration needed for the appointment
-        $totalDuration = $services->sum('duration'); // in minutes
-        Log::info('GuestBookingController@checkAvailability: Total duration calculated', [
-            'total_duration_minutes' => $totalDuration
-        ]);
-        
-        // Get the date for availability check
         $date = Carbon::parse($request->date)->startOfDay();
-        Log::info('GuestBookingController@checkAvailability: Date parsed', [
-            'requested_date' => $request->date,
-            'parsed_date' => $date->toDateString(),
-        ]);
-        
-        // Find available staff members and time slots
-        Log::info('GuestBookingController@checkAvailability: Finding available time slots', [
-            'date' => $date->toDateString(),
-            'duration' => $totalDuration,
-            'staff_id' => $request->staff_id,
-            'location_id' => $request->location_id,
-        ]);
-        $availableSlots = $this->bookingService->findAvailableTimeSlots($date, $totalDuration, $request->staff_id, $services, $request->location_id);
-        
+        $service = Service::findOrFail($request->service_id);
+
+        // Get staff members who can perform this service and are scheduled to work on this day
+        $dayOfWeek = strtolower($date->englishDayOfWeek);
+
+        $staffMembers = $service->staff()
+            ->where('active', true)
+            ->whereJsonContains('work_days', $dayOfWeek)
+            ->whereNotNull('work_start_time')
+            ->whereNotNull('work_end_time')
+            ->get();
+
+        // Get existing appointments for each staff member on this day
+        $startOfDay = $date->copy();
+        $endOfDay = $date->copy()->endOfDay();
+
+        $availableSlots = [];
+
+        foreach ($staffMembers as $staff) {
+            // Get work schedule for this staff member
+            $startTime = Carbon::parse($staff->work_start_time);
+            $endTime = Carbon::parse($staff->work_end_time);
+
+            // Get all appointments for this staff member on this day
+            $bookedAppointments = $staff->appointments()
+                ->whereBetween('start_time', [$startOfDay, $endOfDay])
+                ->whereIn('status', ['scheduled', 'confirmed'])
+                ->orderBy('start_time')
+                ->get(['start_time', 'end_time']);
+            $interval = 15; // 15-minute intervals
+
+            $slots = [];
+            $currentSlot = $startTime->copy();
+
+            while ($currentSlot->copy()->addMinutes($service->duration) <= $endTime) {
+                $slotEnd = $currentSlot->copy()->addMinutes($service->duration);
+                $isAvailable = true;
+
+                // Check if this slot is already booked
+                foreach ($bookedAppointments as $appointment) {
+                    $apptStart = Carbon::parse($appointment->start_time);
+                    $apptEnd = Carbon::parse($appointment->end_time);
+
+                    if ($currentSlot < $apptEnd && $slotEnd > $apptStart) {
+                        $isAvailable = false;
+                        break;
+                    }
+                }
+
+                $slots[] = [
+                    'start_time' => $currentSlot->format('H:i'),
+                    'end_time' => $slotEnd->format('H:i'),
+                    'is_available' => $isAvailable,
+                    'formatted_time' => $currentSlot->format('g:i A') . ' - ' . $slotEnd->format('g:i A')
+                ];
+
+                $currentSlot->addMinutes($interval);
+            }
+
+            $availableSlots[] = [
+                'staff_id' => $staff->id,
+                'staff_name' => $staff->full_name,
+                'staff_photo' => $staff->photo_url,
+                'slots' => $slots,
+                'work_hours' => [
+                    'start' => $staff->work_start_time,
+                    'end' => $staff->work_end_time
+                ]
+            ];
+        }
+
         return response()->json([
             'success' => true,
             'data' => [
                 'date' => $date->toDateString(),
-                'total_duration' => $totalDuration,
-                'available_slots' => $availableSlots
+                'service' => [
+                    'id' => $service->id,
+                    'name' => $service->name,
+                    'duration' => $service->duration,
+                    'price' => $service->price
+                ],
+                'availability' => $availableSlots
             ]
         ]);
     }
@@ -153,7 +190,7 @@ class GuestBookingController extends Controller
         try {
             // Create or find guest client
             $existingClient = Client::where('email', $request->email)->first();
-            
+
             if ($existingClient) {
                 $client = $existingClient;
                 Log::info('GuestBookingController@book: Using existing client', [
@@ -167,7 +204,7 @@ class GuestBookingController extends Controller
                     'phone' => $request->phone,
                     'marketing_consent' => $request->marketing_consent ?? false,
                 ]);
-                
+
                 if (!$client) {
                     throw new \Exception('Failed to create guest client');
                 }
@@ -177,7 +214,7 @@ class GuestBookingController extends Controller
             $appointment = $this->bookingService->createAppointment([
                 'client_id' => $client->id,
                 'staff_id' => $request->staff_id,
-                'service_ids' => $request->service_ids,
+                'service_ids' => [$request->service_id], // Convert single service to array
                 'start_time' => $request->start_time,
                 'notes' => $request->notes,
             ]);
@@ -217,7 +254,7 @@ class GuestBookingController extends Controller
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while booking your appointment. Please try again.'

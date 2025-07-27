@@ -231,17 +231,19 @@ class BookingService
             foreach ($services as $service) {
                 $appointment->services()->attach($service->id, [
                     'price' => $service->price,
-                    'duration' => $service->duration,
-                    'name' => $service->name
+                    'duration' => $service->duration
                 ]);
             }
             
             DB::commit();
-            
+        
             Log::info('BookingService@createAppointment: Appointment created successfully', [
                 'appointment_id' => $appointment->id
             ]);
-            
+        
+            // Dispatch the AppointmentCreated event to trigger confirmation email
+            event(new \App\Events\AppointmentCreated($appointment));
+        
             return $appointment;
         } catch (\Exception $e) {
             DB::rollBack();

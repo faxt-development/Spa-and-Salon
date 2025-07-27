@@ -67,14 +67,6 @@ class Location extends Model
     }
 
     /**
-     * Get the services offered at this location.
-     */
-    public function services(): HasMany
-    {
-        return $this->hasMany(Service::class);
-    }
-
-    /**
      * Get the appointments scheduled at this location.
      */
     public function appointments(): HasMany

@@ -22,7 +22,11 @@
                 
                 <div class="mb-6 bg-gray-50 rounded-lg p-4">
                     <h2 class="text-xl font-bold text-gray-900">{{ $location->name }}</h2>
-                    <p class="text-gray-600">{{ $location->company->name }}</p>
+                    @if($location->company)
+                        <p class="text-gray-600">{{ $location->company->name }}</p>
+                    @else
+                        <p class="text-gray-600">Independent</p>
+                    @endif
                     <p class="text-gray-600 mt-1">{{ $location->address_line_1 }}{{ $location->address_line_2 ? ', ' . $location->address_line_2 : '' }}</p>
                     <p class="text-gray-600">{{ $location->city }}, {{ $location->state }} {{ $location->postal_code }}</p>
                 </div>
@@ -210,8 +214,8 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.data.available_slots && data.data.available_slots.length > 0) {
-                displayTimeSlots(data.data.available_slots);
+            if (data.success && data.data.availability && data.data.availability.length > 0) {
+                displayTimeSlots(data.data.availability);
             } else {
                 timeSlots.innerHTML = '<p class="col-span-3 text-center text-red-500">No available time slots for this date. Please select another date.</p>';
             }
@@ -222,39 +226,88 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Function to display time slots
-    function displayTimeSlots(slots) {
+    // Function to display time slots with staff information
+    function displayTimeSlots(availability) {
         timeSlots.innerHTML = '';
         
-        slots.forEach(slot => {
-            const timeButton = document.createElement('button');
-            timeButton.type = 'button';
-            timeButton.className = 'time-slot py-2 px-3 border rounded text-sm hover:bg-primary-50 hover:border-primary-500';
-            timeButton.textContent = slot.time;
-            timeButton.dataset.time = slot.time;
-            timeButton.dataset.staffId = slot.staff_id;
+        if (availability.length === 0) {
+            timeSlots.innerHTML = '<p class="col-span-3 text-center text-red-500">No availability found for the selected date.</p>';
+            return;
+        }
+        
+        availability.forEach(staff => {
+            // Create staff section
+            const staffSection = document.createElement('div');
+            staffSection.className = 'col-span-3 mb-4';
             
-            timeButton.addEventListener('click', function() {
-                // Remove active class from all time slots
-                document.querySelectorAll('.time-slot').forEach(btn => {
-                    btn.classList.remove('bg-primary-500', 'text-white');
+            // Staff header with name and photo
+            const staffHeader = document.createElement('div');
+            staffHeader.className = 'flex items-center mb-2';
+            
+            if (staff.staff_photo) {
+                const staffPhoto = document.createElement('img');
+                staffPhoto.src = staff.staff_photo;
+                staffPhoto.alt = staff.staff_name;
+                staffPhoto.className = 'w-8 h-8 rounded-full mr-2';
+                staffHeader.appendChild(staffPhoto);
+            }
+            
+            const staffName = document.createElement('h4');
+            staffName.className = 'font-medium text-gray-900';
+            staffName.textContent = staff.staff_name;
+            staffHeader.appendChild(staffName);
+            
+            staffSection.appendChild(staffHeader);
+            
+            // Time slots container
+            const slotsContainer = document.createElement('div');
+            slotsContainer.className = 'grid grid-cols-3 gap-2';
+            
+            // Add available time slots
+            staff.slots.forEach(slot => {
+                if (!slot.is_available) return;
+                
+                const timeButton = document.createElement('button');
+                timeButton.type = 'button';
+                timeButton.className = 'time-slot py-2 px-3 border rounded text-sm hover:bg-primary-50 hover:border-primary-500';
+                timeButton.textContent = slot.formatted_time.split(' - ')[0]; // Show just the start time
+                timeButton.dataset.time = slot.start_time;
+                timeButton.dataset.staffId = staff.staff_id;
+                timeButton.title = `Book with ${staff.staff_name} at ${slot.formatted_time}`;
+                
+                timeButton.addEventListener('click', function() {
+                    // Remove active class from all time slots
+                    document.querySelectorAll('.time-slot').forEach(btn => {
+                        btn.classList.remove('bg-primary-500', 'text-white');
+                    });
+                    
+                    // Add active class to selected time slot
+                    this.classList.add('bg-primary-500', 'text-white');
+                    
+                    // Store selected time and staff
+                    selectedTime = this.dataset.time;
+                    selectedStaffId = this.dataset.staffId;
+                    
+                    // Update summary with full time range
+                    const timeRange = this.title.split(' at ')[1];
+                    summaryDateTime.textContent = `${selectedDate} at ${timeRange}`;
+                    
+                    // Enable book button if all required fields are filled
+                    checkFormCompletion();
                 });
                 
-                // Add active class to selected time slot
-                this.classList.add('bg-primary-500', 'text-white');
-                
-                // Store selected time and staff
-                selectedTime = this.dataset.time;
-                selectedStaffId = this.dataset.staffId;
-                
-                // Update summary
-                summaryDateTime.textContent = `${selectedDate} at ${selectedTime}`;
-                
-                // Enable book button if all required fields are filled
-                checkFormCompletion();
+                slotsContainer.appendChild(timeButton);
             });
             
-            timeSlots.appendChild(timeButton);
+            staffSection.appendChild(slotsContainer);
+            timeSlots.appendChild(staffSection);
+            
+            // Add a divider between staff members
+            if (staff !== availability[availability.length - 1]) {
+                const divider = document.createElement('hr');
+                divider.className = 'my-4 border-gray-200';
+                timeSlots.appendChild(divider);
+            }
         });
     }
     

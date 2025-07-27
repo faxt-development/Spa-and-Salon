@@ -126,9 +126,16 @@
                 </div>
 
                 <div class="p-6">
-                    @if($location->services->count() > 0)
+                    @php
+                        $services = collect();
+                        if ($location->company) {
+                            $services = $location->company->services()->where('active', true)->orderBy('name')->get();
+                        }
+                    @endphp
+                    
+                    @if($services->count() > 0)
                         <div class="grid grid-cols-1 gap-4">
-                            @foreach($location->services as $service)
+                            @foreach($services as $service)
                                 <div class="flex justify-between items-center p-3 border rounded-md">
                                     <div>
                                         <p class="font-medium">{{ $service->name }}</p>
@@ -141,7 +148,7 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="text-gray-500">No services available at this location yet.</p>
+                        <p class="text-gray-500">No services configured for this location's company.</p>
                     @endif
                 </div>
             </div>

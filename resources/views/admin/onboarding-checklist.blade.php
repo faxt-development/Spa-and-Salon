@@ -45,6 +45,10 @@
                         <input type="checkbox" class="checklist-item mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['business_configuration']['setup_service_categories']) && $checklistItems['business_configuration']['setup_service_categories'] ? 'checked' : '' }} data-item-key="business_configuration.setup_service_categories">
                         <a href="{{ route('admin.services.categories') }}" class="hover:text-blue-500 hover:underline">Set up service categories</a>
                     </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="checklist-item mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['business_configuration']['add_services']) && $checklistItems['business_configuration']['add_services'] ? 'checked' : '' }} data-item-key="business_configuration.add_services">
+                        <a href="{{ route('admin.services') }}" class="hover:text-blue-500 hover:underline">Add your services</a>
+                    </li>
                 </ul>
             </div>
 
