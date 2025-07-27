@@ -36,7 +36,7 @@
             <p class="text-sm md:text-base">
                 This page is for spa and salon owners looking to manage their business.
                 Not a business owner?
-                <a href="{{ route('guest.booking.index') }}"  class="underline hover:no-underline font-medium text-accent-200">Click here to book an appointment as a customer</a>.
+                <a href="{{ route('guest.booking.index') }}"  class="underline hover:no-underline font-medium text-white">Click here to book an appointment as a customer</a>.
             </p>
         </div>
 
