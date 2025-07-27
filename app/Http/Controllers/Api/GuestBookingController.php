@@ -210,12 +210,54 @@ class GuestBookingController extends Controller
                 }
             }
 
+            // Check for duplicate appointments
+            $startTime = Carbon::parse($request->date . ' ' . $request->time);
+            $existingAppointment = $this->checkForDuplicateAppointment(
+                $client->id,
+                $request->service_id,
+                $startTime
+            );
+
+            if ($existingAppointment) {
+                Log::info('GuestBookingController@book: Duplicate appointment detected', [
+                    'client_id' => $client->id,
+                    'service_id' => $request->service_id,
+                    'start_time' => $startTime,
+                    'existing_appointment_id' => $existingAppointment->id
+                ]);
+
+                // Resend confirmation email
+                event(new \App\Events\AppointmentCreated($existingAppointment));
+
+                return response()->json([
+                    'success' => false,
+                    'duplicate' => true,
+                    'message' => 'You already have an appointment for this service on ' . 
+                                 $existingAppointment->start_time->format('F j, Y \a\t g:i A') . 
+                                 '. A confirmation email has been resent to your email address.',
+                    'appointment' => [
+                        'id' => $existingAppointment->id,
+                        'start_time' => $existingAppointment->start_time,
+                        'end_time' => $existingAppointment->end_time,
+                        'staff_name' => $existingAppointment->staff->name,
+                        'services' => $existingAppointment->services->map(function($service) {
+                            return [
+                                'id' => $service->id,
+                                'name' => $service->name,
+                                'duration' => $service->duration,
+                                'price' => $service->price
+                            ];
+                        })
+                    ]
+                ], 409);
+            }
+
             // Create the appointment
             $appointment = $this->bookingService->createAppointment([
                 'client_id' => $client->id,
                 'staff_id' => $request->staff_id,
                 'service_ids' => [$request->service_id], // Convert single service to array
-                'start_time' => $request->start_time,
+                'start_time' => $startTime,
                 'notes' => $request->notes,
             ]);
 

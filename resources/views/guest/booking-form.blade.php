@@ -110,15 +110,50 @@
                             </div>
                         </div>
                         
-                        <button id="book-appointment" class="w-full bg-primary-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            Book Appointment
-                        </button>
+                        <div class="text-center">
+                            <button type="button" id="book-button" class="bg-primary-600 text-white py-3 px-8 rounded-lg font-semibold hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                Book Appointment
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Success Message -->
+                    <div id="success-message" style="display: none;" class="text-center py-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Appointment Booked!</h2>
+                        <p class="text-lg text-gray-600 mb-6">Your appointment has been successfully scheduled.</p>
+                        <div class="bg-gray-50 rounded-lg p-4 mb-6 max-w-md mx-auto">
+                            <p class="font-medium" id="success-service-name">Service Name</p>
+                            <p id="success-date-time">Date and Time</p>
+                            <p>Location: {{ $location->name }}</p>
+                            <p class="mt-2">A confirmation email has been sent to your email address.</p>
+                        </div>
+                        <a href="{{ route('guest.booking.index') }}" class="inline-block bg-primary-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors">Book Another Appointment</a>
+                    </div>
+
+                    <!-- Duplicate Appointment Message -->
+                    <div id="duplicate-message" style="display: none;" class="text-center py-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-blue-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Appointment Already Exists</h2>
+                        <p class="text-lg text-gray-600 mb-6">We found an existing appointment for you with the same service.</p>
                         
-                        <p class="text-sm text-gray-500 mt-4 text-center">
-                            By booking an appointment, you agree to our 
-                            <a href="{{ route('terms') }}" class="text-primary-600 hover:underline">Terms of Service</a> and 
-                            <a href="{{ route('privacy') }}" class="text-primary-600 hover:underline">Privacy Policy</a>.
-                        </p>
+                        <div id="duplicate-details" class="mb-6">
+                            <!-- Duplicate appointment details will be inserted here -->
+                        </div>
+                        
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 max-w-md mx-auto">
+                            <p class="text-green-800 font-medium">✓ A confirmation email has been resent to your email address</p>
+                            <p class="text-green-700 text-sm mt-1">Please check your inbox (and spam folder) for your appointment details.</p>
+                        </div>
+                        
+                        <div class="flex gap-4 justify-center">
+                            <a href="{{ route('guest.booking.index') }}" class="inline-block bg-primary-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors">Book Another Service</a>
+                            <button onclick="window.location.reload()" class="inline-block bg-gray-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-gray-700 transition-colors">Try Different Time</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -337,21 +372,20 @@ document.addEventListener('DOMContentLoaded', function() {
         bookButton.disabled = true;
         bookButton.textContent = 'Processing...';
         
-        // Collect form data
         const formData = {
             service_id: selectedService.id,
             staff_id: selectedStaffId,
-            location_id: locationId,
+            location_id: {{ $location->id }},
             date: selectedDate,
             time: selectedTime,
             first_name: document.getElementById('first_name').value,
             last_name: document.getElementById('last_name').value,
             email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
-            notes: document.getElementById('notes').value
+            notes: document.getElementById('notes').value,
+            marketing_consent: document.getElementById('marketing_consent').checked
         };
-        
-        // Make API call to book appointment
+
         fetch('/api/guest/book', {
             method: 'POST',
             headers: {
@@ -360,27 +394,65 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify(formData)
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.status === 409) {
+                // Handle duplicate appointment
+                return response.json().then(data => {
+                    if (data.duplicate) {
+                        // Show duplicate appointment message
+                        document.getElementById('booking-form').style.display = 'none';
+                        document.getElementById('duplicate-message').style.display = 'block';
+                        document.getElementById('duplicate-details').innerHTML = `
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                                <h3 class="font-semibold text-blue-900 mb-2">Your Existing Appointment</h3>
+                                <p class="text-blue-800"><strong>Service:</strong> ${data.appointment.services[0].name}</p>
+                                <p class="text-blue-800"><strong>Date & Time:</strong> ${new Date(data.appointment.start_time).toLocaleString('en-US', {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: 'numeric',
+                                    minute: '2-digit'
+                                })}</p>
+                                <p class="text-blue-800"><strong>Staff:</strong> ${data.appointment.staff_name}</p>
+                                <p class="text-blue-800"><strong>Duration:</strong> ${data.appointment.services[0].duration} minutes</p>
+                            </div>
+                        `;
+                        
+                        // Scroll to top
+                        window.scrollTo(0, 0);
+                        return null;
+                    }
+                    return response.json();
+                });
+            }
+            return response.json();
+        })
         .then(data => {
+            if (data === null) {
+                // Already handled duplicate case above
+                return;
+            }
+            
             if (data.success) {
                 // Show success message
-                const bookingApp = document.getElementById('booking-app');
-                bookingApp.innerHTML = `
-                    <div class="text-center py-8">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-green-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Appointment Booked!</h2>
-                        <p class="text-lg text-gray-600 mb-6">Your appointment has been successfully scheduled.</p>
-                        <div class="bg-gray-50 rounded-lg p-4 mb-6 max-w-md mx-auto">
-                            <p class="font-medium">${selectedService.name}</p>
-                            <p>${selectedDate} at ${selectedTime}</p>
-                            <p>Location: {{ $location->name }}</p>
-                            <p class="mt-2">A confirmation email has been sent to ${formData.email}</p>
-                        </div>
-                        <a href="/" class="inline-block bg-primary-600 text-white py-2 px-6 rounded-lg font-medium hover:bg-primary-700 transition-colors">Return to Home</a>
-                    </div>
-                `;
+                document.getElementById('booking-form').style.display = 'none';
+                document.getElementById('success-message').style.display = 'block';
+                
+                // Update success message details
+                document.getElementById('success-service-name').textContent = selectedService.name;
+                document.getElementById('success-date-time').textContent = 
+                    new Date(selectedDate + ' ' + selectedTime).toLocaleString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit'
+                    });
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
             } else {
                 // Show error message
                 alert('Error booking appointment: ' + (data.message || 'Please try again.'));
