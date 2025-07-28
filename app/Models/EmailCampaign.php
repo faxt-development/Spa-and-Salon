@@ -30,6 +30,7 @@ class EmailCampaign extends Model
         'type',
         'is_template',
         'is_readonly',
+        'company_id',
     ];
 
     /**
@@ -76,6 +77,14 @@ class EmailCampaign extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the company that owns this campaign.
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /**

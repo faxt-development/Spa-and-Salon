@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Signup & Welcome Email Flow - Faxtina</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .mermaid {
+            text-align: center;
+        }
+        .description {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 8px 0;
+        }
+        .step strong {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Client Signup & Welcome Email Process Flow</h1>
+        
+        <div class="mermaid">
+            flowchart TD
+                Start([Client Starts Signup Process]) --> SelectCompany{Select Company/Salon}
+                SelectCompany --> FillForm[Fill Registration Form]
+                FillForm --> Validate{Validate Data}
+                Validate -->|Valid| CreateClient[Create Client Record]
+                Validate -->|Invalid| ShowErrors[Show Validation Errors]
+                ShowErrors --> FillForm
+                
+                CreateClient --> CheckWelcomeTemplate{Check Welcome Template}
+                CheckWelcomeTemplate -->|Company-Specific Template| UseCompanyTemplate[Use Company Template]
+                CheckWelcomeTemplate -->|Global Template| UseGlobalTemplate[Use Global Template]
+                CheckWelcomeTemplate -->|No Template| CreateDefault[Create Default Welcome]
+                
+                UseCompanyTemplate --> Customize[Customize Email Content]
+                UseGlobalTemplate --> Customize[Customize Email Content]
+                CreateDefault --> Customize[Customize Email Content]
+                
+                Customize --> SendEmail[Send Welcome Email]
+                SendEmail --> EmailDelivered{Email Delivered?}
+                
+                EmailDelivered -->|Success| ClientNotified[Client Receives Welcome Email]
+                EmailDelivered -->|Failure| LogError[Log Delivery Error]
+                
+                ClientNotified --> UpdateStatus[Update Client Status]
+                LogError --> RetryDelivery[Retry/Admin Notification]
+                
+                UpdateStatus --> Complete[Signup Process Complete]
+                RetryDelivery --> Complete
+                
+                style Start fill:#e1f5fe
+                style CreateClient fill:#c8e6c9
+                style SendEmail fill:#fff3e0
+                style ClientNotified fill:#dcedc8
+                style Complete fill:#a5d6a7
+                style LogError fill:#ffcdd2
+        </div>
+
+        <div class="description">
+            <h3>Process Description</h3>
+            
+            <div class="step">
+                <strong>1. Client Registration:</strong> New clients sign up through the company-specific registration form, selecting their preferred salon location.
+            </div>
+            
+            <div class="step">
+                <strong>2. Data Validation:</strong> System validates client information (email, phone, name) and ensures uniqueness within the company.
+            </div>
+            
+            <div class="step">
+                <strong>3. Template Selection:</strong> System checks for company-specific welcome email templates first, falls back to global template, or creates default content.
+            </div>
+            
+            <div class="step">
+                <strong>4. Email Customization:</strong> Template is customized with client-specific information (name, company details, login credentials).
+            </div>
+            
+            <div class="step">
+                <strong>5. Email Delivery:</strong> Welcome email is sent to client's email address with salon branding and next steps.
+            </div>
+            
+            <div class="step">
+                <strong>6. Status Tracking:</strong> System tracks email delivery status and updates client record accordingly.
+            </div>
+        </div>
+
+        <div class="description">
+            <h3>Key Components</h3>
+            <ul>
+                <li><strong>Client Model:</strong> Stores client information with company_id association</li>
+                <li><strong>EmailCampaign Model:</strong> Stores welcome email templates scoped by company</li>
+                <li><strong>Company Scoping:</strong> Each company has its own welcome email templates</li>
+                <li><strong>Template Inheritance:</strong> Falls back to global template if company-specific not found</li>
+                <li><strong>Email Service:</strong> Handles actual email delivery and tracking</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+</html>

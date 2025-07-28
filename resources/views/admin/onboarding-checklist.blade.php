@@ -48,9 +48,28 @@
                </ul>
             </div>
 
-            <!-- Step 3 -->
+            <!-- Step 3  -->
             <div class="border-l-4 border-blue-500 pl-4">
-                <h2 class="text-xl font-semibold mb-2">3. Staff Management</h2>
+                <h2 class="text-xl font-semibold mb-2">3. Services Setup</h2>
+                <ul class="space-y-2 text-gray-600">
+                <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['services_setup']['set_pricing_durations']) && $checklistItems['services_setup']['set_pricing_durations'] ? 'checked' : '' }} disabled>
+                        <a href="{{ route('admin.services') }}" class="hover:text-blue-500 hover:underline">Add/Remove Services and Set pricing and durations</a>
+                    </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['services_setup']['configure_service_categories']) && $checklistItems['services_setup']['configure_service_categories'] ? 'checked' : '' }} disabled>
+                        <a href="{{ route('admin.services.categories') }}" class="hover:text-blue-500 hover:underline">Configure service categories</a>
+                    </li>
+                    <li class="flex items-center">
+                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['services_setup']['create_service_packages']) && $checklistItems['services_setup']['create_service_packages'] ? 'checked' : '' }} disabled>
+                        <a href="{{ route('admin.services.packages') }}" class="hover:text-blue-500 hover:underline">Create service packages</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="border-l-4 border-blue-500 pl-4">
+                <h2 class="text-xl font-semibold mb-2">4. Staff Management</h2>
                 <ul class="space-y-2 text-gray-600">
                     <li class="flex items-center">
                         <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['staff_management']['add_staff_members']) && $checklistItems['staff_management']['add_staff_members'] ? 'checked' : '' }} disabled>
@@ -67,24 +86,6 @@
                 </ul>
             </div>
 
-            <!-- Step 4 -->
-            <div class="border-l-4 border-blue-500 pl-4">
-                <h2 class="text-xl font-semibold mb-2">4. Services Setup</h2>
-                <ul class="space-y-2 text-gray-600">
-                <li class="flex items-center">
-                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['services_setup']['set_pricing_durations']) && $checklistItems['services_setup']['set_pricing_durations'] ? 'checked' : '' }} disabled>
-                        <a href="{{ route('admin.services') }}" class="hover:text-blue-500 hover:underline">Add/Remove Services and Set pricing and durations</a>
-                    </li>
-                    <li class="flex items-center">
-                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['services_setup']['configure_service_categories']) && $checklistItems['services_setup']['configure_service_categories'] ? 'checked' : '' }} disabled>
-                        <a href="{{ route('admin.services.categories') }}" class="hover:text-blue-500 hover:underline">Configure service categories</a>
-                    </li>
-                    <li class="flex items-center">
-                        <input type="checkbox" class="mr-2 h-4 w-4 text-blue-500 rounded border-gray-300 focus:ring-blue-500" {{ isset($checklistItems['services_setup']['create_service_packages']) && $checklistItems['services_setup']['create_service_packages'] ? 'checked' : '' }} disabled>
-                        <a href="{{ route('admin.services.packages') }}" class="hover:text-blue-500 hover:underline">Create service packages</a>
-                    </li>
-                </ul>
-            </div>
 
             <!-- Step 5 -->
             <div class="border-l-4 border-blue-500 pl-4">

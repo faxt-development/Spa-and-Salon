@@ -24,29 +24,29 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Template Name</label>
-                    <input type="text" name="name" id="name" value="{{ old('name') }}" required
+                    <input type="text" name="name" id="name" value="{{ old('name', $welcomeTemplate ? $welcomeTemplate->name . ' - Copy' : '') }}" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
                 </div>
                 <div>
                     <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Email Subject</label>
-                    <input type="text" name="subject" id="subject" value="{{ old('subject') }}" required
+                    <input type="text" name="subject" id="subject" value="{{ old('subject', $welcomeTemplate ? $welcomeTemplate->subject : '') }}" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
                 </div>
                 <div>
                     <label for="from_name" class="block text-sm font-medium text-gray-700 mb-1">From Name</label>
-                    <input type="text" name="from_name" id="from_name" value="{{ old('from_name', config('mail.from.name')) }}" required
+                    <input type="text" name="from_name" id="from_name" value="{{ old('from_name', $welcomeTemplate ? $welcomeTemplate->from_name : config('mail.from.name')) }}" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
                 </div>
                 <div>
                     <label for="from_email" class="block text-sm font-medium text-gray-700 mb-1">From Email</label>
-                    <input type="email" name="from_email" id="from_email" value="{{ old('from_email', config('mail.from.address')) }}" required
+                    <input type="email" name="from_email" id="from_email" value="{{ old('from_email', $welcomeTemplate ? $welcomeTemplate->from_email : config('mail.from.address')) }}" required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">
                 </div>
             </div>
             <div class="mt-6">
                 <label for="content" class="block text-sm font-medium text-gray-700 mb-1">Email Content</label>
                 <textarea name="content" id="content" rows="10" required
-                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">{{ old('content') }}</textarea>
+                    class="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200">{{ old('content', $welcomeTemplate ? $welcomeTemplate->content : '') }}</textarea>
                 <p class="text-sm text-gray-500 mt-1">You can use the following variables: {client_name}, {company_name}, {login_link}</p>
             </div>
             <div class="mt-6">

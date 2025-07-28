@@ -14,18 +14,33 @@ class EmailController extends Controller
 {
     /**
      * Show the welcome email configuration page.
+     * these welcome emails are sent to Spa CLIENTS
      *
      * @return \Illuminate\View\View
      */
     public function welcome()
     {
-        // Get any existing welcome email templates
+        // Get the current user's primary company
+        $company = auth()->user()->primaryCompany();
+
+        // Get any existing welcome email templates for this company
         $welcomeTemplates = EmailCampaign::where('type', 'welcome')
+            ->where('company_id', $company->id)
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
+        // Get the welcome template to initialize from (company-specific or global)
+        $welcomeTemplate = EmailCampaign::where('type', 'welcome')
+            ->where(function($query) use ($company) {
+                $query->where('company_id', $company->id)
+                      ->orWhere('is_template', true);
+            })
+            ->orderBy('company_id', 'desc') // Prefer company-specific template
+            ->first();
+
         return view('admin.email.welcome', [
             'welcomeTemplates' => $welcomeTemplates,
+            'welcomeTemplate' => $welcomeTemplate,
         ]);
     }
 
@@ -40,14 +55,14 @@ class EmailController extends Controller
         $reminderTemplates = EmailCampaign::where('type', 'reminder')
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         // Get reminder settings
         $reminderSettings = [
             'days_before' => config('app.reminder_days_before', 1),
             'send_time' => config('app.reminder_send_time', '09:00'),
             'enabled' => config('app.reminders_enabled', true),
         ];
-            
+
         return view('admin.email.reminders', [
             'reminderTemplates' => $reminderTemplates,
             'reminderSettings' => $reminderSettings,
@@ -66,7 +81,7 @@ class EmailController extends Controller
             ->orderBy('created_at', 'desc')
             ->withCount('recipients')
             ->paginate(10);
-            
+
         // Get client segments for targeting
         $segments = [
             ['id' => 'all', 'name' => 'All Clients'],
@@ -76,7 +91,7 @@ class EmailController extends Controller
             ['id' => 'birthday_this_month', 'name' => 'Birthdays This Month'],
             ['id' => 'no_appointments', 'name' => 'No Appointments Yet'],
         ];
-            
+
         return view('admin.email.campaigns', [
             'campaigns' => $campaigns,
             'segments' => $segments,
@@ -99,6 +114,9 @@ class EmailController extends Controller
             'from_name' => 'required|string|max:255',
         ]);
 
+        // Get the current user's primary company
+        $company = auth()->user()->primaryCompany();
+
         EmailCampaign::create([
             'name' => $validated['name'],
             'subject' => $validated['subject'],
@@ -110,6 +128,7 @@ class EmailController extends Controller
             'is_template' => false,
             'is_readonly' => false,
             'user_id' => auth()->id(),
+            'company_id' => $company->id,
         ]);
 
         return redirect()->route('admin.email.welcome')
@@ -180,7 +199,7 @@ class EmailController extends Controller
 
         // In a real application, we would update these settings in the database
         // For now, we'll just redirect with a success message
-        
+
         return redirect()->route('admin.email.reminders')
             ->with('success', 'Reminder settings updated successfully.');
     }

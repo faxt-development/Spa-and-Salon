@@ -22,6 +22,7 @@ class Client extends Model
      */
     protected $fillable = [
         'user_id',
+        'company_id',
         'first_name',
         'last_name',
         'email',
@@ -78,6 +79,14 @@ class Client extends Model
     public function appointments()
     {
         return $this->hasMany(Appointment::class)->orderBy('start_time', 'desc');
+    }
+
+    /**
+     * Get the company that owns the client.
+     */
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
     }
 
     /**

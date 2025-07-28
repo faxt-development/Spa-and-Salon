@@ -9,7 +9,15 @@ class WelcomeEmailCampaignSeeder extends Seeder
 {
     public function run(): void
     {
-        if (!EmailCampaign::where('type', 'welcome')->exists()) {
+        // Get the first company or create a default one
+        $company = \App\Models\Company::first();
+        
+        if (!$company) {
+            $this->command->warn('No company found. Skipping welcome email template creation.');
+            return;
+        }
+
+        if (!EmailCampaign::where('type', 'welcome')->where('company_id', $company->id)->exists()) {
             $welcomeContent = <<<'HTML'
 <!DOCTYPE html>
 <html>
@@ -111,9 +119,10 @@ HTML;
                 'status' => 'active',
                 'is_template' => true,
                 'is_readonly' => true,
+                'company_id' => $company->id,
             ]);
 
-            $this->command->info('Welcome email campaign template created successfully!');
+            $this->command->info('Welcome email campaign template created successfully for company: ' . $company->name);
         } else {
             $this->command->info('Welcome email campaign template already exists.');
         }

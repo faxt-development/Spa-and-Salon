@@ -49,6 +49,9 @@ Route::middleware('auth:sanctum')->group(function () {
 // Public routes
 Route::get('/tax-rates', [TaxController::class, 'index']);
 
+// Client registration (public)
+Route::post('/clients/register', [\App\Http\Controllers\Api\ClientRegistrationController::class, 'register']);
+
 // Guest booking routes
 Route::prefix('guest')->group(function () {
     Route::get('/services', [\App\Http\Controllers\Api\GuestBookingController::class, 'services']);
