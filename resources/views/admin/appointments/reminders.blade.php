@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
 @section('content')
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -20,7 +20,7 @@
 
                 <div class="mb-6">
                     <p class="text-gray-600">
-                        Configure how and when appointment reminders are sent to customers and staff. 
+                        Configure how and when appointment reminders are sent to customers and staff.
                         Effective reminders can significantly reduce no-shows and help your business run smoothly.
                     </p>
                 </div>
@@ -67,14 +67,14 @@
                                         <!-- Customer Reminders -->
                                         <div class="bg-white p-4 rounded border border-gray-200">
                                             <h4 class="font-medium text-gray-800 mb-3">Customer Reminders</h4>
-                                            
+
                                             <div class="mb-4">
                                                 <label class="inline-flex items-center">
                                                     <input type="checkbox" name="settings[{{ $index }}][send_customer_reminders]" value="1" class="rounded border-gray-300 text-accent-500 shadow-sm focus:border-accent-300 focus:ring focus:ring-accent-200 focus:ring-opacity-50" {{ $setting->send_customer_reminders ? 'checked' : '' }}>
                                                     <span class="ml-2">Send appointment reminders to customers</span>
                                                 </label>
                                             </div>
-                                            
+
                                             <div class="mb-2">
                                                 <label for="reminder_hours_before_{{ $index }}" class="block text-sm font-medium text-gray-700">Hours before appointment</label>
                                                 <select id="reminder_hours_before_{{ $index }}" name="settings[{{ $index }}][reminder_hours_before]" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
@@ -85,7 +85,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            
+
                                             <p class="text-sm text-gray-500 mt-2">
                                                 Customers will receive an email reminder before their scheduled appointment.
                                             </p>
@@ -94,14 +94,14 @@
                                         <!-- Staff Notifications -->
                                         <div class="bg-white p-4 rounded border border-gray-200">
                                             <h4 class="font-medium text-gray-800 mb-3">Staff Notifications</h4>
-                                            
+
                                             <div class="mb-4">
                                                 <label class="inline-flex items-center">
                                                     <input type="checkbox" name="settings[{{ $index }}][send_staff_notifications]" value="1" class="rounded border-gray-300 text-accent-500 shadow-sm focus:border-accent-300 focus:ring focus:ring-accent-200 focus:ring-opacity-50" {{ $setting->send_staff_notifications ? 'checked' : '' }}>
                                                     <span class="ml-2">Send appointment notifications to staff</span>
                                                 </label>
                                             </div>
-                                            
+
                                             <p class="text-sm text-gray-500 mt-2">
                                                 Staff members will receive notifications about new bookings, cancellations, and changes to their schedule.
                                             </p>
@@ -121,13 +121,13 @@
 
                 <div class="mt-10 border-t border-gray-200 pt-6">
                     <h2 class="text-lg font-medium text-gray-900 mb-4">About Appointment Reminders</h2>
-                    
+
                     <div class="prose max-w-none text-gray-600">
                         <p>
-                            Appointment reminders are an effective way to reduce no-shows and last-minute cancellations. 
+                            Appointment reminders are an effective way to reduce no-shows and last-minute cancellations.
                             Here are some best practices for using appointment reminders:
                         </p>
-                        
+
                         <ul class="list-disc pl-5 mt-2 space-y-1">
                             <li>Send reminders 24-48 hours before the appointment to give clients enough time to reschedule if needed</li>
                             <li>Include essential information in reminders: date, time, location, service, and cancellation policy</li>
@@ -135,7 +135,7 @@
                             <li>Consider sending multiple reminders (e.g., 48 hours and 2 hours before the appointment)</li>
                             <li>Personalize reminders with the client's name and specific appointment details</li>
                         </ul>
-                        
+
                         <p class="mt-4">
                             Reminder emails are automatically formatted with your company branding and include all necessary appointment details.
                         </p>

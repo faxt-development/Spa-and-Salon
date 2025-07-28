@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app-content')
 
 @section('content')
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -6,13 +6,13 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white border-b border-gray-200">
                 <h1 class="text-2xl font-semibold text-gray-900 mb-6">How to Schedule Appointments</h1>
-                
+
                 <div class="prose max-w-none">
                     <div class="mb-8">
                         <h2 class="text-xl font-medium text-gray-900 mb-4">Overview</h2>
                         <p class="mb-4">
-                            This tutorial will guide you through the process of scheduling appointments in the Faxtina system. 
-                            Properly managing appointments is essential for running your salon or spa efficiently and providing 
+                            This tutorial will guide you through the process of scheduling appointments in the Faxtina system.
+                            Properly managing appointments is essential for running your salon or spa efficiently and providing
                             excellent customer service.
                         </p>
                     </div>
@@ -27,8 +27,8 @@
                             <li>Set up staff availability</li>
                         </ul>
                         <p>
-                            If you haven't completed these steps, please visit the 
-                            <a href="{{ route('admin.onboarding-checklist') }}" class="text-accent-600 hover:text-accent-800 font-medium">onboarding checklist</a> 
+                            If you haven't completed these steps, please visit the
+                            <a href="{{ route('admin.onboarding-checklist') }}" class="text-accent-600 hover:text-accent-800 font-medium">onboarding checklist</a>
                             to get started.
                         </p>
                     </div>
@@ -72,7 +72,7 @@
                         <p class="mb-2">You can perform several actions on existing appointments:</p>
                         <ul class="list-disc pl-5 mb-4">
                             <li class="mb-2">
-                                <strong>View Details:</strong> Click on an appointment to see all details, including client information, 
+                                <strong>View Details:</strong> Click on an appointment to see all details, including client information,
                                 services booked, and payment status
                             </li>
                             <li class="mb-2">
@@ -93,8 +93,8 @@
                     <div class="mb-8">
                         <h2 class="text-xl font-medium text-gray-900 mb-4">Step 4: Appointment Reminders</h2>
                         <p class="mb-4">
-                            If you've enabled customer reminders in your appointment settings, the system will automatically send 
-                            email or SMS reminders to clients before their appointments. You can configure the timing of these reminders 
+                            If you've enabled customer reminders in your appointment settings, the system will automatically send
+                            email or SMS reminders to clients before their appointments. You can configure the timing of these reminders
                             in the appointment settings.
                         </p>
                         <div class="bg-gray-50 p-4 rounded-md mb-4">
@@ -106,44 +106,44 @@
 
                     <div class="mb-8">
                         <h2 class="text-xl font-medium text-gray-900 mb-4">Step 5: Handling Special Situations</h2>
-                        
+
                         <h3 class="text-lg font-medium text-gray-800 mb-2">Rescheduling</h3>
                         <p class="mb-4">
-                            To reschedule an appointment, edit the existing appointment and change the date and/or time. 
+                            To reschedule an appointment, edit the existing appointment and change the date and/or time.
                             The system will check for availability and update the appointment accordingly.
                         </p>
-                        
+
                         <h3 class="text-lg font-medium text-gray-800 mb-2">Adding Services</h3>
                         <p class="mb-4">
-                            If a client wants to add services during their visit, edit the appointment and add the additional services. 
+                            If a client wants to add services during their visit, edit the appointment and add the additional services.
                             The system will recalculate the total price and duration.
                         </p>
-                        
+
                         <h3 class="text-lg font-medium text-gray-800 mb-2">Handling Conflicts</h3>
                         <p class="mb-4">
-                            If you try to schedule an appointment that conflicts with another booking, the system will alert you. 
+                            If you try to schedule an appointment that conflicts with another booking, the system will alert you.
                             You can then choose an alternative time or staff member.
                         </p>
                     </div>
 
                     <div class="mb-8">
                         <h2 class="text-xl font-medium text-gray-900 mb-4">Advanced Features</h2>
-                        
+
                         <h3 class="text-lg font-medium text-gray-800 mb-2">Waitlist Management</h3>
                         <p class="mb-4">
-                            If you've enabled the waitlist feature in your appointment settings, you can add clients to a waitlist 
+                            If you've enabled the waitlist feature in your appointment settings, you can add clients to a waitlist
                             for fully booked time slots. If a cancellation occurs, you can quickly fill the slot from your waitlist.
                         </p>
-                        
+
                         <h3 class="text-lg font-medium text-gray-800 mb-2">Time-Based Pricing</h3>
                         <p class="mb-4">
-                            If you've enabled time-based pricing, you can set different prices for services based on the time of day 
+                            If you've enabled time-based pricing, you can set different prices for services based on the time of day
                             or day of the week. This is useful for implementing peak and off-peak pricing.
                         </p>
-                        
+
                         <h3 class="text-lg font-medium text-gray-800 mb-2">Recurring Appointments</h3>
                         <p class="mb-4">
-                            For clients who book regular appointments (e.g., weekly or monthly), you can set up recurring appointments 
+                            For clients who book regular appointments (e.g., weekly or monthly), you can set up recurring appointments
                             to save time and ensure consistent scheduling.
                         </p>
                     </div>
@@ -171,7 +171,7 @@
 
                     <div class="mt-10 pt-6 border-t border-gray-200">
                         <p class="text-gray-600">
-                            For more assistance with appointment scheduling or other features, please contact support or refer to the 
+                            For more assistance with appointment scheduling or other features, please contact support or refer to the
                             complete documentation.
                         </p>
                     </div>

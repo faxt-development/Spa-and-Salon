@@ -254,7 +254,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth:web', 'role:admin', \A
         Route::get('/', [\App\Http\Controllers\AppointmentController::class, 'index'])->name('index');
         // Keep old route for backward compatibility but redirect to new help section
         Route::get('/learn', function () {
-            return redirect()->route('help.appointments');
+            return redirect()->route('admin.help.appointments');
         })->name('learn');
         Route::get('/reminders', [\App\Http\Controllers\Admin\AppointmentReminderController::class, 'index'])->name('reminders');
         Route::put('/reminders', [\App\Http\Controllers\Admin\AppointmentReminderController::class, 'update'])->name('reminders.update');

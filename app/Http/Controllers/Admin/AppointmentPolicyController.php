@@ -64,11 +64,14 @@ class AppointmentPolicyController extends Controller
                 continue;
             }
 
+            // Ensure enforce_cancellation_fee is explicitly set to false if not present
+            $enforceFee = isset($settingData['enforce_cancellation_fee']) && $settingData['enforce_cancellation_fee'];
+            
             // Update cancellation policy settings
             $setting->update([
                 'cancellation_notice' => $settingData['cancellation_notice'],
-                'enforce_cancellation_fee' => $settingData['enforce_cancellation_fee'] ?? false,
-                'cancellation_fee' => $settingData['enforce_cancellation_fee'] ? $settingData['cancellation_fee'] : null,
+                'enforce_cancellation_fee' => $enforceFee,
+                'cancellation_fee' => $enforceFee ? ($settingData['cancellation_fee'] ?? null) : null,
             ]);
         }
 

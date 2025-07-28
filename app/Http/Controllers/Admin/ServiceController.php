@@ -8,6 +8,7 @@ use App\Models\ServiceCategory;
 use App\Models\ServicePackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ServiceController extends Controller
 {
@@ -212,7 +213,6 @@ class ServiceController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('services')->ignore($service->id),
             ],
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',

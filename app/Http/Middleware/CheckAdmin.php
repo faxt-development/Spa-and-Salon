@@ -52,6 +52,7 @@ class CheckAdmin
             'admin.staff.services' => 'staff_management.assign_services_to_staff',
             'admin.services' => 'services_setup.set_pricing_durations',
             'admin.services.packages' => 'services_setup.create_service_packages',
+            'admin.services.packages' => 'services_setup.create_service_packages',
             'admin.appointments.learn' => 'appointment_management.learn_schedule_appointments',
             'admin.appointments.reminders' => 'appointment_management.setup_appointment_reminders',
             'admin.appointments.policies' => 'appointment_management.configure_cancellation_policies',
