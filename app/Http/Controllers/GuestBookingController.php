@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Company;
+use App\Models\Appointment;
 use App\Models\Location;
 use App\Models\Service;
 use App\Services\BookingService;

@@ -335,6 +335,14 @@ class Staff extends Model
     }
 
     /**
+     * Get the location this staff member belongs to.
+     */
+    public function location(): BelongsTo
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    /**
      * Get the employee record associated with the staff member.
      * This is a one-to-one relationship where the employees table has a staff_id foreign key.
      */

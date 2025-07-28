@@ -33,6 +33,7 @@ class ClientRegistrationController extends Controller
             'company_id' => 'required|exists:companies,id',
             'marketing_consent' => 'boolean',
             'source' => 'nullable|string|max:100',
+            'guest_token' => 'nullable|string|exists:appointment_tokens,token',
         ]);
 
         if ($validator->fails()) {
@@ -44,7 +45,13 @@ class ClientRegistrationController extends Controller
         }
 
         try {
-            // Step 2: Create client record
+            // Step 2: Handle guest-to-client conversion
+            $guestAppointments = [];
+            if ($request->guest_token) {
+                $guestAppointments = $this->handleGuestConversion($request->email, $request->guest_token);
+            }
+
+            // Step 3: Create client record
             $client = Client::create([
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
@@ -66,13 +73,14 @@ class ClientRegistrationController extends Controller
                 $this->sendWelcomeEmail($client, $welcomeTemplate);
             }
 
-            // Step 5: Return success response
+            // Step 6: Return success response
             return response()->json([
                 'status' => 'success',
                 'message' => 'Client registered successfully',
                 'data' => [
                     'client' => $client,
                     'welcome_email_sent' => $welcomeTemplate !== null,
+                    'converted_appointments' => $guestAppointments,
                 ]
             ], 201);
 
@@ -195,5 +203,70 @@ class ClientRegistrationController extends Controller
             'from_email' => $template->from_email,
             'from_name' => $template->from_name,
         ];
+    }
+
+    /**
+     * Handle conversion of guest appointments to registered client
+     *
+     * @param string $email
+     * @param string $guestToken
+     * @return array
+     */
+    private function handleGuestConversion(string $email, string $guestToken): array
+    {
+        try {
+            // Find the appointment token
+            $appointmentToken = \App\Models\AppointmentToken::findValidToken($guestToken);
+            
+            if (!$appointmentToken || $appointmentToken->email !== $email) {
+                return [];
+            }
+
+            $appointment = $appointmentToken->appointment;
+            
+            if (!$appointment) {
+                return [];
+            }
+
+            // Find existing guest client with this email
+            $guestClient = \App\Models\Client::where('email', $email)
+                ->where('is_guest', true)
+                ->first();
+
+            if ($guestClient) {
+                // Update the guest client to registered client
+                $guestClient->update(['is_guest' => false]);
+                
+                // Update the appointment to use the updated client record
+                $appointment->update(['client_id' => $guestClient->id]);
+                
+                // Delete the appointment token as it's no longer needed
+                $appointmentToken->delete();
+
+                Log::info('Guest appointment converted to registered client', [
+                    'appointment_id' => $appointment->id,
+                    'client_id' => $guestClient->id,
+                    'email' => $email
+                ]);
+
+                return [
+                    [
+                        'appointment_id' => $appointment->id,
+                        'appointment_date' => $appointment->start_time->toDateTimeString(),
+                        'status' => 'converted'
+                    ]
+                ];
+            }
+
+            return [];
+
+        } catch (\Exception $e) {
+            Log::error('Failed to convert guest appointment', [
+                'email' => $email,
+                'guest_token' => $guestToken,
+                'error' => $e->getMessage()
+            ]);
+            return [];
+        }
     }
 }

@@ -114,4 +114,27 @@ class GuestAppointmentController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get email address from appointment token
+     *
+     * @param string $token
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getEmail($token)
+    {
+        $appointmentToken = AppointmentToken::findValidToken($token);
+
+        if (!$appointmentToken) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid or expired token.'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'email' => $appointmentToken->email
+        ]);
+    }
 }

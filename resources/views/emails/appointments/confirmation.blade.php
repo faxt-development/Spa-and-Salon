@@ -12,10 +12,18 @@ Hello {{ $appointment->client->first_name }},
 
 Your appointment has been confirmed. Here are the details:
 
-**Service:** {{ $appointment->services->first()->name }}  
-**Date:** {{ $appointment->start_time->format('l, F j, Y') }}  
-**Time:** {{ $appointment->start_time->format('g:i A') }} - {{ $appointment->end_time->format('g:i A') }}  
-**Duration:** {{ $appointment->duration }} minutes  
+**Date:** {{ $appointment->start_time->format('l, F j, Y') }}
+**Time:** {{ $appointment->start_time->format('g:i A') }} - {{ $appointment->end_time->format('g:i A') }}
+
+**Services Booked:**
+@foreach ($appointment->services as $service)
+- **{{ $service->name }}** ({{ $service->duration }} min) - ${{ number_format($service->price, 2) }}
+@endforeach
+
+---
+
+**Total Duration:** {{ $appointment->services->sum('duration') }} minutes
+**Total Price:** ${{ number_format($appointment->services->sum('price'), 2) }}  
 **Staff:** {{ $appointment->staff->full_name }}  
 **Location:** {{ $appointment->staff->location->name }}
 

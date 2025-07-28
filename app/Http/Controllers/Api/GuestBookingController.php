@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\Client;
+use App\Models\Appointment;
 use App\Services\BookingService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -60,76 +61,86 @@ class GuestBookingController extends Controller
             'location_id' => 'required|exists:locations,id',
         ]);
 
-        $date = Carbon::parse($request->date)->startOfDay();
+        $location = \App\Models\Location::findOrFail($request->location_id);
+        $timezone = $location->timezone; // e.g., 'America/New_York'
+
+        $date = Carbon::parse($request->date, $timezone)->startOfDay();
         $service = Service::findOrFail($request->service_id);
 
-        // Get staff members who can perform this service and are scheduled to work on this day
+        // Get staff members for this location who can perform this service and are scheduled to work
         $dayOfWeek = strtolower($date->englishDayOfWeek);
-
         $staffMembers = $service->staff()
+            ->where('staff.location_id', $location->id)
             ->where('active', true)
             ->whereJsonContains('work_days', $dayOfWeek)
             ->whereNotNull('work_start_time')
             ->whereNotNull('work_end_time')
             ->get();
 
-        // Get existing appointments for each staff member on this day
-        $startOfDay = $date->copy();
-        $endOfDay = $date->copy()->endOfDay();
-
         $availableSlots = [];
 
         foreach ($staffMembers as $staff) {
-            // Get work schedule for this staff member
-            $startTime = Carbon::parse($staff->work_start_time);
-            $endTime = Carbon::parse($staff->work_end_time);
+            // Create start and end times in the location's timezone
+            $workStart = Carbon::parse($date->toDateString() . ' ' . $staff->work_start_time, $timezone);
+            $workEnd = Carbon::parse($date->toDateString() . ' ' . $staff->work_end_time, $timezone);
 
-            // Get all appointments for this staff member on this day
+            // Get appointments for this staff in UTC to match database storage
+            $startOfDayUTC = $workStart->copy()->utc();
+            $endOfDayUTC = $workEnd->copy()->utc();
             $bookedAppointments = $staff->appointments()
-                ->whereBetween('start_time', [$startOfDay, $endOfDay])
+                ->whereBetween('start_time', [$startOfDayUTC, $endOfDayUTC])
                 ->whereIn('status', ['scheduled', 'confirmed'])
                 ->orderBy('start_time')
                 ->get(['start_time', 'end_time']);
-            $interval = 15; // 15-minute intervals
 
             $slots = [];
-            $currentSlot = $startTime->copy();
+            $currentSlot = $workStart->copy();
+            $interval = 15; // 15-minute intervals
 
-            while ($currentSlot->copy()->addMinutes($service->duration) <= $endTime) {
+            while ($currentSlot->copy()->addMinutes($service->duration) <= $workEnd) {
                 $slotEnd = $currentSlot->copy()->addMinutes($service->duration);
-                $isAvailable = true;
+                $isBooked = false;
 
-                // Check if this slot is already booked
+                // Check for overlap with booked appointments. All comparisons in UTC.
                 foreach ($bookedAppointments as $appointment) {
-                    $apptStart = Carbon::parse($appointment->start_time);
-                    $apptEnd = Carbon::parse($appointment->end_time);
+                    $apptStart = Carbon::parse($appointment->start_time)->setTimezone($timezone);
+                    $apptEnd = Carbon::parse($appointment->end_time)->setTimezone($timezone);
 
                     if ($currentSlot < $apptEnd && $slotEnd > $apptStart) {
-                        $isAvailable = false;
+                        $isBooked = true;
+                        // Fast-forward the current slot to the end of the booked appointment
+                        $currentSlot = $apptEnd->copy();
                         break;
                     }
                 }
 
+                if ($isBooked) {
+                    continue; // Skip to the next iteration after fast-forwarding
+                }
+                
+                // If we are here, the slot is available
                 $slots[] = [
-                    'start_time' => $currentSlot->format('H:i'),
-                    'end_time' => $slotEnd->format('H:i'),
-                    'is_available' => $isAvailable,
+                    'start_time' => $currentSlot->copy()->utc()->toDateTimeString(), // Send full UTC time for booking
+                    'end_time' => $slotEnd->copy()->utc()->toDateTimeString(),
+                    'is_available' => true,
                     'formatted_time' => $currentSlot->format('g:i A') . ' - ' . $slotEnd->format('g:i A')
                 ];
 
                 $currentSlot->addMinutes($interval);
             }
 
-            $availableSlots[] = [
-                'staff_id' => $staff->id,
-                'staff_name' => $staff->full_name,
-                'staff_photo' => $staff->photo_url,
-                'slots' => $slots,
-                'work_hours' => [
-                    'start' => $staff->work_start_time,
-                    'end' => $staff->work_end_time
-                ]
-            ];
+            if (!empty($slots)) {
+                $availableSlots[] = [
+                    'staff_id' => $staff->id,
+                    'staff_name' => $staff->full_name,
+                    'staff_photo' => $staff->photo_url,
+                    'slots' => $slots,
+                    'work_hours' => [
+                        'start' => $workStart->format('g:i A'),
+                        'end' => $workEnd->format('g:i A')
+                    ]
+                ];
+            }
         }
 
         return response()->json([
@@ -232,8 +243,8 @@ class GuestBookingController extends Controller
                 return response()->json([
                     'success' => false,
                     'duplicate' => true,
-                    'message' => 'You already have an appointment for this service on ' . 
-                                 $existingAppointment->start_time->format('F j, Y \a\t g:i A') . 
+                    'message' => 'You already have an appointment for this service on ' .
+                                 $existingAppointment->start_time->format('F j, Y \a\t g:i A') .
                                  '. A confirmation email has been resent to your email address.',
                     'appointment' => [
                         'id' => $existingAppointment->id,
@@ -252,7 +263,7 @@ class GuestBookingController extends Controller
                 ], 409);
             }
 
-            // Create the appointment
+            // Create appointment
             $appointment = $this->bookingService->createAppointment([
                 'client_id' => $client->id,
                 'staff_id' => $request->staff_id,
@@ -262,7 +273,11 @@ class GuestBookingController extends Controller
             ]);
 
             if (!$appointment) {
-                throw new \Exception('Failed to create appointment');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sorry, the selected time slot is no longer available. Please choose another time.',
+                    'error_type' => 'TIME_SLOT_UNAVAILABLE'
+                ], 409); // Using 409 Conflict status
             }
 
             // Generate appointment token for guest access
@@ -302,6 +317,15 @@ class GuestBookingController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
+
+            if (str_contains($e->getMessage(), 'Time slot no longer available')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sorry, the selected time slot is no longer available. Please choose another time.',
+                    'error_type' => 'TIME_SLOT_UNAVAILABLE'
+                ], 409); // 409 Conflict
+            }
+
             Log::error('GuestBookingController@book: Error booking appointment', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
@@ -312,5 +336,25 @@ class GuestBookingController extends Controller
                 'message' => 'An error occurred while booking your appointment. Please try again.'
             ], 500);
         }
+    }
+
+    /**
+     * Check for duplicate appointments for a client.
+     *
+     * @param  int  $clientId
+     * @param  int  $serviceId
+     * @param  \Carbon\Carbon  $startTime
+     * @return \App\Models\Appointment|null
+     */
+    private function checkForDuplicateAppointment($clientId, $serviceId, $startTime)
+    {
+        return Appointment::where('client_id', $clientId)
+            ->whereHas('services', function ($query) use ($serviceId) {
+                $query->where('services.id', $serviceId);
+            })
+            ->where('start_time', $startTime)
+            ->whereIn('status', ['scheduled', 'confirmed'])
+            ->with(['staff', 'services'])
+            ->first();
     }
 }

@@ -17,7 +17,11 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
+# Ignore Composer dependencies
+/vendor/
+
+# But DO NOT ignore published vendor assets
+!/resources/views/vendor/
 Homestead.json
 Homestead.yaml
 Thumbs.db

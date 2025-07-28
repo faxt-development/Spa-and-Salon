@@ -28,7 +28,7 @@ class AppointmentConfirmation extends Mailable
      */
     public function __construct(Appointment $appointment)
     {
-        $this->appointment = $appointment->load(['client', 'service', 'staff']);
+        $this->appointment = $appointment->load(['client', 'services', 'staff']);
     }
 
     /**
@@ -38,8 +38,10 @@ class AppointmentConfirmation extends Mailable
      */
     public function envelope()
     {
+        $serviceNames = $this->appointment->services->pluck('name')->implode(', ');
+
         return new Envelope(
-            subject: 'Appointment Confirmed: ' . $this->appointment->service->name . ' on ' . $this->appointment->scheduled_at->format('M j'),
+            subject: 'Appointment Confirmed: ' . $serviceNames . ' on ' . $this->appointment->start_time->format('M j'),
         );
     }
 

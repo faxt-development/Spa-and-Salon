@@ -18,7 +18,8 @@ class LocationController extends Controller
      */
     public function index()
     {
-        $locations = Location::orderBy('is_primary', 'desc')
+        $locations = auth()->user()->primaryCompany()->locations()
+            ->orderBy('is_primary', 'desc')
             ->orderBy('name')
             ->paginate(10);
 

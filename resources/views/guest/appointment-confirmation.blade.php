@@ -166,10 +166,10 @@
                                 </li>
                             </ul>
                             <div class="flex flex-col sm:flex-row gap-3">
-                                <a href="{{ route('register') }}" class="inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 transition-colors">
+                                <a href="{{ route('register') }}?guest_token={{ $token }}" class="inline-flex items-center justify-center px-4 py-2 bg-primary-600 text-white font-medium rounded-md hover:bg-primary-700 transition-colors">
                                     Create Free Account
                                 </a>
-                                <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition-colors">
+                                <a href="{{ route('login') }}?redirect=/guest-appointment/{{ $token }}" class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition-colors">
                                     I Already Have an Account
                                 </a>
                             </div>
