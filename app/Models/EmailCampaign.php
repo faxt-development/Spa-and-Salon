@@ -21,11 +21,15 @@ class EmailCampaign extends Model
         'name',
         'subject',
         'content',
-        'segment',
+        'from_email',
+        'from_name',
+        'status',
         'scheduled_for',
         'sent_at',
-        'status',
         'user_id',
+        'type',
+        'is_template',
+        'is_readonly',
     ];
 
     /**
@@ -34,8 +38,23 @@ class EmailCampaign extends Model
      * @var array
      */
     protected $casts = [
+        'is_template' => 'boolean',
+        'is_readonly' => 'boolean',
         'scheduled_for' => 'datetime',
         'sent_at' => 'datetime',
+    ];
+
+    /**
+     * The possible campaign types.
+     *
+     * @var array
+     */
+    public const TYPES = [
+        'welcome',
+        'promotional',
+        'transactional',
+        'newsletter',
+        'other',
     ];
 
     /**

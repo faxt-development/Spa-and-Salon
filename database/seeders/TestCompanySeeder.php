@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Company;
+use App\Models\Staff;
 use App\Models\BusinessHour;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -283,12 +284,12 @@ class TestCompanySeeder extends Seeder
             $staffRole = \Spatie\Permission\Models\Role::create(['name' => 'staff']);
         }
 
-        // Get or create some staff members if none exist
+        // Get or create some staff members with the exact emails expected by AppointmentSeeder
         $staffMembers = [];
         $staffEmails = [
-            'staff1@example.com' => 'John Smith',
-            'staff2@example.com' => 'Jane Doe',
-            'staff3@example.com' => 'Mike Johnson',
+            'alex.johnson@example.com' => 'Alex Johnson',
+            'taylor.smith@example.com' => 'Taylor Smith',
+            'jordan.williams@example.com' => 'Jordan Williams',
         ];
 
         foreach ($staffEmails as $email => $name) {
@@ -320,6 +321,23 @@ class TestCompanySeeder extends Seeder
                     'updated_at' => now(),
                 ]
             ]);
+
+            // Create actual staff records in the staff table
+            // Always ensure staff records exist for the expected emails
+            $staffRecord = Staff::updateOrCreate(
+                ['email' => $email],
+                [
+                    'user_id' => $staff->id,
+                    'first_name' => $name,
+                    'last_name' => '',
+                    'phone' => '555-01' . ($index + 1),
+                    'position' => $index === 0 ? 'Senior Stylist' : ($index === 1 ? 'Color Specialist' : 'Massage Therapist'),
+                    'bio' => 'Experienced professional specializing in ' . ($index === 0 ? 'hair styling' : ($index === 1 ? 'hair coloring' : 'massage therapy')),
+                    'active' => true,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
         }
 
         $this->command->info('Attached ' . count($staffMembers) . ' staff members to the company');
@@ -448,11 +466,10 @@ class TestCompanySeeder extends Seeder
             return;
         }
 
-        // Get all staff members assigned to the company
-        $staffMembers = $company->userStaff()
-            ->get();
+        // Get all users assigned to the company as staff
+        $userStaff = $company->userStaff()->get();
 
-        if ($staffMembers->isEmpty()) {
+        if ($userStaff->isEmpty()) {
             $this->command->warn('No staff members found to attach to services');
             return;
         }
@@ -465,16 +482,23 @@ class TestCompanySeeder extends Seeder
             return;
         }
 
-        $attachedCount = 0;
+        // Map user IDs to staff IDs
+        $staffData = [];
+        foreach ($userStaff as $user) {
+            // Find the corresponding staff record for this user
+            $staff = \App\Models\Staff::where('user_id', $user->id)->first();
+            if ($staff) {
+                $staffData[$staff->id] = [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
 
-        // Prepare staff data once outside the loop
-$staffData = [];
-foreach ($staffMembers as $staff) {
-    $staffData[$staff->id] = [
-        'created_at' => now(),
-        'updated_at' => now(),
-    ];
-}
+        if (empty($staffData)) {
+            $this->command->warn('No valid staff records found for the assigned users');
+            return;
+        }
 
 // Use a transaction for data consistency
 DB::beginTransaction();
@@ -483,12 +507,12 @@ try {
         $service->staff()->syncWithoutDetaching($staffData);
     }
     DB::commit();
-    $this->command->info("Successfully associated {$staffMembers->count()} staff members with {$services->count()} services");
+    $this->command->info("Successfully associated " . count($staffData) . " staff members with {$services->count()} services");
 } catch (\Exception $e) {
     DB::rollBack();
     $this->command->error("Failed to associate staff with services: " . $e->getMessage());
 }
 
-        $this->command->info("Attached {$staffMembers->count()} staff members to {$services->count()} services at company '{$company->name}'", 'info');
+        $this->command->info("Attached " . count($staffData) . " staff members to {$services->count()} services at company '{$company->name}'", 'info');
     }
 }

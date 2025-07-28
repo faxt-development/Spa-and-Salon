@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Mail\AdminNewTrialNotification;
 use App\Mail\WelcomeNewUser;
-use App\Models\Plan;
-use App\Models\Subscription;
+use App\Models\Company;
+use App\Models\CompanyUser;
+use App\Models\Staff;
 use App\Models\User;
-use App\Services\PaymentService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Services\StripeService;
+use App\Services\WelcomeEmailService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -293,8 +293,9 @@ class StripeWebhookController extends Controller
             // when they click the link in the welcome email
             $onboardingUrl = route('onboarding.start', ['session_id' => $session->id]);
 
-            // Send welcome email to the new user with onboarding link
-            Mail::to($user->email)->send(new WelcomeNewUser($user, $temporaryPassword, $onboardingUrl));
+            // Send welcome email using campaign system
+            $welcomeEmailService = app(WelcomeEmailService::class);
+            $welcomeEmailService->sendWelcomeEmail($user, $temporaryPassword, $onboardingUrl);
             Log::info('Sent welcome email to user with onboarding link', [
                 'user_id' => $user->id,
                 'onboarding_url' => $onboardingUrl

@@ -26,9 +26,9 @@ class DatabaseSeeder extends Seeder
             ServiceCategorySeeder::class,
             WalkInSeeder::class,
             ServiceSeeder::class,
-            // Create admin user and test company
+            // Create admin user and test company (includes staff creation)
             TestCompanySeeder::class,
-            // Staff seeder depends on company seeder
+            // Staff seeder for detailed staff setup
             StaffSeeder::class,
             AppointmentSeeder::class,
             SettingsTableSeeder::class,
@@ -42,6 +42,8 @@ class DatabaseSeeder extends Seeder
             TransactionSeeder::class,
             // Generate sample revenue data
             RevenueDataSeeder::class,
+            // Seed email campaigns
+            EmailCampaignsTableSeeder::class,
         ]);
 
         // Note: Admin user and test company are now created by TestCompanySeeder

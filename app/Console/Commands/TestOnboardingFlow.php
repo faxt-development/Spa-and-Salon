@@ -5,9 +5,12 @@ namespace App\Console\Commands;
 use App\Http\Controllers\Api\StripeWebhookController;
 use App\Mail\AdminNewTrialNotification;
 use App\Mail\WelcomeNewUser;
+use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Models\Plan;
-use App\Models\User;
 use App\Models\Subscription;
+use App\Models\User;
+use App\Services\WelcomeEmailService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -111,20 +114,9 @@ class TestOnboardingFlow extends Command
             $this->info('Attempting to send welcome email...');
             Log::info('Attempting to send welcome email', ['to' => $user->email]);
 
-            // Capture the email content for logging
-            $welcomeEmail = new WelcomeNewUser($user, $temporaryPassword, $onboardingUrl);
-
-            // Log the email view data
-            Log::info('Welcome email view data', [
-                'user' => $user->name,
-                'email' => $user->email,
-                'onboardingUrl' => $onboardingUrl,
-                'view' => 'emails.welcome-new-user'
-            ]);
-
-            // Send the email
-           // Mail::to($user->email)->send($welcomeEmail);
-           Mail::mailer('log')->to($user->email)->send($welcomeEmail);
+            // Send welcome email using campaign system
+            $welcomeEmailService = app(WelcomeEmailService::class);
+            $welcomeEmailService->sendWelcomeEmail($user, $temporaryPassword);
 
             $this->info('Welcome email sent successfully!');
             Log::info('Welcome email sent successfully', ['to' => $user->email]);

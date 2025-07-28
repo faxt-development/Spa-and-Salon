@@ -20,29 +20,21 @@ class WelcomeNewUser extends Mailable implements ShouldQueue
      * @var \App\Models\User
      */
     public $user;
-
-    /**
-     * The temporary password for the user.
-     *
-     * @var string|null
-     */
     public $temporaryPassword;
-
-    /**
-     * The onboarding URL for the user.
-     *
-     * @var string|null
-     */
     public $onboardingUrl;
+    public $customSubject;
+    public $customContent;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(User $user, ?string $temporaryPassword = null, ?string $onboardingUrl = null)
+    public function __construct(User $user, ?string $temporaryPassword = null, ?string $onboardingUrl = null, ?string $customSubject = null, ?string $customContent = null)
     {
         $this->user = $user;
         $this->temporaryPassword = $temporaryPassword;
         $this->onboardingUrl = $onboardingUrl;
+        $this->customSubject = $customSubject;
+        $this->customContent = $customContent;
     }
 
     /**
@@ -51,7 +43,7 @@ class WelcomeNewUser extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome to Faxtina - Your Account Details',
+            subject: $this->customSubject ?? 'Welcome to Faxtina - Your Account Details',
         );
     }
 
@@ -60,6 +52,12 @@ class WelcomeNewUser extends Mailable implements ShouldQueue
      */
     public function content(): Content
     {
+        if ($this->customContent) {
+            return new Content(
+                htmlString: $this->customContent
+            );
+        }
+        
         return new Content(
             view: 'emails.welcome-new-user',
         );

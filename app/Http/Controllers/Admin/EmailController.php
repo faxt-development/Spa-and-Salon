@@ -107,10 +107,31 @@ class EmailController extends Controller
             'from_name' => $validated['from_name'],
             'type' => 'welcome',
             'status' => 'active',
+            'is_template' => false,
+            'is_readonly' => false,
+            'user_id' => auth()->id(),
         ]);
 
         return redirect()->route('admin.email.welcome')
             ->with('success', 'Welcome email template created successfully.');
+    }
+
+    public function copyTemplate(EmailCampaign $campaign)
+    {
+        if ($campaign->is_readonly) {
+            $copy = $campaign->replicate();
+            $copy->name = $campaign->name . ' (Copy)';
+            $copy->is_template = false;
+            $copy->is_readonly = false;
+            $copy->user_id = auth()->id();
+            $copy->save();
+
+            return redirect()->route('admin.email.welcome')
+                ->with('success', 'Template copied successfully. You can now edit the copy.');
+        }
+
+        return redirect()->route('admin.email.welcome')
+            ->with('error', 'This template cannot be copied.');
     }
 
     /**
