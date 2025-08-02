@@ -57,6 +57,18 @@
                                 </div>
 
                                 <div class="mt-4">
+                                    <x-input-label for="location_id" :value="__('Location')" />
+                                    <select id="location_id" name="location_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                        <option value="">{{ __('Select Location') }}</option>
+                                        @foreach ($locations as $location)
+                                            <option value="{{ $location->id }}" {{ (old('location_id', $staff->location_id) == $location->id) ? 'selected' : '' }}>
+                                                {{ $location->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="mt-4">
                                     <x-input-label for="bio" :value="__('Bio')" />
                                     <textarea id="bio" name="bio" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" rows="3">{{ old('bio', $staff->bio) }}</textarea>
                                 </div>
@@ -143,12 +155,30 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                                     <div>
                                         <x-input-label for="work_start_time" :value="__('Start Time')" />
-                                        <x-text-input id="work_start_time" name="work_start_time" type="time" class="mt-1 block w-full" :value="old('work_start_time', $staff->work_start_time ? $staff->work_start_time->format('H:i') : null)" />
+                                        @php
+                                            $timezone = $staff->location && $staff->location->timezone 
+                                                ? $staff->location->timezone 
+                                                : ($company->locations->where('is_primary', true)->first()->timezone ?? 'UTC');
+                                            
+                                            $startTime = old('work_start_time');
+                                            if (!$startTime && $staff->work_start_time) {
+                                                $startTime = $staff->work_start_time->setTimezone($timezone)->format('H:i');
+                                            }
+                                        @endphp
+                                        <x-text-input id="work_start_time" name="work_start_time" type="time" class="mt-1 block w-full" :value="$startTime" />
+                                        <p class="mt-1 text-xs text-gray-500">{{ __('Time shown in') }} {{ $timezone }}</p>
                                     </div>
 
                                     <div>
                                         <x-input-label for="work_end_time" :value="__('End Time')" />
-                                        <x-text-input id="work_end_time" name="work_end_time" type="time" class="mt-1 block w-full" :value="old('work_end_time', $staff->work_end_time ? $staff->work_end_time->format('H:i') : null)" />
+                                        @php
+                                            $endTime = old('work_end_time');
+                                            if (!$endTime && $staff->work_end_time) {
+                                                $endTime = $staff->work_end_time->setTimezone($timezone)->format('H:i');
+                                            }
+                                        @endphp
+                                        <x-text-input id="work_end_time" name="work_end_time" type="time" class="mt-1 block w-full" :value="$endTime" />
+                                        <p class="mt-1 text-xs text-gray-500">{{ __('Time shown in') }} {{ $timezone }}</p>
                                     </div>
                                 </div>
                             </div>

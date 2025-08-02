@@ -8,6 +8,7 @@ use App\Models\Permission;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\BusinessHour;
+use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +45,7 @@ class StaffController extends Controller
         // Check if there are no staff members yet
         $noStaff = $staff->isEmpty();
 
-        return view('admin.staff.index', compact('staff', 'noStaff', 'adminIsStaff', 'user'));
+        return view('admin.staff.index', compact('staff', 'noStaff', 'adminIsStaff', 'user', 'company'));
     }
 
     /**
@@ -374,8 +375,11 @@ class StaffController extends Controller
                 ->with('error', 'You do not have permission to edit this staff member.');
         }
 
+        // Get locations that belong to the current company
+        $locations = Location::where('company_id', $company->id)->orderBy('name')->get();
+
         $roles = Role::all();
-        return view('admin.staff.edit', compact('staff', 'roles'));
+        return view('admin.staff.edit', compact('staff', 'roles', 'locations'));
     }
 
     /**
@@ -461,8 +465,43 @@ class StaffController extends Controller
                 $staff->profile_image = $profileImage;
             }
 
+            // Get timezone for conversion
+            $timezone = null;
+            if ($request->location_id) {
+                $location = Location::find($request->location_id);
+                $timezone = $location ? $location->timezone : null;
+            }
+
+            if (!$timezone && $company) {
+                $primaryLocation = $company->locations()->where('is_primary', true)->first();
+                $timezone = $primaryLocation ? $primaryLocation->timezone : null;
+            }
+
+            // Default to UTC if no timezone found
+            $timezone = $timezone ?: 'UTC';
+
+            // Convert work times from local timezone to UTC for storage
+            $workStartTime = null;
+            $workEndTime = null;
+
+            if ($request->work_start_time) {
+                $workStartTime = \Carbon\Carbon::createFromFormat(
+                    'H:i',
+                    $request->work_start_time,
+                    $timezone
+                )->setTimezone('UTC');
+            }
+
+            if ($request->work_end_time) {
+                $workEndTime = \Carbon\Carbon::createFromFormat(
+                    'H:i',
+                    $request->work_end_time,
+                    $timezone
+                )->setTimezone('UTC');
+            }
+
             // Update staff record
-            $staff->update([
+            $staffData = [
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
                 'email' => $request->email,
@@ -470,15 +509,18 @@ class StaffController extends Controller
                 'position' => $request->position,
                 'bio' => $request->bio,
                 'active' => $request->has('active'),
-                'work_start_time' => $request->work_start_time,
-                'work_end_time' => $request->work_end_time,
+                'work_start_time' => $workStartTime,
+                'work_end_time' => $workEndTime,
                 'work_days' => $request->work_days,
                 'commission_rate' => $request->commission_rate,
+                'location_id' => $request->location_id,
                 'specialties' => $request->specialties,
                 'certifications' => $request->certifications,
                 'languages' => $request->languages,
                 'notes' => $request->notes,
-            ]);
+            ];
+
+            $staff->update($staffData);
 
             // Debug employee data
             info('Employee data from request:', [
@@ -747,14 +789,14 @@ class StaffController extends Controller
 
         // Get business hours for the company
         $businessHours = [];
-        
+
         // First check if there's a primary location
         $primaryLocation = $company->locations()->where('is_primary', true)->first();
-        
+
         if ($primaryLocation) {
             // Try to get business hours from the primary location
             $locationBusinessHours = $primaryLocation->businessHours()->get();
-            
+
             if ($locationBusinessHours->isNotEmpty()) {
                 foreach ($locationBusinessHours as $hour) {
                     $businessHours[$hour->day_of_week] = [
@@ -765,13 +807,13 @@ class StaffController extends Controller
                 }
             }
         }
-        
+
         // If no location business hours found, try company-wide business hours
         if (empty($businessHours)) {
             $companyBusinessHours = BusinessHour::where('company_id', $company->id)
                 ->whereNull('location_id')
                 ->get();
-                
+
             if ($companyBusinessHours->isNotEmpty()) {
                 foreach ($companyBusinessHours as $hour) {
                     $businessHours[$hour->day_of_week] = [
@@ -782,7 +824,7 @@ class StaffController extends Controller
                 }
             }
         }
-        
+
         // Default business hours if none are set
         if (empty($businessHours)) {
             // Default to 9am-5pm for weekdays, closed on weekends
@@ -812,7 +854,7 @@ class StaffController extends Controller
     // Custom validation for start and end times that handles day boundaries
     $endTime = $request->work_end_time;
     $startTime = $request->work_start_time;
-    
+
     // Basic validation rules
     $rules = [
         'staff_id' => 'required|exists:staff,id',
@@ -821,10 +863,10 @@ class StaffController extends Controller
         'work_start_time' => 'required|date_format:H:i',
         'work_end_time' => 'required|date_format:H:i',
     ];
-    
+
     // Perform basic validation first
     $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules);
-    
+
     if ($validator->fails()) {
         return response()->json([
             'success' => false,
@@ -832,23 +874,23 @@ class StaffController extends Controller
             'errors' => $validator->errors()
         ], 422);
     }
-    
+
     // Now handle the time comparison logic
     if ($startTime && $endTime) {
         // Parse the times
         list($startHour, $startMinute) = array_map('intval', explode(':', $startTime));
         list($endHour, $endMinute) = array_map('intval', explode(':', $endTime));
-        
+
         // Convert to minutes for easier comparison
         $startMinutes = $startHour * 60 + $startMinute;
         $endMinutes = $endHour * 60 + $endMinute;
-        
+
         // Special case: if end time is earlier than start time, assume it's the next day
         // This handles cases like start=22:00, end=01:00 (meaning 1 AM the next day)
         if ($endMinutes < $startMinutes && $endTime !== '00:00') {
             // End time is on the next day, which is valid
             // No additional validation needed
-        } 
+        }
         // Special case: midnight (00:00) is treated as end of day (24:00)
         else if ($endTime === '00:00') {
             // Midnight is always considered after any other time of day
@@ -865,7 +907,7 @@ class StaffController extends Controller
             ], 422);
         }
     }
-    
+
     // If we've reached here, validation passed
     $validated = $validator->validated();
 

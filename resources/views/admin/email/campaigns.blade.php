@@ -22,7 +22,7 @@
             <div class="bg-white shadow-md rounded-lg p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold">Your Campaigns</h2>
-                    <a href="{{ route('email-campaigns.create') }}" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded">
+                    <a href="{{ route('admin.email-campaigns.create') }}" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-4 rounded">
                         Create New Campaign
                     </a>
                 </div>
@@ -123,7 +123,7 @@
                     @endforeach
                 </ul>
                 <div class="mt-4 pt-4 border-t border-gray-200">
-                    <a href="{{ route('email-campaigns.create') }}" class="text-blue-600 hover:text-blue-800 font-medium">
+                    <a href="{{ route('admin.email-campaigns.create') }}" class="text-blue-600 hover:text-blue-800 font-medium">
                         Create Targeted Campaign →
                     </a>
                 </div>
