@@ -128,9 +128,9 @@ class AssistantController extends Controller
                 SELECT content, metadata, 1 - (embedding <=> $vectorSql) AS similarity
                 FROM embeddings
                 WHERE metadata->>'source_type' = 'help_document'
-                  AND (1 - (embedding <=> $vectorSql)) > 0.7
+                  AND (1 - (embedding <=> $vectorSql)) > 0.5
                 ORDER BY embedding <=> $vectorSql ASC
-                LIMIT 5
+                LIMIT 10
             ";
 
             // Fallback query without threshold
@@ -139,7 +139,7 @@ class AssistantController extends Controller
                 FROM embeddings
                 WHERE metadata->>'source_type' = 'help_document'
                 ORDER BY embedding <=> $vectorSql ASC
-                LIMIT 5
+                LIMIT 10
             ";
 
             // Define an RPC query as a last resort
