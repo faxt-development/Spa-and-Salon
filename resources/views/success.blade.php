@@ -20,7 +20,7 @@
             </p>
             <div class="mt-8 border-t border-gray-200 pt-8">
                 <p class="text-md text-gray-600 max-w-2xl mx-auto">
-                    If you have any questions or need assistance, please contact our support team at <a href="mailto:info@faxt.com" class="text-primary-600 hover:text-primary-800 font-medium">info@faxt.com</a> or call us at <a href="tel:+13863617935" class="text-primary-600 hover:text-primary-800 font-medium">+1 (386) 361-7935</a>.
+                    If you have any questions or need assistance, please contact our support team at <a href="mailto:info@faxt.com" class="text-primary-600 hover:text-primary-800 font-medium">info@faxt.com</a> or call us at <a href="tel:+13862005141" class="text-primary-600 hover:text-primary-800 font-medium">+1 (386) 200-5141</a>.
                 </p>
             </div>
         </div>

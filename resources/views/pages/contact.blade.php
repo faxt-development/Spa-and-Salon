@@ -99,7 +99,7 @@
                         </div>
                         <div class="ml-4">
                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">Phone</h3>
-                            <p class="text-gray-600 dark:text-gray-300">+1 (386) 361-7935</p>
+                            <p class="text-gray-600 dark:text-gray-300">+1 (386) 200-5141</p>
                             <p class="text-sm text-gray-500 dark:text-gray-400">Monday - Friday, 9:00 AM - 6:00 PM EST</p>
                         </div>
                     </div>
